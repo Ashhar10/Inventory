@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #000000 0%, #2d2d2d 100%);
             min-height: 100vh;
             padding: 20px;
             perspective: 1500px;
@@ -49,12 +49,13 @@
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
             padding: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
             transform-style: preserve-3d;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer;
             position: relative;
             overflow: hidden;
+            border: 2px solid #333;
         }
 
         .stat-card::before {
@@ -64,7 +65,7 @@
             left: 0;
             right: 0;
             height: 5px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
+            background: linear-gradient(90deg, #000, #444);
             transform: scaleX(0);
             transition: transform 0.4s;
         }
@@ -90,10 +91,10 @@
             animation: float 3s ease-in-out infinite;
         }
 
-        .stat-card:nth-child(1) .stat-icon { background: linear-gradient(135deg, #667eea, #764ba2); }
-        .stat-card:nth-child(2) .stat-icon { background: linear-gradient(135deg, #f093fb, #f5576c); }
-        .stat-card:nth-child(3) .stat-icon { background: linear-gradient(135deg, #4facfe, #00f2fe); }
-        .stat-card:nth-child(4) .stat-icon { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+        .stat-card:nth-child(1) .stat-icon { background: linear-gradient(135deg, #000, #333); }
+        .stat-card:nth-child(2) .stat-icon { background: linear-gradient(135deg, #1a1a1a, #444); }
+        .stat-card:nth-child(3) .stat-icon { background: linear-gradient(135deg, #2d2d2d, #555); }
+        .stat-card:nth-child(4) .stat-icon { background: linear-gradient(135deg, #3a3a3a, #666); }
 
         .stat-value {
             font-size: 2.5em;
@@ -120,8 +121,9 @@
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
             padding: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
             animation: fadeInUp 0.8s ease;
+            border: 2px solid #333;
         }
 
         .section-title {
@@ -150,12 +152,12 @@
 
         input:focus, select:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #000;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
         }
 
         button {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #000, #333);
             color: white;
             border: none;
             cursor: pointer;
@@ -186,7 +188,7 @@
 
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
         }
 
         table {
@@ -195,7 +197,7 @@
         }
 
         thead {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #000, #333);
             color: white;
         }
 
@@ -211,7 +213,7 @@
         }
 
         tbody tr:hover {
-            background: linear-gradient(90deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            background: linear-gradient(90deg, rgba(0, 0, 0, 0.05), rgba(50, 50, 50, 0.1));
             transform: translateX(5px);
         }
 
@@ -223,9 +225,9 @@
             text-transform: uppercase;
         }
 
-        .status-in-stock { background: #43e97b; color: white; }
-        .status-low-stock { background: #f5576c; color: white; }
-        .status-out-stock { background: #666; color: white; }
+        .status-in-stock { background: #333; color: white; }
+        .status-low-stock { background: #666; color: white; }
+        .status-out-stock { background: #000; color: white; }
 
         .chart-3d {
             position: relative;
@@ -239,13 +241,13 @@
 
         .bar-3d {
             width: 60px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #000, #444);
             border-radius: 10px 10px 0 0;
             position: relative;
             transform-style: preserve-3d;
             transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .bar-3d:hover {
