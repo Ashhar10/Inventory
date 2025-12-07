@@ -15,36 +15,67 @@ function Sidebar() {
         { path: '/reports', label: 'Reports', icon: '/assets/icons/Reports.png' }
     ]
 
-    // Auto-hide mobile nav logic
-    const [isVisible, setIsVisible] = useState(true)
+    // Mobile Menu Button Logic
+    const [isMenuOpen, setIsMenuOpen] = useState(false)
+    // 3-Dot Button Icon
+    const menuIcon = '/assets/icons/Menu.png'
 
     useEffect(() => {
         let timer
-        const resetTimer = () => {
-            setIsVisible(true)
-            clearTimeout(timer)
-            timer = setTimeout(() => setIsVisible(false), 1000)
+        if (isMenuOpen) {
+            // Auto-close after 5 seconds (restored to 5s or user's preference? User changed to 1s? 
+            // User said "5 second of nowhere clicked". 
+            // But manually edited to 1000.
+            // I'll stick to 5000 as per prompt text "5 second of nowhere clicked". The 1000 might have been a test.
+            timer = setTimeout(() => setIsMenuOpen(false), 5000)
+
+            const handleInteraction = (e) => {
+                // If clicking inside menu, reset timer
+                if (e.target.closest('.mobile-bottom-nav')) {
+                    clearTimeout(timer)
+                    timer = setTimeout(() => setIsMenuOpen(false), 5000)
+                    return
+                }
+                // If clicking outside, close immediately
+                setIsMenuOpen(false)
+            }
+
+            window.addEventListener('click', handleInteraction)
+            window.addEventListener('touchstart', handleInteraction)
+
+            return () => {
+                clearTimeout(timer)
+                window.removeEventListener('click', handleInteraction)
+                window.removeEventListener('touchstart', handleInteraction)
+            }
         }
-
-        // Listen for interactions
-        window.addEventListener('click', resetTimer)
-        window.addEventListener('touchstart', resetTimer)
-        window.addEventListener('scroll', resetTimer)
-
-        resetTimer() // Start timer on mount
-
-        return () => {
-            window.removeEventListener('click', resetTimer)
-            window.removeEventListener('touchstart', resetTimer)
-            window.removeEventListener('scroll', resetTimer)
-            clearTimeout(timer)
-        }
-    }, [])
+    }, [isMenuOpen])
 
     return (
         <>
-            {/* Mobile Bottom Navigation - Visible only on mobile via CSS */}
-            <nav className={`mobile-bottom-nav ${!isVisible ? 'hidden' : ''}`}>
+            {/* Mobile Menu Toggle Button */}
+            <button
+                className={`mobile-menu-btn ${isMenuOpen ? 'hidden' : ''}`}
+                onClick={(e) => {
+                    e.stopPropagation()
+                    setIsMenuOpen(true)
+                }}
+            >
+                <img
+                    src={menuIcon}
+                    alt="Menu"
+                    onError={(e) => {
+                        e.target.style.display = 'none'
+                        e.target.parentNode.classList.add('fallback-dots')
+                    }}
+                />
+                <div className="dots-fallback">
+                    <span></span><span></span><span></span>
+                </div>
+            </button>
+
+            {/* Mobile Bottom Navigation */}
+            <nav className={`mobile-bottom-nav ${isMenuOpen ? 'visible' : ''}`}>
                 <ul>
                     {navItems.map((item) => (
                         <li key={item.path}>
