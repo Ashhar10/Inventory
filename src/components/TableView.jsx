@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 function TableView({
     columns,
@@ -13,6 +13,23 @@ function TableView({
     const [currentPage, setCurrentPage] = useState(1)
     const [expandedRow, setExpandedRow] = useState(null)
     const itemsPerPage = 10
+
+    // Auto-collapse logic
+    useEffect(() => {
+        if (expandedRow !== null) {
+            const timer = setTimeout(() => setExpandedRow(null), 5000)
+
+            const handleOutsideClick = () => setExpandedRow(null)
+            // Use capture phase or check if click target is not within the expanded row if needed
+            // But simple window click is fine because row click stops propagation
+            window.addEventListener('click', handleOutsideClick)
+
+            return () => {
+                clearTimeout(timer)
+                window.removeEventListener('click', handleOutsideClick)
+            }
+        }
+    }, [expandedRow])
 
     // Filter data based on search
     const filteredData = data?.filter((row) => {
@@ -82,7 +99,10 @@ function TableView({
                             paginatedData.map((row, idx) => (
                                 <tr
                                     key={idx}
-                                    onClick={() => setExpandedRow(expandedRow === idx ? null : idx)}
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        setExpandedRow(expandedRow === idx ? null : idx)
+                                    }}
                                     className={expandedRow === idx ? 'expanded' : ''}
                                 >
                                     {columns.map((col) => (

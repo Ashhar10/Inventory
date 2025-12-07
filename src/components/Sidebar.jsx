@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom'
-import { useState } from 'react'
+import { NavLink } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import logo from '/assets/icons/Dashboard.png' // Fallback icon
 
 function Sidebar() {
@@ -15,10 +16,36 @@ function Sidebar() {
         { path: '/reports', label: 'Reports', icon: '/assets/icons/Reports.png' }
     ]
 
+    // Auto-hide mobile nav logic
+    const [isVisible, setIsVisible] = useState(true)
+
+    useEffect(() => {
+        let timer
+        const resetTimer = () => {
+            setIsVisible(true)
+            clearTimeout(timer)
+            timer = setTimeout(() => setIsVisible(false), 5000)
+        }
+
+        // Listen for interactions
+        window.addEventListener('click', resetTimer)
+        window.addEventListener('touchstart', resetTimer)
+        window.addEventListener('scroll', resetTimer)
+
+        resetTimer() // Start timer on mount
+
+        return () => {
+            window.removeEventListener('click', resetTimer)
+            window.removeEventListener('touchstart', resetTimer)
+            window.removeEventListener('scroll', resetTimer)
+            clearTimeout(timer)
+        }
+    }, [])
+
     return (
         <>
             {/* Mobile Bottom Navigation - Visible only on mobile via CSS */}
-            <nav className="mobile-bottom-nav">
+            <nav className={`mobile-bottom-nav ${!isVisible ? 'hidden' : ''}`}>
                 <ul>
                     {navItems.map((item) => (
                         <li key={item.path}>
