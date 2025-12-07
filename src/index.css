@@ -12,23 +12,37 @@
 
 :root {
   /* New Color Palette */
-  --bg-dark: #1B1B1B;
-  --bg-surface: #323232;
-  --text-main: #FFE7D0;
-  --accent-orange: #FC6E20;
+  /* IOS 26 - Space Grey Palette */
+  --bg-dark: #09090B;
+  /* Deepest Black (Abyss) */
+  --bg-surface: #18181B;
+  /* Dark Grey (Void) */
+  --bg-card: #27272A;
+  /* Mid Grey (Slate) */
+  --bg-hover: #52525B;
+  /* Light Grey (Steel) */
 
-  /* Primary Colors - Mapped to Orange Theme */
-  --primary-50: #fff7ed;
-  --primary-100: #ffedd5;
-  --primary-200: #fed7aa;
-  --primary-300: #fdba74;
-  --primary-400: #fb923c;
-  --primary-500: #FC6E20;
-  /* Main Accent */
-  --primary-600: #ea580c;
-  --primary-700: #c2410c;
-  --primary-800: #9a3412;
-  --primary-900: #7c2d12;
+  --text-main: #F4F4F5;
+  /* Nearly White */
+  --text-muted: #A1A1AA;
+  /* Lavender Grey */
+
+  --accent-primary: #E4E4E7;
+  /* Silver/Platinum as primary accent */
+  --accent-glow: #FCD34D;
+  /* Subtle Gold for Sun/Energy highlights */
+
+  /* Neutral Scale - Replacing Orange Scheme */
+  --primary-50: #fafafa;
+  --primary-100: #f4f4f5;
+  --primary-200: #e4e4e7;
+  --primary-300: #d4d4d8;
+  --primary-400: #a1a1aa;
+  --primary-500: #71717a;
+  --primary-600: #52525b;
+  --primary-700: #3f3f46;
+  --primary-800: #27272a;
+  --primary-900: #18181b;
 
   /* Neutral Colors */
   --gray-50: #f9fafb;
@@ -43,15 +57,15 @@
   --gray-900: #111827;
 
   /* Backgrounds */
-  --bg-gradient-dashboard: #1B1B1B;
+  --bg-gradient-dashboard: radial-gradient(circle at top right, #27272A 0%, #09090B 100%);
   /* Solid Dark Background */
-  --bg-gradient-primary: linear-gradient(135deg, #FC6E20 0%, #ea580c 100%);
-  --bg-gradient-secondary: linear-gradient(135deg, #323232 0%, #1B1B1B 100%);
+  --bg-gradient-primary: linear-gradient(135deg, #52525B 0%, #27272A 100%);
+  --bg-gradient-secondary: linear-gradient(135deg, #27272A 0%, #18181B 100%);
 
-  /* Glass Effect - Adjusted for Dark Mode */
-  --glass-bg: rgba(50, 50, 50, 0.7);
-  --glass-border: rgba(255, 231, 208, 0.1);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  /* Glass Effect - Futuristic IOS */
+  --glass-bg: rgba(39, 39, 42, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
 
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
