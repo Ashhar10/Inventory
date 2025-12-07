@@ -8,56 +8,48 @@ const dashboardCards = [
         image: '/assets/icons/Customers.png',
         title: 'Customers',
         path: '/customers',
-        gradient: 'linear-gradient(135deg, #FC6E20 0%, #c2410c 100%)'
     },
     {
         id: 'products',
         image: '/assets/icons/Products.png',
         title: 'Products',
         path: '/products',
-        gradient: 'linear-gradient(135deg, #323232 0%, #1B1B1B 100%)'
     },
     {
         id: 'orders',
         image: '/assets/icons/Orders.png',
         title: 'Orders',
         path: '/orders',
-        gradient: 'linear-gradient(135deg, #FC6E20 0%, #c2410c 100%)'
     },
     {
         id: 'packing',
         image: '/assets/icons/Packing.png',
         title: 'Packing',
         path: '/packing',
-        gradient: 'linear-gradient(135deg, #323232 0%, #1B1B1B 100%)'
     },
     {
         id: 'sales',
         image: '/assets/icons/Sales.png',
         title: 'Sales',
         path: '/sales',
-        gradient: 'linear-gradient(135deg, #FC6E20 0%, #c2410c 100%)'
     },
     {
         id: 'inventory',
         image: '/assets/icons/Inventory.png',
         title: 'Inventory',
         path: '/inventory',
-        gradient: 'linear-gradient(135deg, #323232 0%, #1B1B1B 100%)'
     },
     {
         id: 'stores',
         image: '/assets/icons/Stores.png',
         title: 'Stores',
         path: '/stores',
-        gradient: 'linear-gradient(135deg, #FC6E20 0%, #c2410c 100%)'
     },
     {
         id: 'users',
         image: '/assets/icons/Users.png',
         title: 'Add New User',
         path: '/users',
-        gradient: 'linear-gradient(135deg, #323232 0%, #1B1B1B 100%)'
     },
 ]
 
@@ -99,82 +91,220 @@ function Dashboard() {
     }
 
     return (
-        <div className="container">
-            <div style={{ textAlign: 'center', marginBottom: 'var(--spacing-3xl)' }}>
-                <h1 className="page-title fade-in-up">
-                    Pakistan Wire Industries (Pvt.) LTD
-                </h1>
-                <p style={{
-                    fontSize: '1.5rem',
-                    color: 'white',
-                    fontWeight: '600',
-                    textShadow: '1px 1px 2px rgba(0,0,0,0.2)'
-                }} className="fade-in-up stagger-1">
-                    Inventory Dashboard
-                </p>
-            </div>
-
-            {/* Quick Stats */}
-            <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                gap: 'var(--spacing-lg)',
-                marginBottom: 'var(--spacing-3xl)'
-            }}>
-                <div className="glass-card fade-in-up stagger-2" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                    <img src="/assets/icons/Customers.png" alt="Customers" style={{ width: '48px', height: '48px', marginBottom: 'var(--spacing-sm)' }} />
-                    <div style={{ fontSize: '2rem', fontWeight: '800', color: 'var(--text-main)' }}>{stats.customers}</div>
-                    <div style={{ color: 'var(--text-main)', opacity: 0.8, fontWeight: '600' }}>Total Customers</div>
+        <>
+            <div className="container responsive-container">
+                <div className="dashboard-header">
+                    <h1 className="page-title fade-in-up">
+                        Pakistan Wire Industries (Pvt.) LTD
+                    </h1>
+                    <p className="dashboard-subtitle fade-in-up stagger-1">
+                        Inventory Dashboard
+                    </p>
                 </div>
 
-                <div className="glass-card fade-in-up stagger-3" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                    <img src="/assets/icons/Products.png" alt="Products" style={{ width: '48px', height: '48px', marginBottom: 'var(--spacing-sm)' }} />
-                    <div style={{ fontSize: '2rem', fontWeight: '800', color: 'var(--text-main)' }}>{stats.products}</div>
-                    <div style={{ color: 'var(--text-main)', opacity: 0.8, fontWeight: '600' }}>Total Products</div>
-                </div>
-
-                <div className="glass-card fade-in-up stagger-4" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                    <img src="/assets/icons/Orders.png" alt="Orders" style={{ width: '48px', height: '48px', marginBottom: 'var(--spacing-sm)' }} />
-                    <div style={{ fontSize: '2rem', fontWeight: '800', color: 'var(--text-main)' }}>{stats.pendingOrders}</div>
-                    <div style={{ color: 'var(--text-main)', opacity: 0.8, fontWeight: '600' }}>Pending Orders</div>
-                </div>
-
-                <div className="glass-card fade-in-up stagger-5" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                    <img src="/assets/icons/Sales.png" alt="Sales" style={{ width: '48px', height: '48px', marginBottom: 'var(--spacing-sm)' }} />
-                    <div style={{ fontSize: '2rem', fontWeight: '800', color: 'var(--text-main)' }}>
-                        Rs. {stats.salesThisMonth.toLocaleString()}
+                <div className="stats- fade-in-up stagger-2">
+                    <div className="glass-card stat-card">
+                        <img src="/assets/icons/Customers.png" alt="Customers" className="stat-icon" />
+                        <div className="stat-value">{stats.customers}</div>
+                        <div className="stat-label">Total Customers</div>
                     </div>
-                    <div style={{ color: 'var(--text-main)', opacity: 0.8, fontWeight: '600' }}>Sales This Month</div>
-                </div>
-            </div>
 
-            {/* Main Dashboard Cards */}
-            <div className="dashboard-grid">
-                {dashboardCards.map((card, index) => (
-                    <div
-                        key={card.id}
-                        className={`card-3d card-glow dashboard-card fade-in-up stagger-${index + 1}`}
-                        onClick={() => handleCardClick(card.path)}
-                        style={{
-                            background: 'var(--bg-surface)'
-                        }}
-                    >
-                        <div className="icon-container" style={{ background: 'transparent' }}>
-                            <img src={card.image} alt={card.title} style={{ width: '64px', height: '64px', objectFit: 'contain' }} />
+                    <div className="glass-card stat-card">
+                        <img src="/assets/icons/Products.png" alt="Products" className="stat-icon" />
+                        <div className="stat-value">{stats.products}</div>
+                        <div className="stat-label">Total Products</div>
+                    </div>
+
+                    <div className="glass-card stat-card">
+                        <img src="/assets/icons/Orders.png" alt="Orders" className="stat-icon" />
+                        <div className="stat-value">{stats.pendingOrders}</div>
+                        <div className="stat-label">Pending Orders</div>
+                    </div>
+
+                    <div className="glass-card stat-card">
+                        <img src="/assets/icons/Sales.png" alt="Sales" className="stat-icon" />
+                        <div className="stat-value">Rs. {stats.salesThisMonth.toLocaleString()}</div>
+                        <div className="stat-label">Sales This Month</div>
+                    </div>
+                </div>
+
+                <div className="dashboard-grid">
+                    {dashboardCards.map((card, index) => (
+                        <div
+                            key={card.id}
+                            className={`card-3d card-glow dashboard-card fade-in-up stagger-${index + 1}`}
+                            onClick={() => handleCardClick(card.path)}
+                        >
+                            <div className="icon-container">
+                                <img src={card.image} alt={card.title} />
+                            </div>
+                            <h3 className="card-title">{card.title}</h3>
                         </div>
-                        <h3 style={{
-                            fontSize: '1.5rem',
-                            fontWeight: '700',
-                            color: 'var(--text-main)',
-                            position: 'relative',
-                            zIndex: 2
-                        }}>
-                            {card.title}
-                        </h3>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
-        </div>
+
+            <style>{`
+                .responsive-container {
+                    width: 100%;
+                    max-width: 1400px;
+                    margin: 0 auto;
+                }
+
+                .dashboard-header {
+                    text-align: center;
+                    margin-bottom: var(--spacing-3xl);
+                }
+
+                .dashboard-subtitle {
+                    font-size: 1.5rem;
+                    color: white;
+                    font-weight: 600;
+                    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+                    margin-top: var(--spacing-md);
+                }
+
+                .stats-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: var(--spacing-lg);
+                    margin-bottom: var(--spacing-3xl);
+                }
+
+                .stat-card {
+                    padding: var(--spacing-xl);
+                    text-align: center;
+                    min-height: 150px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                }
+
+                .stat-icon {
+                    width: 48px;
+                    height: 48px;
+                    margin-bottom: var(--spacing-sm);
+                }
+
+                .stat-value {
+                    font-size: 2rem;
+                    font-weight: 800;
+                    color: var(--text-main);
+                    margin: var(--spacing-sm) 0;
+                }
+
+                .stat-label {
+                    color: var(--text-main);
+                    opacity: 0.8;
+                    font-weight: 600;
+                    font-size: 0.9rem;
+                }
+
+                .dashboard-card .icon-container {
+                    background: transparent !important;
+                }
+
+                .dashboard-card .icon-container img {
+                    width: 64px;
+                    height: 64px;
+                    object-fit: contain;
+                }
+
+                .card-title {
+                    font-size: 1.5rem;
+                    font-weight: 700;
+                    color: var(--text-main);
+                    position: relative;
+                    z-index: 2;
+                    margin-top: var(--spacing-md);
+                }
+
+                @media (max-width: 768px) {
+                    .dashboard-header {
+                        margin-bottom: var(--spacing-xl);
+                    }
+
+                    .page-title {
+                        font-size: 1.5rem !important;
+                        padding: 0 var(--spacing-md);
+                    }
+
+                    .dashboard-subtitle {
+                        font-size: 1.1rem;
+                    }
+
+                    .stats-grid {
+                        grid-template-columns: repeat(2, 1fr);
+                        gap: var(--spacing-md);
+                    }
+
+                    .stat-card {
+                        padding: var(--spacing-md);
+                        min-height: 120px;
+                    }
+
+                    .stat-icon {
+                        width: 32px;
+                        height: 32px;
+                    }
+
+                    .stat-value {
+                        font-size: 1.5rem;
+                    }
+
+                    .stat-label {
+                        font-size: 0.75rem;
+                    }
+
+                    .dashboard-grid {
+                        grid-template-columns: repeat(2, 1fr) !important;
+                        gap: var(--spacing-md) !important;
+                    }
+
+                    .dashboard-card {
+                        padding: var(--spacing-lg) !important;
+                    }
+
+                    .dashboard-card .icon-container img {
+                        width: 48px !important;
+                        height: 48px !important;
+                    }
+
+                    .card-title {
+                        font-size: 1.1rem !important;
+                    }
+                }
+
+                @media (max-width: 480px) {
+                    .page-title {
+                        font-size: 1.2rem !important;
+                    }
+
+                    .dashboard-subtitle {
+                        font-size: 1rem;
+                    }
+
+                    .stats-grid {
+                        grid-template-columns: 1fr;
+                        gap: var(--spacing-sm);
+                    }
+
+                    .dashboard-grid {
+                        grid-template-columns: 1fr !important;
+                        gap: var(--spacing-sm) !important;
+                    }
+
+                    .dashboard-card {
+                        padding: var(--spacing-md) !important;
+                    }
+
+                    .card-title {
+                        font-size: 1rem !important;
+                    }
+                }
+            `}</style>
+        </>
     )
 }
 
