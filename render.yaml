@@ -3,7 +3,7 @@ services:
     name: pakistan-wire-inventory
     env: static
     runtime: node
-    buildCommand: npm install && npm run build
+    buildCommand: npm install --legacy-peer-deps && npm run build
     staticPublishPath: ./dist
     envVars:
       - key: VITE_SUPABASE_URL
