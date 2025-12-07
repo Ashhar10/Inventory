@@ -11,6 +11,7 @@ function TableView({
 }) {
     const [searchTerm, setSearchTerm] = useState('')
     const [currentPage, setCurrentPage] = useState(1)
+    const [expandedRow, setExpandedRow] = useState(null)
     const itemsPerPage = 10
 
     // Filter data based on search
@@ -79,7 +80,11 @@ function TableView({
                             </tr>
                         ) : (
                             paginatedData.map((row, idx) => (
-                                <tr key={idx}>
+                                <tr
+                                    key={idx}
+                                    onClick={() => setExpandedRow(expandedRow === idx ? null : idx)}
+                                    className={expandedRow === idx ? 'expanded' : ''}
+                                >
                                     {columns.map((col) => (
                                         <td key={col.key}>
                                             {col.render ? col.render(row[col.key], row) : row[col.key]}
@@ -90,7 +95,10 @@ function TableView({
                                             <div style={{ display: 'flex', gap: '0.5rem' }}>
                                                 {onEdit && (
                                                     <button
-                                                        onClick={() => onEdit(row)}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            onEdit(row)
+                                                        }}
                                                         className="btn btn-secondary"
                                                         style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
                                                     >
@@ -99,7 +107,10 @@ function TableView({
                                                 )}
                                                 {onDelete && (
                                                     <button
-                                                        onClick={() => onDelete(row)}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            onDelete(row)
+                                                        }}
                                                         className="btn btn-danger"
                                                         style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
                                                     >

@@ -411,6 +411,16 @@ body {
   margin-top: var(--spacing-xs);
 }
 
+/* Force dark autofill */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #27272a inset !important;
+  -webkit-text-fill-color: white !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
 /* ===== TABLE STYLES ===== */
 .table-container {
   background: rgba(39, 39, 42, 0.6);
@@ -468,13 +478,28 @@ body {
 }
 
 .table tbody tr:hover {
-  background: rgba(82, 82, 91, 0.3);
-  transform: scale(1.00);
+  background: rgba(82, 82, 91, 0.4);
+  /* Stronger hover */
+  cursor: pointer;
 }
 
 .table tbody td {
-  padding: var(--spacing-lg);
+  padding: 8px 16px;
+  /* Thinner Y axis */
   color: var(--text-main);
+  white-space: nowrap;
+  /* "one line" */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+  vertical-align: middle;
+}
+
+/* Expansion class for clicked rows (requires JS toggle) */
+.table tbody tr.expanded td {
+  white-space: normal;
+  overflow: visible;
+  padding: 16px;
 }
 
 /* ===== NAVBAR ===== */
@@ -748,14 +773,18 @@ body {
 }
 
 .modal {
-  background: white;
+  background: #18181B;
+  /* Dark background */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  /* Ensure text is visible */
   border-radius: var(--radius-2xl);
   padding: var(--spacing-2xl);
   max-width: 600px;
   width: 90%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: var(--shadow-2xl);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75);
   animation: slideUp var(--transition-bounce);
 }
 
@@ -1372,8 +1401,8 @@ body {
   }
 }
 
-/* ===== DESKTOP (≥768px) - Show Sidebar, Hide Bottom Nav ===== */
-@media (min-width: 768px) {
+/* ===== DESKTOP (≥1025px) - Show Sidebar, Hide Bottom Nav ===== */
+@media (min-width: 1025px) {
 
   /* Show desktop sidebar */
   .sidebar {
@@ -1389,6 +1418,25 @@ body {
   .app-content {
     margin-left: 80px;
     padding-bottom: 0;
+  }
+}
+
+/* Tablet/Landscape Mobile (768px - 1024px) - Use Mobile Nav but adjust layout */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .sidebar {
+    display: none !important;
+  }
+
+  .mobile-bottom-nav {
+    display: flex !important;
+    width: 80% !important;
+    /* Wider on tablets */
+    max-width: 600px !important;
+  }
+
+  .app-content {
+    margin-left: 0;
+    padding-bottom: 100px;
   }
 }
 
