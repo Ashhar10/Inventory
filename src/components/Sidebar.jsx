@@ -1,13 +1,13 @@
 import { Link, useLocation } from 'react-router-dom'
 
 const menuItems = [
-    { path: '/', icon: '📊', label: 'Dashboard' },
-    { path: '/customers', icon: '👥', label: 'Customers' },
-    { path: '/products', icon: '📦', label: 'Products' },
-    { path: '/inventory', icon: '🏢', label: 'Inventory' },
-    { path: '/orders', icon: '📋', label: 'Orders' },
-    { path: '/sales', icon: '💰', label: 'Sales' },
-    { path: '/reports', icon: '📈', label: 'Reports' },
+    { path: '/', image: '/assets/icons/nav-dashboard.png', label: 'Dashboard' },
+    { path: '/customers', image: '/assets/icons/nav-customers.png', label: 'Customers' },
+    { path: '/products', image: '/assets/icons/nav-products.png', label: 'Products' },
+    { path: '/inventory', image: '/assets/icons/nav-inventory.png', label: 'Inventory' },
+    { path: '/orders', image: '/assets/icons/nav-orders.png', label: 'Orders' },
+    { path: '/sales', image: '/assets/icons/nav-sales.png', label: 'Sales' },
+    { path: '/reports', image: '/assets/icons/nav-reports.png', label: 'Reports' },
 ]
 
 function Sidebar() {
@@ -23,7 +23,15 @@ function Sidebar() {
                                 to={item.path}
                                 className={`sidebar-link ${location.pathname === item.path ? 'active' : ''}`}
                             >
-                                <span style={{ fontSize: '1.5rem' }}>{item.icon}</span>
+                                <img
+                                    src={item.image}
+                                    alt={item.label}
+                                    style={{ width: '24px', height: '24px', objectFit: 'contain' }}
+                                    onError={(e) => {
+                                        e.target.style.display = 'none';
+                                        e.target.nextSibling.innerText = item.label; // Fallback text logic if needed
+                                    }}
+                                />
                                 <span>{item.label}</span>
                             </Link>
                         </li>

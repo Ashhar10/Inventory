@@ -11,24 +11,24 @@
 }
 
 :root {
-  /* Primary Colors - Blue Gradient Theme */
-  --primary-50: #eff6ff;
-  --primary-100: #dbeafe;
-  --primary-200: #bfdbfe;
-  --primary-300: #93c5fd;
-  --primary-400: #60a5fa;
-  --primary-500: #3b82f6;
-  --primary-600: #2563eb;
-  --primary-700: #1d4ed8;
-  --primary-800: #1e40af;
-  --primary-900: #1e3a8a;
+  /* New Color Palette */
+  --bg-dark: #1B1B1B;
+  --bg-surface: #323232;
+  --text-main: #FFE7D0;
+  --accent-orange: #FC6E20;
 
-  /* Accent Colors */
-  --accent-purple: #8b5cf6;
-  --accent-pink: #ec4899;
-  --accent-orange: #f97316;
-  --accent-green: #10b981;
-  --accent-cyan: #06b6d4;
+  /* Primary Colors - Mapped to Orange Theme */
+  --primary-50: #fff7ed;
+  --primary-100: #ffedd5;
+  --primary-200: #fed7aa;
+  --primary-300: #fdba74;
+  --primary-400: #fb923c;
+  --primary-500: #FC6E20;
+  /* Main Accent */
+  --primary-600: #ea580c;
+  --primary-700: #c2410c;
+  --primary-800: #9a3412;
+  --primary-900: #7c2d12;
 
   /* Neutral Colors */
   --gray-50: #f9fafb;
@@ -42,24 +42,24 @@
   --gray-800: #1f2937;
   --gray-900: #111827;
 
-  /* Background Gradients */
-  --bg-gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --bg-gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  --bg-gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  --bg-gradient-dashboard: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  /* Backgrounds */
+  --bg-gradient-dashboard: #1B1B1B;
+  /* Solid Dark Background */
+  --bg-gradient-primary: linear-gradient(135deg, #FC6E20 0%, #ea580c 100%);
+  --bg-gradient-secondary: linear-gradient(135deg, #323232 0%, #1B1B1B 100%);
 
-  /* Glass Effect */
-  --glass-bg: rgba(255, 255, 255, 0.1);
-  --glass-border: rgba(255, 255, 255, 0.2);
-  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  /* Glass Effect - Adjusted for Dark Mode */
+  --glass-bg: rgba(50, 50, 50, 0.7);
+  --glass-border: rgba(255, 231, 208, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 
   /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  --shadow-3d: 0 30px 60px -15px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.75);
+  --shadow-3d: 0 30px 60px -15px rgba(0, 0, 0, 0.8);
 
   /* Spacing */
   --spacing-xs: 0.25rem;
@@ -97,9 +97,8 @@ html {
 
 body {
   font-family: var(--font-sans);
-  color: var(--gray-900);
-  background: var(--bg-gradient-dashboard);
-  background-attachment: fixed;
+  color: var(--text-main);
+  background: var(--bg-dark);
   min-height: 100vh;
   line-height: 1.6;
   overflow-x: hidden;
