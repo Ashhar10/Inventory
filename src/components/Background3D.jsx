@@ -1,105 +1,276 @@
-
 import React, { Suspense, useRef, useMemo } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { Points, PointMaterial, Stars, Float, Sparkles, OrbitControls } from '@react-three/drei'
-import * as random from 'maath/random/dist/maath-random.esm'
+import { Points, PointMaterial, Stars, Sparkles } from '@react-three/drei'
 import * as THREE from 'three'
 
 /* 
-   SOLAR SYSTEM ENGINE - IOS 26 THEME
-   - Replaces Galaxy with realistic Solar System
-   - Interactive Sun with sparking lights
-   - Orbiting Planets
+   REALISTIC SOLAR SYSTEM - IOS 26 THEME
+   Features:
+   - Glowing Sun with volumetric lighting
+   - Planets with realistic materials & lighting
+   - Saturn with rings
+   - Asteroid belt
+   - Interactive mouse parallax
 */
 
 function Sun() {
-    return (
-        <group>
-            {/* The Sun Body */}
-            <mesh>
-                <sphereGeometry args={[1.5, 32, 32]} />
-                <meshStandardMaterial
-                    emissive="#FCD34D"
-                    emissiveIntensity={2}
-                    color="#FCD34D"
-                    toneMapped={false}
-                />
-            </mesh>
-            {/* Sun Glow/Atmosphere */}
-            <mesh scale={[1.2, 1.2, 1.2]}>
-                <sphereGeometry args={[1.5, 32, 32]} />
-                <meshBasicMaterial color="#fbbf24" transparent opacity={0.2} />
-            </mesh>
-            {/* Sparking Lights (Solar Flares) */}
-            <Sparkles count={50} scale={4} size={6} speed={0.4} opacity={1} color="#fbbf24" />
+    const glowRef = useRef()
 
-            {/* Main Light Source */}
-            <pointLight intensity={2} distance={100} decay={2} color="#fff7ed" />
-        </group>
-    )
-}
-
-function Planet({ distance, size, color, speed, zVariance = 0, name }) {
-    const ref = useRef()
-    const angle = useRef(Math.random() * Math.PI * 2)
-
-    useFrame((state, delta) => {
-        angle.current += speed * delta
-        ref.current.position.x = Math.cos(angle.current) * distance
-        ref.current.position.z = Math.sin(angle.current) * distance + Math.sin(angle.current * 3) * zVariance
-        ref.current.rotation.y += delta // Self rotation
+    useFrame((state) => {
+        if (glowRef.current) {
+            glowRef.current.rotation.z += 0.001
+        }
     })
 
     return (
-        <group ref={ref}>
+        <group>
+            {/* Core Sun Body */}
             <mesh>
-                <sphereGeometry args={[size, 32, 32]} />
+                <sphereGeometry args={[1.8, 64, 64]} />
                 <meshStandardMaterial
-                    color={color}
-                    roughness={0.7}
-                    metalness={0.2}
+                    emissive="#FCD34D"
+                    emissiveIntensity={3}
+                    color="#FBBF24"
+                    toneMapped={false}
+                    roughness={0.3}
                 />
             </mesh>
-            {/* Orbit Trail (Optional, simple ring) */}
-            {/* To keep it optimized we don't render full orbit lines for everything */}
+
+            {/* Inner Glow Layer */}
+            <mesh scale={1.15}>
+                <sphereGeometry args={[1.8, 32, 32]} />
+                <meshBasicMaterial
+                    color="#fde047"
+                    transparent
+                    opacity={0.4}
+                    side={THREE.BackSide}
+                />
+            </mesh>
+
+            {/* Outer Glow/Corona */}
+            <mesh ref={glowRef} scale={1.3}>
+                <sphereGeometry args={[1.8, 32, 32]} />
+                <meshBasicMaterial
+                    color="#fef3c7"
+                    transparent
+                    opacity={0.15}
+                    side={THREE.BackSide}
+                />
+            </mesh>
+
+            {/* Solar Flares/Sparkles */}
+            <Sparkles
+                count={80}
+                scale={5}
+                size={8}
+                speed={0.3}
+                opacity={0.8}
+                color="#fef3c7"
+            />
+
+            {/* Main Sun Light - Illuminates all planets */}
+            <pointLight
+                position={[0, 0, 0]}
+                intensity={4}
+                distance={100}
+                decay={1.5}
+                color="#fff7ed"
+                castShadow
+            />
+
+            {/* Ambient warm glow */}
+            <pointLight
+                position={[0, 0, 0]}
+                intensity={1}
+                distance={50}
+                decay={2}
+                color="#fbbf24"
+            />
         </group>
     )
 }
 
-function SolarSystem({ mousePos }) {
+function Planet({
+    distance,
+    size,
+    color,
+    speed,
+    zVariance = 0,
+    emissive = '#000000',
+    emissiveIntensity = 0,
+    rings = false
+}) {
+    const planetRef = useRef()
+    const angle = useRef(Math.random() * Math.PI * 2)
+
+    useFrame((state, delta) => {
+        angle.current += speed * delta * 0.5
+
+        const x = Math.cos(angle.current) * distance
+        const z = Math.sin(angle.current) * distance + Math.sin(angle.current * 2) * zVariance
+
+        planetRef.current.position.x = x
+        planetRef.current.position.z = z
+        planetRef.current.rotation.y += delta * 0.5
+    })
+
     return (
-        <group rotation={[0.2, 0, 0]}>
+        <group ref={planetRef}>
+            {/* Planet Body */}
+            <mesh castShadow receiveShadow>
+                <sphereGeometry args={[size, 32, 32]} />
+                <meshStandardMaterial
+                    color={color}
+                    emissive={emissive}
+                    emissiveIntensity={emissiveIntensity}
+                    roughness={0.8}
+                    metalness={0.1}
+                />
+            </mesh>
+
+            {/* Optional Rings (Saturn) */}
+            {rings && (
+                <mesh rotation={[Math.PI / 2.5, 0, 0]}>
+                    <ringGeometry args={[size * 1.5, size * 2.2, 64]} />
+                    <meshStandardMaterial
+                        color="#d4d4d8"
+                        transparent
+                        opacity={0.7}
+                        side={THREE.DoubleSide}
+                        roughness={0.9}
+                    />
+                </mesh>
+            )}
+
+            {/* Subtle atmosphere glow for Earth-like planets */}
+            {emissiveIntensity > 0 && (
+                <mesh scale={1.1}>
+                    <sphereGeometry args={[size, 16, 16]} />
+                    <meshBasicMaterial
+                        color={emissive}
+                        transparent
+                        opacity={0.1}
+                        side={THREE.BackSide}
+                    />
+                </mesh>
+            )}
+        </group>
+    )
+}
+
+function AsteroidBelt() {
+    const points = useMemo(() => {
+        const particles = []
+        for (let i = 0; i < 2000; i++) {
+            const angle = Math.random() * Math.PI * 2
+            const radius = 8 + Math.random() * 2 // Between Mars and Jupiter
+            const x = Math.cos(angle) * radius
+            const z = Math.sin(angle) * radius
+            const y = (Math.random() - 0.5) * 0.5
+            particles.push(x, y, z)
+        }
+        return new Float32Array(particles)
+    }, [])
+
+    return (
+        <Points positions={points} stride={3}>
+            <PointMaterial
+                transparent
+                color="#71717a"
+                size={0.02}
+                sizeAttenuation={true}
+                depthWrite={false}
+            />
+        </Points>
+    )
+}
+
+function SolarSystem() {
+    return (
+        <group rotation={[0.1, 0, 0]}>
+            {/* The Sun */}
             <Sun />
 
-            {/* Mercury-like */}
-            <Planet distance={2.5} size={0.1} color="#A1A1AA" speed={1.5} name="Mercury" />
+            {/* Inner Planets */}
+            <Planet
+                distance={3}
+                size={0.12}
+                color="#A1A1AA"
+                speed={2}
+                emissive="#52525B"
+                emissiveIntensity={0.1}
+            /> {/* Mercury */}
 
-            {/* Venus-like (Gold/White) */}
-            <Planet distance={3.5} size={0.15} color="#E4E4E7" speed={1.2} name="Venus" />
+            <Planet
+                distance={4}
+                size={0.18}
+                color="#E4E4E7"
+                speed={1.6}
+                emissive="#fef3c7"
+                emissiveIntensity={0.2}
+            /> {/* Venus */}
 
-            {/* Earth-like (Blue/Slate) - Fits theme */}
-            <Planet distance={5} size={0.18} color="#3b82f6" speed={1} name="Earth" />
+            <Planet
+                distance={5.5}
+                size={0.2}
+                color="#3b82f6"
+                speed={1.2}
+                emissive="#60a5fa"
+                emissiveIntensity={0.3}
+            /> {/* Earth */}
 
-            {/* Mars-like (Red/Rust) */}
-            <Planet distance={7} size={0.12} color="#ef4444" speed={0.8} name="Mars" />
+            <Planet
+                distance={7}
+                size={0.15}
+                color="#dc2626"
+                speed={1}
+                emissive="#7c2d12"
+                emissiveIntensity={0.1}
+            /> {/* Mars */}
 
-            {/* Jupiter-like (Giant) */}
-            <Planet distance={10} size={0.6} color="#d4d4d8" speed={0.4} zVariance={1} name="Jupiter" />
+            {/* Asteroid Belt */}
+            <AsteroidBelt />
 
-            {/* Saturn-like (Rings) */}
-            <group>
-                <Planet distance={14} size={0.5} color="#FCD34D" speed={0.3} name="Saturn" />
-                {/* Rings would go here simpler to just have the planet for optimization */}
-            </group>
+            {/* Outer Planets */}
+            <Planet
+                distance={11}
+                size={0.7}
+                color="#d4d4d8"
+                speed={0.5}
+                zVariance={0.8}
+            /> {/* Jupiter */}
+
+            <Planet
+                distance={15}
+                size={0.6}
+                color="#FCD34D"
+                speed={0.35}
+                rings={true}
+            /> {/* Saturn with Rings */}
+
+            <Planet
+                distance={19}
+                size={0.4}
+                color="#67e8f9"
+                speed={0.2}
+                emissive="#06b6d4"
+                emissiveIntensity={0.2}
+            /> {/* Uranus */}
         </group>
     )
 }
 
 function StarField() {
     return (
-        <group>
-            <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={0.5} />
-        </group>
+        <Stars
+            radius={120}
+            depth={80}
+            count={8000}
+            factor={6}
+            saturation={0}
+            fade
+            speed={0.3}
+        />
     )
 }
 
@@ -107,17 +278,19 @@ function Scene({ mousePos }) {
     const groupRef = useRef()
 
     useFrame((state, delta) => {
-        // Subtle tilt parallax
-        const targetX = mousePos.current.y * 0.1
-        const targetY = mousePos.current.x * 0.1
+        if (!groupRef.current) return
 
-        groupRef.current.rotation.x += (targetX - groupRef.current.rotation.x) * delta
-        groupRef.current.rotation.y += (targetY - groupRef.current.rotation.y) * delta
+        // Smooth mouse parallax
+        const targetX = mousePos.current.y * 0.15
+        const targetY = mousePos.current.x * 0.15
+
+        groupRef.current.rotation.x += (targetX - groupRef.current.rotation.x) * delta * 0.5
+        groupRef.current.rotation.y += (targetY - groupRef.current.rotation.y) * delta * 0.5
     })
 
     return (
         <group ref={groupRef}>
-            <SolarSystem mousePos={mousePos} />
+            <SolarSystem />
             <StarField />
         </group>
     )
@@ -140,15 +313,31 @@ export default function Background3D() {
                 width: '100vw',
                 height: '100vh',
                 zIndex: -1,
-                background: '#09090B', // IOS 26 Abyss Black
+                background: 'radial-gradient(ellipse at center, #18181b 0%, #09090b 100%)',
                 pointerEvents: 'none'
             }}
             onMouseMove={handleMouseMove}
         >
-            <Canvas camera={{ position: [0, 8, 12], fov: 45 }}>
+            <Canvas
+                camera={{ position: [0, 12, 16], fov: 50 }}
+                gl={{
+                    antialias: true,
+                    alpha: true,
+                    powerPreference: 'high-performance'
+                }}
+                shadows
+            >
                 <Suspense fallback={null}>
-                    {/* Deep Space Lighting */}
-                    <ambientLight intensity={0.05} />
+                    {/* Ambient lighting for deep space */}
+                    <ambientLight intensity={0.03} color="#1e293b" />
+
+                    {/* Subtle fill light from "distant stars" */}
+                    <hemisphereLight
+                        skyColor="#1e293b"
+                        groundColor="#020617"
+                        intensity={0.1}
+                    />
+
                     <Scene mousePos={mousePos} />
                 </Suspense>
             </Canvas>

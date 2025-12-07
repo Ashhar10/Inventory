@@ -168,8 +168,8 @@ body {
 }
 
 .glass-card:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(82, 82, 91, 0.4);
+  border-color: rgba(255, 255, 255, 0.2);
   box-shadow: var(--shadow-2xl);
 }
 
@@ -330,13 +330,14 @@ body {
 }
 
 .btn-secondary {
-  background: white;
-  color: var(--primary-600);
-  border: 2px solid var(--primary-500);
+  background: rgba(228, 228, 231, 0.1);
+  color: var(--text-main);
+  border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .btn-secondary:hover {
-  background: var(--primary-50);
+  background: rgba(82, 82, 91, 0.3);
+  border-color: rgba(255, 255, 255, 0.3);
   transform: translateY(-2px);
 }
 
@@ -359,7 +360,7 @@ body {
   display: block;
   margin-bottom: var(--spacing-sm);
   font-weight: 600;
-  color: var(--gray-700);
+  color: var(--text-main);
 }
 
 .form-input,
@@ -367,21 +368,23 @@ body {
 .form-textarea {
   width: 100%;
   padding: var(--spacing-md);
-  border: 2px solid var(--gray-200);
+  border: 2px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-md);
   font-family: var(--font-sans);
   font-size: 1rem;
   transition: all var(--transition-base);
-  background: white;
+  background: rgba(39, 39, 42, 0.6);
+  color: var(--text-main);
 }
 
 .form-input:focus,
 .form-select:focus,
 .form-textarea:focus {
   outline: none;
-  border-color: var(--primary-500);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
   transform: translateY(-1px);
+  background: rgba(39, 39, 42, 0.8);
 }
 
 .form-textarea {
@@ -397,7 +400,9 @@ body {
 
 /* ===== TABLE STYLES ===== */
 .table-container {
-  background: white;
+  background: rgba(39, 39, 42, 0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-xl);
   overflow: hidden;
   box-shadow: var(--shadow-lg);
@@ -409,7 +414,8 @@ body {
 }
 
 .table thead {
-  background: var(--bg-gradient-primary);
+  background: rgba(82, 82, 91, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .table thead th {
@@ -423,18 +429,18 @@ body {
 }
 
 .table tbody tr {
-  border-bottom: 1px solid var(--gray-200);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   transition: all var(--transition-fast);
 }
 
 .table tbody tr:hover {
-  background: var(--primary-50);
-  transform: scale(1.01);
+  background: rgba(82, 82, 91, 0.3);
+  transform: scale(1.00);
 }
 
 .table tbody td {
   padding: var(--spacing-lg);
-  color: var(--gray-700);
+  color: var(--text-main);
 }
 
 /* ===== NAVBAR ===== */
