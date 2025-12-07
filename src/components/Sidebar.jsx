@@ -108,7 +108,7 @@ function Sidebar() {
                     align-items: center;
                     gap: var(--spacing-md);
                     padding: var(--spacing-md);
-                    margin: 0 var(--spacing-xs);
+                    margin: 0;
                     border-radius: var(--radius-lg);
                     color: white;
                     text-decoration: none;
@@ -124,14 +124,14 @@ function Sidebar() {
                     background: linear-gradient(135deg, rgba(82, 82, 91, 0.8) 0%, rgba(63, 63, 70, 0.9) 100%);
                     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
                     padding: var(--spacing-lg) var(--spacing-md);
-                    margin: 4px var(--spacing-xs);
+                    margin: 4px 0;
                     border-radius: var(--radius-xl);
                     font-weight: 700;
                 }
                 
                 .sidebar-glow-indicator {
                     position: absolute;
-                    left: -6px;
+                    left: 0;
                     top: 50%;
                     transform: translateY(-50%);
                     width: 4px;
