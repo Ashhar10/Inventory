@@ -4,8 +4,8 @@ import { Points, PointMaterial, Stars, Sparkles } from '@react-three/drei'
 import * as THREE from 'three'
 
 /* 
-   RESPONSIVE REALISTIC SOLAR SYSTEM - IOS 26 THEME
-   Adapts to different screen sizes automatically
+   ULTRA-RESPONSIVE SOLAR SYSTEM
+   Optimized for all devices: phones, foldables, tablets, desktop
 */
 
 function Sun() {
@@ -144,10 +144,10 @@ function Planet({
     )
 }
 
-function AsteroidBelt() {
+function AsteroidBelt({ count }) {
     const points = useMemo(() => {
         const particles = []
-        for (let i = 0; i < 2000; i++) {
+        for (let i = 0; i < count; i++) {
             const angle = Math.random() * Math.PI * 2
             const radius = 8 + Math.random() * 2
             const x = Math.cos(angle) * radius
@@ -156,7 +156,7 @@ function AsteroidBelt() {
             particles.push(x, y, z)
         }
         return new Float32Array(particles)
-    }, [])
+    }, [count])
 
     return (
         <Points positions={points} stride={3}>
@@ -171,9 +171,8 @@ function AsteroidBelt() {
     )
 }
 
-function SolarSystem({ isMobile }) {
-    // Scale down for mobile
-    const scale = isMobile ? 0.6 : 1
+function SolarSystem({ deviceType }) {
+    const scale = deviceType === 'mobile' ? 0.5 : deviceType === 'small' ? 0.4 : 1
 
     return (
         <group rotation={[0.1, 0, 0]} scale={scale}>
@@ -184,7 +183,7 @@ function SolarSystem({ isMobile }) {
             <Planet distance={5.5} size={0.2} color="#3b82f6" speed={1.2} emissive="#60a5fa" emissiveIntensity={0.3} />
             <Planet distance={7} size={0.15} color="#dc2626" speed={1} emissive="#7c2d12" emissiveIntensity={0.1} />
 
-            <AsteroidBelt />
+            <AsteroidBelt count={deviceType === 'mobile' ? 1000 : 2000} />
 
             <Planet distance={11} size={0.7} color="#d4d4d8" speed={0.5} zVariance={0.8} />
             <Planet distance={15} size={0.6} color="#FCD34D" speed={0.35} rings={true} />
@@ -193,12 +192,14 @@ function SolarSystem({ isMobile }) {
     )
 }
 
-function StarField({ isMobile }) {
+function StarField({ deviceType }) {
+    const starCount = deviceType === 'small' ? 2000 : deviceType === 'mobile' ? 4000 : 8000
+
     return (
         <Stars
-            radius={isMobile ? 80 : 120}
-            depth={isMobile ? 50 : 80}
-            count={isMobile ? 4000 : 8000}
+            radius={deviceType === 'mobile' ? 80 : 120}
+            depth={deviceType === 'mobile' ? 50 : 80}
+            count={starCount}
             factor={6}
             saturation={0}
             fade
@@ -207,11 +208,14 @@ function StarField({ isMobile }) {
     )
 }
 
-function ResponsiveCamera({ isMobile }) {
+function ResponsiveCamera({ deviceType }) {
     const { camera } = useThree()
 
     useEffect(() => {
-        if (isMobile) {
+        if (deviceType === 'small') {
+            camera.position.set(0, 20, 24)
+            camera.fov = 70
+        } else if (deviceType === 'mobile') {
             camera.position.set(0, 16, 20)
             camera.fov = 60
         } else {
@@ -219,18 +223,18 @@ function ResponsiveCamera({ isMobile }) {
             camera.fov = 50
         }
         camera.updateProjectionMatrix()
-    }, [isMobile, camera])
+    }, [deviceType, camera])
 
     return null
 }
 
-function Scene({ mousePos, isMobile }) {
+function Scene({ mousePos, deviceType }) {
     const groupRef = useRef()
 
     useFrame((state, delta) => {
         if (!groupRef.current) return
 
-        const sensitivity = isMobile ? 0.08 : 0.15
+        const sensitivity = deviceType === 'small' ? 0.05 : deviceType === 'mobile' ? 0.08 : 0.15
         const targetX = mousePos.current.y * sensitivity
         const targetY = mousePos.current.x * sensitivity
 
@@ -240,24 +244,36 @@ function Scene({ mousePos, isMobile }) {
 
     return (
         <group ref={groupRef}>
-            <SolarSystem isMobile={isMobile} />
-            <StarField isMobile={isMobile} />
+            <SolarSystem deviceType={deviceType} />
+            <StarField deviceType={deviceType} />
         </group>
     )
 }
 
 export default function Background3D() {
     const mousePos = useRef({ x: 0, y: 0 })
-    const [isMobile, setIsMobile] = useState(false)
+    const [deviceType, setDeviceType] = useState('desktop')
 
     useEffect(() => {
-        const checkMobile = () => {
-            setIsMobile(window.innerWidth < 768)
+        const updateDeviceType = () => {
+            const width = window.innerWidth
+            if (width < 380) {
+                setDeviceType('small') // Foldables, small phones
+            } else if (width < 768) {
+                setDeviceType('mobile') // Regular phones
+            } else {
+                setDeviceType('desktop')
+            }
         }
 
-        checkMobile()
-        window.addEventListener('resize', checkMobile)
-        return () => window.removeEventListener('resize', checkMobile)
+        updateDeviceType()
+        window.addEventListener('resize', updateDeviceType)
+        window.addEventListener('orientationchange', updateDeviceType)
+
+        return () => {
+            window.removeEventListener('resize', updateDeviceType)
+            window.removeEventListener('orientationchange', updateDeviceType)
+        }
     }, [])
 
     const handleMouseMove = (e) => {
@@ -273,6 +289,8 @@ export default function Background3D() {
         }
     }
 
+    const pixelRatio = deviceType === 'small' ? [1, 1] : deviceType === 'mobile' ? [1, 1.5] : [1, 2]
+
     return (
         <div
             style={{
@@ -280,7 +298,9 @@ export default function Background3D() {
                 top: 0,
                 left: 0,
                 width: '100vw',
+                width: '100dvw',
                 height: '100vh',
+                height: '100dvh',
                 zIndex: -1,
                 background: 'radial-gradient(ellipse at center, #18181b 0%, #09090b 100%)',
                 pointerEvents: 'none'
@@ -291,13 +311,13 @@ export default function Background3D() {
             <Canvas
                 camera={{ position: [0, 12, 16], fov: 50 }}
                 gl={{
-                    antialias: true,
+                    antialias: deviceType !== 'small',
                     alpha: true,
-                    powerPreference: isMobile ? 'low-power' : 'high-performance',
-                    pixelRatio: isMobile ? Math.min(window.devicePixelRatio, 2) : window.devicePixelRatio
+                    powerPreference: deviceType === 'desktop' ? 'high-performance' : 'low-power',
+                    pixelRatio: window.devicePixelRatio
                 }}
-                shadows={!isMobile}
-                dpr={isMobile ? [1, 1.5] : [1, 2]}
+                shadows={deviceType === 'desktop'}
+                dpr={pixelRatio}
             >
                 <Suspense fallback={null}>
                     <ambientLight intensity={0.03} color="#1e293b" />
@@ -307,8 +327,8 @@ export default function Background3D() {
                         intensity={0.1}
                     />
 
-                    <ResponsiveCamera isMobile={isMobile} />
-                    <Scene mousePos={mousePos} isMobile={isMobile} />
+                    <ResponsiveCamera deviceType={deviceType} />
+                    <Scene mousePos={mousePos} deviceType={deviceType} />
                 </Suspense>
             </Canvas>
         </div>

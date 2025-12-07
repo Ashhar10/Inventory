@@ -112,14 +112,18 @@ html {
 body {
   font-family: var(--font-sans);
   color: var(--text-main);
-  /* background: var(--bg-dark); - Removed to allow 3D background */
   min-height: 100vh;
+  min-height: -webkit-fill-available;
   line-height: 1.6;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
 }
 
 #root {
   min-height: 100vh;
+  min-height: -webkit-fill-available;
 }
 
 /* ===== ANIMATED BACKGROUND ===== */
@@ -916,36 +920,10 @@ body {
   }
 }
 
-@media (max-width: 480px) {
-  .app-content {
-    padding: var(--spacing-sm);
-  }
-
-  .page-title {
-    font-size: 1.25rem;
-  }
-
-  .dashboard-grid {
-    padding: var(--spacing-sm);
-  }
-
-  .btn {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    font-size: 0.85rem;
-  }
+to {
+  opacity: 1;
+  transform: translateY(0);
 }
-
-/* ===== ANIMATIONS ===== */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .fade-in-up {
