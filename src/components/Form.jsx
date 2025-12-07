@@ -88,11 +88,11 @@ function Form({ fields, onSubmit, onCancel, initialData = {}, submitLabel = 'Sub
 
             <div style={{ display: 'flex', gap: 'var(--spacing-md)', marginTop: 'var(--spacing-xl)' }}>
                 <button type="submit" className="btn btn-primary" disabled={loading}>
-                    {loading ? '⏳ Saving...' : `✅ ${submitLabel}`}
+                    {loading ? 'Saving...' : submitLabel}
                 </button>
                 {onCancel && (
                     <button type="button" onClick={onCancel} className="btn btn-secondary">
-                        ❌ Cancel
+                        Cancel
                     </button>
                 )}
             </div>

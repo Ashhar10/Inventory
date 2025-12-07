@@ -9,13 +9,14 @@ function Navbar({ user }) {
     return (
         <nav className="navbar">
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', maxWidth: '100%', margin: '0 auto' }}>
-                <div className="navbar-brand">
-                    🏭 Pakistan Wire Industries (Pvt.) LTD
+                <div className="navbar-brand" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <img src="/assets/icons/logo.png" alt="Company Logo" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
+                    <span>Pakistan Wire Industries (Pvt.) LTD</span>
                 </div>
 
                 <div className="flex gap-lg" style={{ alignItems: 'center' }}>
                     <span style={{ color: 'white', fontWeight: '500' }}>
-                        📊 Inventory Dashboard
+                        Inventory Dashboard
                     </span>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>

@@ -67,10 +67,7 @@ function Orders() {
                 }
                 return (
                     <span style={{ color: colors[val] || '#6b7280', fontWeight: '700' }}>
-                        {val === 'paid' && '✅'}
-                        {val === 'partial' && '⚠️'}
-                        {val === 'unpaid' && '❌'}
-                        {' '}{val?.toUpperCase()}
+                        {val?.toUpperCase()}
                     </span>
                 )
             }
@@ -107,7 +104,7 @@ function Orders() {
             <div className="container" style={{ marginTop: 'var(--spacing-2xl)' }}>
                 <div className="glass-card" style={{ padding: 'var(--spacing-2xl)' }}>
                     <h3 style={{ color: 'white', marginBottom: 'var(--spacing-lg)', fontSize: '1.25rem' }}>
-                        📊 Orders Overview
+                        Orders Overview
                     </h3>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 'var(--spacing-lg)' }}>
                         <div style={{ textAlign: 'center' }}>

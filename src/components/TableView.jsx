@@ -43,7 +43,7 @@ function TableView({
                     </h1>
                     {onAdd && (
                         <button onClick={onAdd} className="btn btn-primary">
-                            ➕ Add New
+                            Add New
                         </button>
                     )}
                 </div>
@@ -52,7 +52,7 @@ function TableView({
                     <input
                         type="text"
                         className="form-input"
-                        placeholder="🔍 Search..."
+                        placeholder="Search..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         style={{ maxWidth: '400px' }}
@@ -94,7 +94,7 @@ function TableView({
                                                         className="btn btn-secondary"
                                                         style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
                                                     >
-                                                        ✏️ Edit
+                                                        Edit
                                                     </button>
                                                 )}
                                                 {onDelete && (
@@ -103,7 +103,7 @@ function TableView({
                                                         className="btn btn-danger"
                                                         style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
                                                     >
-                                                        🗑️ Delete
+                                                        Delete
                                                     </button>
                                                 )}
                                             </div>

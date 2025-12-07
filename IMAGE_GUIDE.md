@@ -1,15 +1,16 @@
 # 🎨 Image Assets Guide
 
-The UI is now configured to be **Text-Only** for navigation and headers, but we still use images for the **Dashboard Visuals** to make it look premium.
-
 ## 📂 Location
 Place all images in this folder:
 **`public/assets/icons/`**
 
-## 🖼️ Required Images (For Dashboard Only)
+## 🖼️ Required Images
 
-Please add these exact files to populate your dashboard cards and stats:
+### Company Logo
+- `logo.png` - **REQUIRED** for navbar (32x32px recommended, PNG with transparent background)
 
+### Dashboard Visuals (Optional)
+These are only displayed on the main dashboard page to provide visual richness:
 - `Customers.png`
 - `Products.png`
 - `Inventory.png`
@@ -18,14 +19,18 @@ Please add these exact files to populate your dashboard cards and stats:
 - `Reports.png`
 - `Packing.png`
 - `Stores.png`
-- `Users.png`      *(For "Add New User" card)*
-- `Logout.png`     *(Optional, keep just in case)*
+- `Users.png`
 
 *(Recommended size: 64x64 pixels, transparent background PNG)*
 
 ---
 
-## 🎨 Design Notes
-- **Sidebar & Headers**: Clean text, no icons (as requested).
-- **Dashboard**: Uses the images above for a rich visual experience.
-- **Theme**: Dark (#1B1B1B) / Orange (#FC6E20) / Cream (#FFE7D0).
+## ✨ Final UI Architecture
+- **Navbar**: Company logo image + clean text
+- **Sidebar**: Text-only navigation (no icons)
+- **All Pages**: Clean text headers, no emojis
+- **Buttons**: Simple text labels, no icons
+- **Dashboard Cards**: Optional images for visual appeal
+- **Theme Colors**: Dark (#1B1B1B) / Orange (#FC6E20) / Cream (#FFE7D0)
+
+The application now has a professional, minimalist design with text-based UI and an optional company logo.

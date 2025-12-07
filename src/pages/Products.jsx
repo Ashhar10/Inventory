@@ -25,7 +25,7 @@ function Products() {
         {
             key: 'is_active',
             label: 'Status',
-            render: (val) => val ? '✅ Active' : '⛔ Inactive'
+            render: (val) => <span style={{ color: val ? '#10b981' : '#ef4444', fontWeight: '600' }}>{val ? 'Active' : 'Inactive'}</span>
         },
     ]
 
@@ -159,7 +159,7 @@ function Products() {
                 <div className="modal-overlay" onClick={() => setShowModal(false)}>
                     <div className="modal" onClick={(e) => e.stopPropagation()}>
                         <h2 style={{ marginBottom: 'var(--spacing-xl)' }}>
-                            {editingProduct ? '✏️ Edit Product' : '➕ Add New Product'}
+                            {editingProduct ? 'Edit Product' : 'Add New Product'}
                         </h2>
                         <Form
                             fields={formFields}

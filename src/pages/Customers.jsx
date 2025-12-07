@@ -37,7 +37,7 @@ function Customers() {
         {
             key: 'is_active',
             label: 'Status',
-            render: (val) => val ? '✅ Active' : '⛔ Inactive'
+            render: (val) => <span style={{ color: val ? '#10b981' : '#ef4444', fontWeight: '600' }}>{val ? 'Active' : 'Inactive'}</span>
         },
     ]
 
@@ -175,7 +175,7 @@ function Customers() {
                 <div className="modal-overlay" onClick={() => setShowModal(false)}>
                     <div className="modal" onClick={(e) => e.stopPropagation()}>
                         <h2 style={{ marginBottom: 'var(--spacing-xl)' }}>
-                            {editingCustomer ? '✏️ Edit Customer' : '➕ Add New Customer'}
+                            {editingCustomer ? 'Edit Customer' : 'Add New Customer'}
                         </h2>
                         <Form
                             fields={formFields}

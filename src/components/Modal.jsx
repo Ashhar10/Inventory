@@ -36,29 +36,18 @@ function Modal({ isOpen, onClose, title, message, type = 'info', onConfirm, show
                 onClick={(e) => e.stopPropagation()}
                 style={{ maxWidth: '500px', animation: 'slideUp 0.3s ease-out' }}
             >
-                <div style={{
-                    textAlign: 'center',
-                    marginBottom: 'var(--spacing-xl)',
-                    paddingBottom: 'var(--spacing-lg)',
-                    borderBottom: `2px solid ${colors[type]}`
-                }}>
-                    <div style={{
-                        fontSize: '4rem',
-                        marginBottom: 'var(--spacing-md)'
+
+                {title && (
+                    <h2 style={{
+                        fontSize: '1.5rem',
+                        fontWeight: '700',
+                        color: colors[type],
+                        marginBottom: 'var(--spacing-xl)',
+                        textAlign: 'center'
                     }}>
-                        {icons[type]}
-                    </div>
-                    {title && (
-                        <h2 style={{
-                            fontSize: '1.5rem',
-                            fontWeight: '700',
-                            color: colors[type],
-                            marginBottom: 'var(--spacing-sm)'
-                        }}>
-                            {title}
-                        </h2>
-                    )}
-                </div>
+                        {title}
+                    </h2>
+                )}
 
                 <div style={{
                     fontSize: '1.1rem',

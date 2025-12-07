@@ -100,10 +100,10 @@ function Reports() {
                             Daily Sales Summary
                         </li>
                         <li style={{ padding: 'var(--spacing-md) 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                            ✓ Monthly Revenue Report
+                            Monthly Revenue Report
                         </li>
                         <li style={{ padding: 'var(--spacing-md) 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                            ✓ Sales by Product Category
+                            Sales by Product Category
                         </li>
                         <li style={{ padding: 'var(--spacing-md) 0' }}>
                             ✓ Top Customers by Revenue
@@ -117,13 +117,13 @@ function Reports() {
                     </h3>
                     <ul style={{ listStyle: 'none', color: 'rgba(255,255,255,0.9)' }}>
                         <li style={{ padding: 'var(--spacing-md) 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                            ✓ Current Stock Levels
+                            Current Stock Levels
                         </li>
                         <li style={{ padding: 'var(--spacing-md) 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                            ✓ Low Stock Alert Report
+                            Low Stock Alert Report
                         </li>
                         <li style={{ padding: 'var(--spacing-md) 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                            ✓ Inventory Movement History
+                            Inventory Movement History
                         </li>
                         <li style={{ padding: 'var(--spacing-md) 0' }}>
                             ✓ Stock Valuation Report
@@ -137,13 +137,13 @@ function Reports() {
                     </h3>
                     <ul style={{ listStyle: 'none', color: 'rgba(255,255,255,0.9)' }}>
                         <li style={{ padding: 'var(--spacing-md) 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                            ✓ Order Status Summary
+                            Order Status Summary
                         </li>
                         <li style={{ padding: 'var(--spacing-md) 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                            ✓ Pending Deliveries
+                            Pending Deliveries
                         </li>
                         <li style={{ padding: 'var(--spacing-md) 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                            ✓ Order Fulfillment Rate
+                            Order Fulfillment Rate
                         </li>
                         <li style={{ padding: 'var(--spacing-md) 0' }}>
                             ✓ Customer Order History
