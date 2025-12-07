@@ -2,6 +2,7 @@ services:
   - type: web
     name: pakistan-wire-inventory
     env: static
+    runtime: node
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
     envVars:
