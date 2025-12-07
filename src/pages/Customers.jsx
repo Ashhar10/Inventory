@@ -42,7 +42,7 @@ function Customers() {
     ]
 
     const formFields = [
-        { name: 'customer_code', label: 'Customer Code', type: 'text', required: true, placeholder: 'CUST-001' },
+        { name: 'customer_code', label: 'Customer Code', type: 'text', required: false, placeholder: 'Auto-generated if left empty' },
         { name: 'name', label: 'Customer Name', type: 'text', required: true, placeholder: 'Muhammad Ali' },
         { name: 'company_name', label: 'Company Name', type: 'text', placeholder: 'Ali Construction Ltd' },
         { name: 'email', label: 'Email', type: 'email', placeholder: 'customer@example.com' },
@@ -106,8 +106,18 @@ function Customers() {
     const handleSubmit = async (formData) => {
         try {
             const user = await auth.getCurrentUser()
+
+            // Auto-generate customer code if not provided or if it's the default
+            let customerCode = formData.customer_code
+            if (!customerCode || customerCode === 'CUST-001') {
+                // Generate unique code with timestamp
+                const timestamp = Date.now().toString().slice(-6)
+                customerCode = `CUST-${timestamp}`
+            }
+
             const customerData = {
                 ...formData,
+                customer_code: customerCode,
                 credit_limit: formData.credit_limit ? parseFloat(formData.credit_limit) : 0,
                 current_balance: 0,
                 country: 'Pakistan',
@@ -135,7 +145,12 @@ function Customers() {
                     editingCustomer ? 'Customer updated successfully!' : 'Customer created successfully!'
                 )
             } else {
-                showError('Error saving customer: ' + error.message)
+                // Check if it's a duplicate key error
+                if (error.message.includes('duplicate') || error.message.includes('unique')) {
+                    showError('A customer with this code already exists. Please use a different code.')
+                } else {
+                    showError('Error saving customer: ' + error.message)
+                }
             }
         } catch (err) {
             showError('An unexpected error occurred: ' + err.message)
