@@ -1,8 +1,18 @@
 import { NavLink } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 function Sidebar() {
     const [isExpanded, setIsExpanded] = useState(false)
+    const [isMobile, setIsMobile] = useState(false)
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768)
+        }
+        checkMobile()
+        window.addEventListener('resize', checkMobile)
+        return () => window.removeEventListener('resize', checkMobile)
+    }, [])
 
     const navItems = [
         { path: '/', label: 'Dashboard', icon: '/assets/icons/Dashboard.png' },
@@ -14,6 +24,25 @@ function Sidebar() {
         { path: '/reports', label: 'Reports', icon: '/assets/icons/Reports.png' }
     ]
 
+    if (isMobile) {
+        // Mobile bottom navigation
+        return (
+            <nav className="mobile-bottom-nav">
+                <ul>
+                    {navItems.map((item) => (
+                        <li key={item.path}>
+                            <NavLink to={item.path} className={({ isActive }) => isActive ? 'active' : ''}>
+                                <img src={item.icon} alt={item.label} onError={(e) => e.target.style.display = 'none'} />
+                                <span>{item.label}</span>
+                            </NavLink>
+                        </li>
+                    ))}
+                </ul>
+            </nav>
+        )
+    }
+
+    // Desktop sidebar
     return (
         <div
             className="sidebar"
@@ -208,6 +237,63 @@ function Sidebar() {
                 
                 .sidebar::-webkit-scrollbar-thumb:hover {
                     background: rgba(255, 255, 255, 0.3);
+                }
+                
+                /* Mobile Bottom Nav */
+                .mobile-bottom-nav {
+                    position: fixed;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    background: rgba(39, 39, 42, 0.95);
+                    backdrop-filter: blur(20px);
+                    border-top: 1px solid rgba(255, 255, 255, 0.1);
+                    padding: 8px 0;
+                    z-index: 1000;
+                    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+                }
+                
+                .mobile-bottom-nav ul {
+                    list-style: none;
+                    padding: 0;
+                    margin: 0;
+                    display: flex;
+                    justify-content: space-around;
+                    align-items: center;
+                }
+                
+                .mobile-bottom-nav li {
+                    flex: 1;
+                    text-align: center;
+                }
+                
+                .mobile-bottom-nav a {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 4px;
+                    padding: 6px 4px;
+                    color: rgba(255, 255, 255, 0.7);
+                    text-decoration: none;
+                    font-size: 0.65rem;
+                    transition: all 0.3s;
+                }
+                
+                .mobile-bottom-nav a.active {
+                    color: #E4E4E7;
+                    background: rgba(82, 82, 91, 0.5);
+                    border-radius: 8px;
+                }
+                
+                .mobile-bottom-nav img {
+                    width: 22px;
+                    height: 22px;
+                    object-fit: contain;
+                    filter: brightness(1.2);
+                }
+                
+                .mobile-bottom-nav a.active img {
+                    filter: brightness(1.5);
                 }
             `}</style>
         </div>

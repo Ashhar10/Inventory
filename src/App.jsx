@@ -74,6 +74,43 @@ function App() {
                     </div>
                 </div>
             )}
+
+            <style>{`
+                .app-container {
+                    min-height: 100vh;
+                    display: flex;
+                    flex-direction: column;
+                }
+                
+                .app-layout {
+                    display: flex;
+                    flex: 1;
+                }
+                
+                .app-content {
+                    flex: 1;
+                    padding: 2rem;
+                    overflow-x: hidden;
+                }
+                
+                @media (max-width: 768px) {
+                    .app-layout {
+                        flex-direction: column;
+                    }
+                    
+                    .app-content {
+                        padding: 1rem;
+                        padding-bottom: 80px; /* Space for bottom nav */
+                    }
+                }
+                
+                @media (max-width: 480px) {
+                    .app-content {
+                        padding: 0.75rem;
+                        padding-bottom: 80px;
+                    }
+                }
+            `}</style>
         </BrowserRouter>
     )
 }
