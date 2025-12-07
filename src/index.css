@@ -606,20 +606,33 @@ input:-webkit-autofill:active {
 }
 
 .dashboard-card {
+  /* Match report box styling */
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+  border-radius: var(--radius-2xl);
+  padding: var(--spacing-2xl);
+  box-shadow: var(--shadow-lg);
   text-align: center;
   min-height: 140px;
-  /* Reduced height for "small boxes" */
   display: flex;
   flex-direction: column;
   justify-content: center;
   position: relative;
   z-index: 1;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  transform-style: preserve-3d;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-2xl);
 }
 
 .dashboard-card h3 {
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--primary-700);
+  color: #27272a;
+  /* Dark text for light background */
   margin-bottom: var(--spacing-sm);
   position: relative;
   z-index: 2;
@@ -628,13 +641,13 @@ input:-webkit-autofill:active {
 .dashboard-card .count {
   font-size: 2.5rem;
   font-weight: 800;
-  background: var(--bg-gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #27272a;
+  /* Dark text for light background */
+  background: transparent;
   position: relative;
   z-index: 2;
 }
+
 
 /* ===== LOADING SPINNER ===== */
 .spinner {
@@ -985,7 +998,10 @@ input:-webkit-autofill:active {
   }
 
   .modal {
-    background: white;
+    background: #18181B !important;
+    /* Force dark background */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
     border-radius: var(--radius-2xl);
     padding: var(--spacing-2xl);
     max-width: 600px;
