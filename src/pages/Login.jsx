@@ -49,7 +49,7 @@ function Login() {
                         marginBottom: 'var(--spacing-md)',
                         textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
                     }}>
-                        🏭 Pakistan Wire Industries
+                        Pakistan Wire Industries
                     </h1>
                     <p style={{
                         fontSize: '1.25rem',
@@ -71,13 +71,13 @@ function Login() {
                             color: 'white',
                             fontWeight: '500'
                         }}>
-                            ⚠️ {error}
+                            {error}
                         </div>
                     )}
 
                     <div className="form-group">
                         <label className="form-label" style={{ color: 'white' }}>
-                            📧 Email Address
+                            Email Address
                         </label>
                         <input
                             type="email"
@@ -92,7 +92,7 @@ function Login() {
 
                     <div className="form-group">
                         <label className="form-label" style={{ color: 'white' }}>
-                            🔒 Password
+                            Password
                         </label>
                         <input
                             type="password"
@@ -111,7 +111,7 @@ function Login() {
                         disabled={loading}
                         style={{ width: '100%', padding: 'var(--spacing-lg)', fontSize: '1.1rem', marginTop: 'var(--spacing-lg)' }}
                     >
-                        {loading ? '⏳ Logging in...' : '🚀 Login to Dashboard'}
+                        {loading ? 'Logging in...' : 'Login to Dashboard'}
                     </button>
                 </form>
 

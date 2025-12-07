@@ -35,7 +35,7 @@ function Reports() {
 
     return (
         <div className="container">
-            <h1 className="page-title">📈 Reports & Analytics</h1>
+            <h1 className="page-title">Reports & Analytics</h1>
 
             {/* Key Metrics */}
             <div style={{
@@ -45,7 +45,7 @@ function Reports() {
                 marginBottom: 'var(--spacing-2xl)'
             }}>
                 <div className="glass-card fade-in-up" style={{ padding: 'var(--spacing-2xl)', textAlign: 'center' }}>
-                    <div style={{ fontSize: '3rem', marginBottom: 'var(--spacing-md)' }}>👥</div>
+
                     <div style={{ fontSize: '3rem', fontWeight: '800', color: 'white', marginBottom: 'var(--spacing-sm)' }}>
                         {stats.customers}
                     </div>
@@ -55,7 +55,7 @@ function Reports() {
                 </div>
 
                 <div className="glass-card fade-in-up stagger-1" style={{ padding: 'var(--spacing-2xl)', textAlign: 'center' }}>
-                    <div style={{ fontSize: '3rem', marginBottom: 'var(--spacing-md)' }}>📦</div>
+
                     <div style={{ fontSize: '3rem', fontWeight: '800', color: 'white', marginBottom: 'var(--spacing-sm)' }}>
                         {stats.products}
                     </div>
@@ -65,7 +65,7 @@ function Reports() {
                 </div>
 
                 <div className="glass-card fade-in-up stagger-2" style={{ padding: 'var(--spacing-2xl)', textAlign: 'center' }}>
-                    <div style={{ fontSize: '3rem', marginBottom: 'var(--spacing-md)' }}>📋</div>
+
                     <div style={{ fontSize: '3rem', fontWeight: '800', color: 'white', marginBottom: 'var(--spacing-sm)' }}>
                         {stats.pendingOrders}
                     </div>
@@ -75,7 +75,7 @@ function Reports() {
                 </div>
 
                 <div className="glass-card fade-in-up stagger-3" style={{ padding: 'var(--spacing-2xl)', textAlign: 'center' }}>
-                    <div style={{ fontSize: '3rem', marginBottom: 'var(--spacing-md)' }}>💰</div>
+
                     <div style={{ fontSize: '2.5rem', fontWeight: '800', color: 'white', marginBottom: 'var(--spacing-sm)' }}>
                         Rs. {stats.salesThisMonth.toLocaleString()}
                     </div>
@@ -93,11 +93,11 @@ function Reports() {
             }}>
                 <div className="glass-card fade-in-up stagger-4" style={{ padding: 'var(--spacing-2xl)' }}>
                     <h3 style={{ color: 'white', fontSize: '1.5rem', marginBottom: 'var(--spacing-lg)' }}>
-                        📊 Sales Reports
+                        Sales Reports
                     </h3>
                     <ul style={{ listStyle: 'none', color: 'rgba(255,255,255,0.9)' }}>
                         <li style={{ padding: 'var(--spacing-md) 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                            ✓ Daily Sales Summary
+                            Daily Sales Summary
                         </li>
                         <li style={{ padding: 'var(--spacing-md) 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                             ✓ Monthly Revenue Report
@@ -113,7 +113,7 @@ function Reports() {
 
                 <div className="glass-card fade-in-up stagger-5" style={{ padding: 'var(--spacing-2xl)' }}>
                     <h3 style={{ color: 'white', fontSize: '1.5rem', marginBottom: 'var(--spacing-lg)' }}>
-                        📦 Inventory Reports
+                        Inventory Reports
                     </h3>
                     <ul style={{ listStyle: 'none', color: 'rgba(255,255,255,0.9)' }}>
                         <li style={{ padding: 'var(--spacing-md) 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
@@ -133,7 +133,7 @@ function Reports() {
 
                 <div className="glass-card fade-in-up stagger-6" style={{ padding: 'var(--spacing-2xl)' }}>
                     <h3 style={{ color: 'white', fontSize: '1.5rem', marginBottom: 'var(--spacing-lg)' }}>
-                        📋 Order Reports
+                        Order Reports
                     </h3>
                     <ul style={{ listStyle: 'none', color: 'rgba(255,255,255,0.9)' }}>
                         <li style={{ padding: 'var(--spacing-md) 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
@@ -159,7 +159,7 @@ function Reports() {
                 textAlign: 'center'
             }}>
                 <h3 style={{ color: 'white', fontSize: '1.5rem', marginBottom: 'var(--spacing-md)' }}>
-                    📈 Advanced Analytics Coming Soon!
+                    Advanced Analytics Coming Soon!
                 </h3>
                 <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '1.1rem' }}>
                     Interactive charts, graphs, and detailed analytics will be available in the next update.

@@ -1,17 +1,15 @@
 # 🎨 Image Assets Guide
 
-I have simplified the naming for you. Now you only need a few images, named exactly like the feature they represent.
+The UI is now configured to be **Text-Only** for navigation and headers, but we still use images for the **Dashboard Visuals** to make it look premium.
 
 ## 📂 Location
-
 Place all images in this folder:
 **`public/assets/icons/`**
 
-## 🖼️ Required Images
+## 🖼️ Required Images (For Dashboard Only)
 
-Please rename your icon files to match these **exact names** (case-sensitive):
+Please add these exact files to populate your dashboard cards and stats:
 
-- `Dashboard.png`
 - `Customers.png`
 - `Products.png`
 - `Inventory.png`
@@ -20,19 +18,14 @@ Please rename your icon files to match these **exact names** (case-sensitive):
 - `Reports.png`
 - `Packing.png`
 - `Stores.png`
-- `Users.png`      *(For "Add New User")*
-- `Logout.png`
+- `Users.png`      *(For "Add New User" card)*
+- `Logout.png`     *(Optional, keep just in case)*
 
 *(Recommended size: 64x64 pixels, transparent background PNG)*
 
-### 💡 Why this is easier
-I have updated the code so that `Customers.png` will automatically be used in the Sidebar, the Dashboard Cards, and the Stats boxes. You don't need separate images for each place!
-
 ---
 
-## 🎨 Color Theme Reminder
-
-Your requested palette is active:
-- **Background**: `#1B1B1B` (Dark)
-- **Accent**: `#FC6E20` (Orange)
-- **Text**: `#FFE7D0` (Cream)
+## 🎨 Design Notes
+- **Sidebar & Headers**: Clean text, no icons (as requested).
+- **Dashboard**: Uses the images above for a rich visual experience.
+- **Theme**: Dark (#1B1B1B) / Orange (#FC6E20) / Cream (#FFE7D0).

@@ -33,7 +33,7 @@ function Navbar({ user }) {
                             className="btn btn-secondary"
                             style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
                         >
-                            <img src="/assets/icons/Logout.png" alt="Logout" style={{ width: '20px', height: '20px', marginRight: '0.5rem' }} />
+
                             Logout
                         </button>
                     </div>

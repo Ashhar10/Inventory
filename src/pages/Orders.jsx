@@ -97,7 +97,7 @@ function Orders() {
     return (
         <>
             <TableView
-                title="📋 Orders Management"
+                title="Orders Management"
                 columns={columns}
                 data={orders}
                 onEdit={handleEdit}

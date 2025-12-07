@@ -146,7 +146,7 @@ function Products() {
             <ModalComponent />
 
             <TableView
-                title="📦 Products Management"
+                title="Products Management"
                 columns={columns}
                 data={products}
                 onAdd={handleAdd}

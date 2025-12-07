@@ -77,7 +77,7 @@ function Inventory() {
     return (
         <>
             <TableView
-                title="🏢 Inventory Management"
+                title="Inventory Management"
                 columns={columns}
                 data={inventory}
                 loading={loading}
@@ -86,7 +86,7 @@ function Inventory() {
             <div className="container" style={{ marginTop: 'var(--spacing-2xl)' }}>
                 <div className="glass-card" style={{ padding: 'var(--spacing-2xl)' }}>
                     <h3 style={{ color: 'white', marginBottom: 'var(--spacing-lg)', fontSize: '1.25rem' }}>
-                        📊 Inventory Insights
+                        Inventory Insights
                     </h3>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--spacing-lg)' }}>
                         <div style={{ textAlign: 'center' }}>

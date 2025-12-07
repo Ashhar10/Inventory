@@ -162,7 +162,7 @@ function Customers() {
             <ModalComponent />
 
             <TableView
-                title="👥 Customers Management"
+                title="Customers Management"
                 columns={columns}
                 data={customers}
                 onAdd={handleAdd}

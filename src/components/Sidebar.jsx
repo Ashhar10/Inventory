@@ -23,15 +23,6 @@ function Sidebar() {
                                 to={item.path}
                                 className={`sidebar-link ${location.pathname === item.path ? 'active' : ''}`}
                             >
-                                <img
-                                    src={item.image}
-                                    alt={item.label}
-                                    style={{ width: '24px', height: '24px', objectFit: 'contain' }}
-                                    onError={(e) => {
-                                        e.target.style.display = 'none';
-                                        e.target.nextSibling.innerText = item.label; // Fallback text logic if needed
-                                    }}
-                                />
                                 <span>{item.label}</span>
                             </Link>
                         </li>

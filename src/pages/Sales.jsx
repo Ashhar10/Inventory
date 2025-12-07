@@ -91,7 +91,7 @@ function Sales() {
     return (
         <>
             <TableView
-                title="💰 Sales Management"
+                title="Sales Management"
                 columns={columns}
                 data={sales}
                 loading={loading}
