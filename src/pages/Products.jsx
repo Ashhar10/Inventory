@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { db, auth } from '../supabase/client'
 import TableView from '../components/TableView'
 import Form from '../components/Form'
-import { useModal } from '../components/useModal'
+import { useModal } from '../components/useModal.jsx'
 
 function Products() {
     const [products, setProducts] = useState([])
