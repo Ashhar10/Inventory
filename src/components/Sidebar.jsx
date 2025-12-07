@@ -50,7 +50,10 @@ function Sidebar() {
                         style={{
                             opacity: 0,
                             animation: `fadeInLeft 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) ${index * 0.08}s forwards`,
-                            transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                            transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center'
                         }}
                     >
                         <NavLink
@@ -110,9 +113,9 @@ function Sidebar() {
                 .sidebar-link {
                     display: flex;
                     align-items: center;
+                    justify-content: flex-start;
                     gap: var(--spacing-md);
                     padding: var(--spacing-md);
-                    margin: 0 var(--spacing-sm);
                     border-radius: var(--radius-lg);
                     color: white;
                     text-decoration: none;
@@ -121,14 +124,14 @@ function Sidebar() {
                     transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
                     position: relative;
                     overflow: visible;
-                    whiteSpace: nowrap;
+                    white-space: nowrap;
                     background: transparent;
-                    transform: scale(1);
+                    transform-origin: center;
+                    width: 90%;
                 }
                 
                 .sidebar-link.active {
                     padding: var(--spacing-lg);
-                    margin: 8px 4px;
                     border-radius: var(--radius-xl);
                     font-weight: 700;
                     font-size: 1.05rem;
@@ -141,7 +144,7 @@ function Sidebar() {
                 .sidebar-active-indicator {
                     position: absolute;
                     top: 50%;
-                    left: -4px;
+                    left: -8px;
                     width: 4px;
                     height: 70%;
                     background: linear-gradient(180deg, #E4E4E7 0%, #A1A1AA 100%);
@@ -160,6 +163,7 @@ function Sidebar() {
                     justify-content: center;
                     transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
                     filter: brightness(1.2);
+                    flex-shrink: 0;
                 }
                 
                 .sidebar-icon.active {
@@ -182,12 +186,13 @@ function Sidebar() {
                     transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
                     letter-spacing: 0.4px;
                     text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+                    flex: 1;
                 }
                 
                 /* Hover effects for non-active items */
                 .sidebar-link:not(.active):hover {
                     background: rgba(82, 82, 91, 0.3);
-                    transform: translateX(4px) scale(1.02);
+                    transform: scale(1.02);
                     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
                 }
                 
@@ -203,7 +208,7 @@ function Sidebar() {
                 }
                 
                 .sidebar-link.active:hover .sidebar-icon {
-                    transform: scale(1.1) rotate(-2deg);
+                    transform: scale(1.05);
                 }
                 
                 /* Smooth scrollbar */
