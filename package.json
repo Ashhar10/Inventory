@@ -10,6 +10,8 @@
     "lint": "eslint src --ext js,jsx"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.4.2",
     "@supabase/supabase-js": "^2.39.0",
     "bcryptjs": "^2.4.3",
     "chart.js": "^4.4.1",
@@ -19,7 +21,8 @@
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.20.1"
+    "react-router-dom": "^6.20.1",
+    "three": "^0.181.2"
   },
   "devDependencies": {
     "@types/react": "^18.2.45",

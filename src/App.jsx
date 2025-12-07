@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { auth } from './supabase/client'
+import Background3D from './components/Background3D'
 
 // Pages
 import Login from './pages/Login'
@@ -54,7 +55,7 @@ function App() {
                 </Routes>
             ) : (
                 <div style={{ minHeight: '100vh' }}>
-                    <div className="animated-background"></div>
+                    <Background3D />
                     <Navbar user={user} />
                     <div style={{ display: 'flex' }}>
                         <Sidebar />
