@@ -493,10 +493,10 @@ body {
 .navbar-brand {
   font-size: 1.5rem;
   font-weight: 800;
-  background: var(--bg-gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #ffffff;
+  /* Explicit white for visibility */
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  text-decoration: none;
 }
 
 /* ===== SIDEBAR ===== */
@@ -1297,10 +1297,13 @@ body {
 
   /* Thinner logout button */
   .navbar .btn {
-    padding: 6px 12px !important;
-    font-size: 0.8rem !important;
-    height: auto !important;
-    min-height: 32px !important;
+    padding: 4px 10px !important;
+    /* Even thinner */
+    font-size: 0.75rem !important;
+    min-height: 28px !important;
+    border-width: 1px !important;
+    /* Thinner border */
+    line-height: 1 !important;
   }
 
   .page-title {
