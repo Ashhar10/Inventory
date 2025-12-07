@@ -11,14 +11,15 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.20.1",
+    "bcryptjs": "^2.4.3",
     "chart.js": "^4.4.1",
-    "react-chartjs-2": "^5.2.0",
-    "framer-motion": "^10.16.16",
     "date-fns": "^3.0.6",
-    "lucide-react": "^0.303.0"
+    "framer-motion": "^10.16.16",
+    "lucide-react": "^0.303.0",
+    "react": "^18.2.0",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.20.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.45",

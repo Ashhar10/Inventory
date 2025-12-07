@@ -21,13 +21,13 @@ function App() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        // Check current session
+        // Check current session from localStorage
         auth.getSession().then((session) => {
             setUser(session?.user ?? null)
             setLoading(false)
         })
 
-        // Listen for auth changes
+        // Listen for auth changes using custom event system
         const { data: authListener } = auth.onAuthStateChange((_event, session) => {
             setUser(session?.user ?? null)
         })

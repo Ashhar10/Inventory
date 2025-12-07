@@ -12,13 +12,13 @@ function Login() {
         setError('')
         setLoading(true)
 
-        const { error: signInError } = await auth.signIn(email, password)
+        const { data, error: signInError } = await auth.signIn(email, password)
 
         if (signInError) {
             setError(signInError.message || 'Failed to login. Please check your credentials.')
             setLoading(false)
         } else {
-            // Redirect handled by App.jsx auth state change
+            // Redirect to dashboard
             window.location.href = '/'
         }
     }

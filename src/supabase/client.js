@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import bcrypt from 'bcryptjs'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -7,45 +8,146 @@ if (!supabaseUrl || !supabaseAnonKey) {
     console.error('Missing Supabase environment variables. Please check your .env file.')
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-    auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true,
-    },
-})
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-// Authentication helpers
+// Session storage key
+const SESSION_KEY = 'pwi_auth_session'
+
+// Custom Authentication helpers (no Supabase Auth)
 export const auth = {
     signIn: async (email, password) => {
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        })
-        return { data, error }
+        try {
+            // Query the users table to find user by email
+            const { data: users, error: queryError } = await supabase
+                .from('users')
+                .select('*')
+                .eq('email', email.toLowerCase())
+                .eq('is_active', true)
+                .limit(1)
+
+            if (queryError) {
+                console.error('Database query error:', queryError)
+                return { data: null, error: { message: 'Database error occurred' } }
+            }
+
+            if (!users || users.length === 0) {
+                return { data: null, error: { message: 'Invalid email or password' } }
+            }
+
+            const user = users[0]
+
+            // Verify password using bcrypt
+            const passwordMatch = await bcrypt.compare(password, user.password_hash)
+
+            if (!passwordMatch) {
+                return { data: null, error: { message: 'Invalid email or password' } }
+            }
+
+            // Create session object (excluding password_hash)
+            const { password_hash, ...userWithoutPassword } = user
+            const session = {
+                user: userWithoutPassword,
+                access_token: `custom_token_${user.id}_${Date.now()}`,
+                expires_at: Date.now() + (7 * 24 * 60 * 60 * 1000) // 7 days
+            }
+
+            // Store session in localStorage
+            localStorage.setItem(SESSION_KEY, JSON.stringify(session))
+
+            // Dispatch custom event for auth state listeners
+            window.dispatchEvent(new CustomEvent('authStateChange', { detail: { session } }))
+
+            return { data: { user: userWithoutPassword, session }, error: null }
+        } catch (error) {
+            console.error('Sign in error:', error)
+            return { data: null, error: { message: 'An unexpected error occurred' } }
+        }
     },
 
     signOut: async () => {
-        const { error } = await supabase.auth.signOut()
-        return { error }
+        try {
+            // Clear session from localStorage
+            localStorage.removeItem(SESSION_KEY)
+
+            // Dispatch custom event for auth state listeners
+            window.dispatchEvent(new CustomEvent('authStateChange', { detail: { session: null } }))
+
+            return { error: null }
+        } catch (error) {
+            console.error('Sign out error:', error)
+            return { error: { message: 'Failed to sign out' } }
+        }
     },
 
     getCurrentUser: async () => {
-        const { data: { user } } = await supabase.auth.getUser()
-        return user
+        try {
+            const sessionStr = localStorage.getItem(SESSION_KEY)
+            if (!sessionStr) return null
+
+            const session = JSON.parse(sessionStr)
+
+            // Check if session is expired
+            if (session.expires_at && session.expires_at < Date.now()) {
+                localStorage.removeItem(SESSION_KEY)
+                return null
+            }
+
+            return session.user
+        } catch (error) {
+            console.error('Get current user error:', error)
+            return null
+        }
     },
 
     getSession: async () => {
-        const { data: { session } } = await supabase.auth.getSession()
-        return session
+        try {
+            const sessionStr = localStorage.getItem(SESSION_KEY)
+            if (!sessionStr) return null
+
+            const session = JSON.parse(sessionStr)
+
+            // Check if session is expired
+            if (session.expires_at && session.expires_at < Date.now()) {
+                localStorage.removeItem(SESSION_KEY)
+                return null
+            }
+
+            return session
+        } catch (error) {
+            console.error('Get session error:', error)
+            return null
+        }
     },
 
     onAuthStateChange: (callback) => {
-        return supabase.auth.onAuthStateChange(callback)
+        // Custom event listener for auth state changes
+        const handler = (event) => {
+            const session = event.detail.session
+            callback('SIGNED_IN', session)
+        }
+
+        window.addEventListener('authStateChange', handler)
+
+        // Return subscription object similar to Supabase
+        return {
+            data: {
+                subscription: {
+                    unsubscribe: () => {
+                        window.removeEventListener('authStateChange', handler)
+                    }
+                }
+            }
+        }
     },
+
+    // Helper to hash passwords (for future user creation)
+    hashPassword: async (password) => {
+        const salt = await bcrypt.genSalt(10)
+        return await bcrypt.hash(password, salt)
+    }
 }
 
-// Database helpers
+// Database helpers (unchanged - still use Supabase for data operations)
 export const db = {
     // Customers
     getCustomers: async () => {
@@ -57,9 +159,16 @@ export const db = {
     },
 
     createCustomer: async (customerData) => {
+        // Get current user for created_by field
+        const currentUser = await auth.getCurrentUser()
+        const dataWithCreator = {
+            ...customerData,
+            created_by: currentUser?.id
+        }
+
         const { data, error } = await supabase
             .from('customers')
-            .insert([customerData])
+            .insert([dataWithCreator])
             .select()
         return { data, error }
     },
@@ -91,9 +200,16 @@ export const db = {
     },
 
     createProduct: async (productData) => {
+        // Get current user for created_by field
+        const currentUser = await auth.getCurrentUser()
+        const dataWithCreator = {
+            ...productData,
+            created_by: currentUser?.id
+        }
+
         const { data, error } = await supabase
             .from('products')
-            .insert([productData])
+            .insert([dataWithCreator])
             .select()
         return { data, error }
     },
@@ -129,9 +245,16 @@ export const db = {
     },
 
     updateInventory: async (id, inventoryData) => {
+        // Get current user for updated_by field
+        const currentUser = await auth.getCurrentUser()
+        const dataWithUpdater = {
+            ...inventoryData,
+            updated_by: currentUser?.id
+        }
+
         const { data, error } = await supabase
             .from('inventory')
-            .update(inventoryData)
+            .update(dataWithUpdater)
             .eq('id', id)
             .select()
         return { data, error }
@@ -151,10 +274,17 @@ export const db = {
     },
 
     createOrder: async (orderData, orderItems) => {
+        // Get current user for created_by field
+        const currentUser = await auth.getCurrentUser()
+        const dataWithCreator = {
+            ...orderData,
+            created_by: currentUser?.id
+        }
+
         // Create order
         const { data: order, error: orderError } = await supabase
             .from('orders')
-            .insert([orderData])
+            .insert([dataWithCreator])
             .select()
             .single()
 
@@ -202,9 +332,16 @@ export const db = {
     },
 
     createSale: async (saleData) => {
+        // Get current user for created_by field
+        const currentUser = await auth.getCurrentUser()
+        const dataWithCreator = {
+            ...saleData,
+            created_by: currentUser?.id
+        }
+
         const { data, error } = await supabase
             .from('sales')
-            .insert([saleData])
+            .insert([dataWithCreator])
             .select()
         return { data, error }
     },

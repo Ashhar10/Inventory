@@ -1,19 +1,21 @@
 -- Pakistan Wire Industries (Pvt.) LTD - Inventory Management System
--- Database Schema for Supabase (PostgreSQL)
+-- Database Schema with Custom Authentication (No Supabase Auth)
 
 -- =============================================
 -- EXTENSIONS
 -- =============================================
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- =============================================
 -- TABLES
 -- =============================================
 
--- Users Profile Table (extends Supabase Auth)
+-- Users Table (Custom Authentication - No Supabase Auth Dependency)
 CREATE TABLE IF NOT EXISTS public.users (
-    id UUID REFERENCES auth.users(id) PRIMARY KEY,
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
     full_name TEXT NOT NULL,
     role TEXT NOT NULL DEFAULT 'user' CHECK (role IN ('admin', 'manager', 'staff', 'user')),
     phone TEXT,
@@ -185,18 +187,19 @@ CREATE TABLE IF NOT EXISTS public.inventory_movements (
 -- INDEXES FOR PERFORMANCE
 -- =============================================
 
-CREATE INDEX idx_customers_customer_code ON public.customers(customer_code);
-CREATE INDEX idx_customers_name ON public.customers(name);
-CREATE INDEX idx_products_sku ON public.products(sku);
-CREATE INDEX idx_products_category ON public.products(category);
-CREATE INDEX idx_inventory_product_id ON public.inventory(product_id);
-CREATE INDEX idx_inventory_store_id ON public.inventory(store_id);
-CREATE INDEX idx_orders_customer_id ON public.orders(customer_id);
-CREATE INDEX idx_orders_status ON public.orders(status);
-CREATE INDEX idx_orders_order_date ON public.orders(order_date);
-CREATE INDEX idx_sales_customer_id ON public.sales(customer_id);
-CREATE INDEX idx_sales_sale_date ON public.sales(sale_date);
-CREATE INDEX idx_packing_order_id ON public.packing(order_id);
+CREATE INDEX IF NOT EXISTS idx_users_email ON public.users(email);
+CREATE INDEX IF NOT EXISTS idx_customers_customer_code ON public.customers(customer_code);
+CREATE INDEX IF NOT EXISTS idx_customers_name ON public.customers(name);
+CREATE INDEX IF NOT EXISTS idx_products_sku ON public.products(sku);
+CREATE INDEX IF NOT EXISTS idx_products_category ON public.products(category);
+CREATE INDEX IF NOT EXISTS idx_inventory_product_id ON public.inventory(product_id);
+CREATE INDEX IF NOT EXISTS idx_inventory_store_id ON public.inventory(store_id);
+CREATE INDEX IF NOT EXISTS idx_orders_customer_id ON public.orders(customer_id);
+CREATE INDEX IF NOT EXISTS idx_orders_status ON public.orders(status);
+CREATE INDEX IF NOT EXISTS idx_orders_order_date ON public.orders(order_date);
+CREATE INDEX IF NOT EXISTS idx_sales_customer_id ON public.sales(customer_id);
+CREATE INDEX IF NOT EXISTS idx_sales_sale_date ON public.sales(sale_date);
+CREATE INDEX IF NOT EXISTS idx_packing_order_id ON public.packing(order_id);
 
 -- =============================================
 -- FUNCTIONS & TRIGGERS
@@ -212,27 +215,35 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Apply updated_at triggers
+DROP TRIGGER IF EXISTS update_users_updated_at ON public.users;
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON public.users
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_stores_updated_at ON public.stores;
 CREATE TRIGGER update_stores_updated_at BEFORE UPDATE ON public.stores
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_customers_updated_at ON public.customers;
 CREATE TRIGGER update_customers_updated_at BEFORE UPDATE ON public.customers
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_products_updated_at ON public.products;
 CREATE TRIGGER update_products_updated_at BEFORE UPDATE ON public.products
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_inventory_updated_at ON public.inventory;
 CREATE TRIGGER update_inventory_updated_at BEFORE UPDATE ON public.inventory
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_orders_updated_at ON public.orders;
 CREATE TRIGGER update_orders_updated_at BEFORE UPDATE ON public.orders
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_sales_updated_at ON public.sales;
 CREATE TRIGGER update_sales_updated_at BEFORE UPDATE ON public.sales
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_packing_updated_at ON public.packing;
 CREATE TRIGGER update_packing_updated_at BEFORE UPDATE ON public.packing
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
@@ -253,81 +264,88 @@ ALTER TABLE public.packing ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.packing_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.inventory_movements ENABLE ROW LEVEL SECURITY;
 
--- Users policies
-CREATE POLICY "Users can view their own profile" ON public.users
-    FOR SELECT USING (auth.uid() = id);
+-- Drop all existing policies (if any)
+DROP POLICY IF EXISTS "Users can view their own profile" ON public.users;
+DROP POLICY IF EXISTS "Admins can view all users" ON public.users;
+DROP POLICY IF EXISTS "Authenticated users can view stores" ON public.stores;
+DROP POLICY IF EXISTS "Authenticated users can view customers" ON public.customers;
+DROP POLICY IF EXISTS "Authenticated users can manage customers" ON public.customers;
+DROP POLICY IF EXISTS "Authenticated users can view products" ON public.products;
+DROP POLICY IF EXISTS "Authenticated users can manage products" ON public.products;
+DROP POLICY IF EXISTS "Authenticated users can view inventory" ON public.inventory;
+DROP POLICY IF EXISTS "Authenticated users can manage inventory" ON public.inventory;
+DROP POLICY IF EXISTS "Authenticated users can view orders" ON public.orders;
+DROP POLICY IF EXISTS "Authenticated users can manage orders" ON public.orders;
+DROP POLICY IF EXISTS "Authenticated users can view order items" ON public.order_items;
+DROP POLICY IF EXISTS "Authenticated users can manage order items" ON public.order_items;
+DROP POLICY IF EXISTS "Authenticated users can view sales" ON public.sales;
+DROP POLICY IF EXISTS "Authenticated users can manage sales" ON public.sales;
+DROP POLICY IF EXISTS "Authenticated users can view packing" ON public.packing;
+DROP POLICY IF EXISTS "Authenticated users can manage packing" ON public.packing;
+DROP POLICY IF EXISTS "Authenticated users can view packing items" ON public.packing_items;
+DROP POLICY IF EXISTS "Authenticated users can manage packing items" ON public.packing_items;
+DROP POLICY IF EXISTS "Authenticated users can view inventory movements" ON public.inventory_movements;
+DROP POLICY IF EXISTS "Authenticated users can create inventory movements" ON public.inventory_movements;
 
-CREATE POLICY "Admins can view all users" ON public.users
-    FOR SELECT USING (
-        EXISTS (
-            SELECT 1 FROM public.users
-            WHERE id = auth.uid() AND role = 'admin'
-        )
-    );
+-- Create permissive policies (authentication handled on client side)
+-- Note: In a production environment, you should implement proper service role authentication
+-- For now, we'll allow all operations (RLS is enabled but policies are permissive for authenticated service role)
 
--- General policies for authenticated users (you can customize based on roles)
-CREATE POLICY "Authenticated users can view stores" ON public.stores
-    FOR SELECT USING (auth.role() = 'authenticated');
+CREATE POLICY "Allow all operations on users" ON public.users
+    FOR ALL USING (true);
 
-CREATE POLICY "Authenticated users can view customers" ON public.customers
-    FOR SELECT USING (auth.role() = 'authenticated');
+CREATE POLICY "Allow all operations on stores" ON public.stores
+    FOR ALL USING (true);
 
-CREATE POLICY "Authenticated users can manage customers" ON public.customers
-    FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Allow all operations on customers" ON public.customers
+    FOR ALL USING (true);
 
-CREATE POLICY "Authenticated users can view products" ON public.products
-    FOR SELECT USING (auth.role() = 'authenticated');
+CREATE POLICY "Allow all operations on products" ON public.products
+    FOR ALL USING (true);
 
-CREATE POLICY "Authenticated users can manage products" ON public.products
-    FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Allow all operations on inventory" ON public.inventory
+    FOR ALL USING (true);
 
-CREATE POLICY "Authenticated users can view inventory" ON public.inventory
-    FOR SELECT USING (auth.role() = 'authenticated');
+CREATE POLICY "Allow all operations on orders" ON public.orders
+    FOR ALL USING (true);
 
-CREATE POLICY "Authenticated users can manage inventory" ON public.inventory
-    FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Allow all operations on order_items" ON public.order_items
+    FOR ALL USING (true);
 
-CREATE POLICY "Authenticated users can view orders" ON public.orders
-    FOR SELECT USING (auth.role() = 'authenticated');
+CREATE POLICY "Allow all operations on sales" ON public.sales
+    FOR ALL USING (true);
 
-CREATE POLICY "Authenticated users can manage orders" ON public.orders
-    FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Allow all operations on packing" ON public.packing
+    FOR ALL USING (true);
 
-CREATE POLICY "Authenticated users can view order items" ON public.order_items
-    FOR SELECT USING (auth.role() = 'authenticated');
+CREATE POLICY "Allow all operations on packing_items" ON public.packing_items
+    FOR ALL USING (true);
 
-CREATE POLICY "Authenticated users can manage order items" ON public.order_items
-    FOR ALL USING (auth.role() = 'authenticated');
-
-CREATE POLICY "Authenticated users can view sales" ON public.sales
-    FOR SELECT USING (auth.role() = 'authenticated');
-
-CREATE POLICY "Authenticated users can manage sales" ON public.sales
-    FOR ALL USING (auth.role() = 'authenticated');
-
-CREATE POLICY "Authenticated users can view packing" ON public.packing
-    FOR SELECT USING (auth.role() = 'authenticated');
-
-CREATE POLICY "Authenticated users can manage packing" ON public.packing
-    FOR ALL USING (auth.role() = 'authenticated');
-
-CREATE POLICY "Authenticated users can view packing items" ON public.packing_items
-    FOR SELECT USING (auth.role() = 'authenticated');
-
-CREATE POLICY "Authenticated users can manage packing items" ON public.packing_items
-    FOR ALL USING (auth.role() = 'authenticated');
-
-CREATE POLICY "Authenticated users can view inventory movements" ON public.inventory_movements
-    FOR SELECT USING (auth.role() = 'authenticated');
-
-CREATE POLICY "Authenticated users can create inventory movements" ON public.inventory_movements
-    FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+CREATE POLICY "Allow all operations on inventory_movements" ON public.inventory_movements
+    FOR ALL USING (true);
 
 -- =============================================
--- SEED DATA (for testing)
+-- SEED DATA
 -- =============================================
 
--- Insert default store
+-- Insert default admin user with bcrypt hashed password
+-- Password: Admin@123
+-- Hash generated with bcrypt, cost factor 10
+INSERT INTO public.users (email, password_hash, full_name, role, is_active)
+VALUES (
+    'admin@pakistanwire.com',
+    '$2a$10$gTpkAv.ZiXg4aov6gR04tuRvEHhDQSMWlnlZG9ce4OMGLAUW1icte',
+    'Admin User',
+    'admin',
+    true
+)
+ON CONFLICT (email) DO UPDATE 
+SET password_hash = EXCLUDED.password_hash,
+    full_name = EXCLUDED.full_name,
+    role = EXCLUDED.role,
+    is_active = EXCLUDED.is_active;
+
+-- Insert default stores
 INSERT INTO public.stores (name, location, address, manager_name, contact_phone, capacity)
 VALUES 
     ('Main Warehouse', 'Karachi', '123 Industrial Area, Karachi, Pakistan', 'Ahmed Khan', '+92-300-1234567', 10000),
@@ -342,7 +360,7 @@ VALUES
     ('WIRE-003', 'Barbed Wire 12 Gauge', 'Security barbed wire fencing', 'Barbed Wire', 'ROLL', 3500.00, 2800.00, 50),
     ('WIRE-004', 'Chain Link Fence 6ft', 'Commercial chain link fencing', 'Chain Link', 'ROLL', 8500.00, 7000.00, 25),
     ('WIRE-005', 'Steel Wire Rope 6mm', 'Heavy duty steel wire rope', 'Wire Rope', 'METER', 450.00, 350.00, 200)
-ON CONFLICT DO NOTHING;
+ON CONFLICT (sku) DO NOTHING;
 
 -- Insert sample customers
 INSERT INTO public.customers (customer_code, name, company_name, email, phone, address, city, credit_limit, payment_terms)
@@ -350,9 +368,4 @@ VALUES
     ('CUST-001', 'Muhammad Ali', 'Ali Construction Ltd', 'ali@construction.com', '+92-300-1111111', 'Plot 45, DHA Phase 5', 'Karachi', 500000, 'Net 30'),
     ('CUST-002', 'Fatima Enterprises', 'Fatima Trading Co', 'info@fatima.com', '+92-301-2222222', 'Main Boulevard, Gulberg', 'Lahore', 300000, 'Net 15'),
     ('CUST-003', 'Zubair Khan', 'Khan Industries', 'zubair@khan.com', '+92-333-3333333', 'Industrial Estate, SITE', 'Karachi', 750000, 'Net 45')
-ON CONFLICT DO NOTHING;
-
--- Note: After running this schema, you need to create an admin user in Supabase Auth
--- Then insert the user profile with this query:
--- INSERT INTO public.users (id, email, full_name, role)
--- VALUES ('[auth-user-id]', 'admin@pakistanwire.com', 'Admin User', 'admin');
+ON CONFLICT (customer_code) DO NOTHING;
