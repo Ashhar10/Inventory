@@ -1,62 +1,80 @@
 
-import React, { Suspense, useRef, useState } from 'react'
+import React, { Suspense, useRef, useMemo } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { Gear } from './3d/Gear'
-import { Environment, Float, Stars } from '@react-three/drei'
+import { Points, PointMaterial, Stars, Float } from '@react-three/drei'
+import * as random from 'maath/random/dist/maath-random.esm'
 
-function Scene({ mousePos }) {
-    const groupRef = useRef()
+function Galaxy({ mousePos }) {
+    const ref = useRef()
 
-    useFrame((state) => {
-        // Parallax effect based on mouse position
-        const x = (mousePos.current.x * state.viewport.width) / 100
-        const y = (mousePos.current.y * state.viewport.height) / 100
+    // Generate particles for spiral galaxy
+    const particles = useMemo(() => {
+        const temp = new Float32Array(5000 * 3)
+        // Helper to generate spiral
+        for (let i = 0; i < 5000; i++) {
+            const i3 = i * 3
+            const radius = Math.random() * Math.random() * 8 + 0.5 // concentration near center
+            const spinAngle = radius * 2.5 // more spin further out
+            const branchAngle = (i % 3) * ((2 * Math.PI) / 3) // 3 arms
 
-        // Smoothly interpolate rotation
-        groupRef.current.rotation.x += 0.001
-        groupRef.current.rotation.y += 0.001
+            const randomX = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.5
+            const randomY = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.5
+            const randomZ = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.5
 
-        // Tilt scene towards mouse
-        groupRef.current.rotation.x = state.clock.getElapsedTime() * 0.05 + (y * 0.05)
-        groupRef.current.rotation.y = state.clock.getElapsedTime() * 0.05 + (x * 0.05)
+            temp[i3] = Math.cos(branchAngle + spinAngle) * radius + randomX
+            temp[i3 + 1] = (Math.random() - 0.5) * (radius * 0.2) + randomY // flatten disk
+            temp[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ
+        }
+        return temp
+    }, [])
+
+    useFrame((state, delta) => {
+        ref.current.rotation.x -= delta / 100
+        ref.current.rotation.y -= delta / 150
+
+        // Mouse parallax
+        const x = (mousePos.current.x * state.viewport.width) / 50
+        const y = (mousePos.current.y * state.viewport.height) / 50
+
+        ref.current.rotation.x += y * 0.001
+        ref.current.rotation.y += x * 0.001
     })
 
     return (
-        <group ref={groupRef}>
-            {/* Background Gears (Darker, Slower) */}
-            <Float speed={1.5} rotationIntensity={0.5} floatIntensity={0.5}>
-                <Gear position={[-8, 5, -10]} size={3} color="#333" speed={0.2} toothCount={12} thickness={1} />
-                <Gear position={[8, -5, -8]} size={4} color="#2a2a2a" speed={-0.15} toothCount={16} thickness={1} />
-                <Gear position={[0, 0, -15]} size={6} color="#222" speed={0.1} toothCount={20} thickness={2} />
-            </Float>
-
-            {/* Foreground Gears (Orange Accents, Faster) */}
-            <Float speed={2} rotationIntensity={1} floatIntensity={1}>
-                {/* Top Left Cluster */}
-                <Gear position={[-6, 2, -2]} size={1.2} color="#FC6E20" speed={0.5} />
-                <Gear position={[-4.5, 3, -4]} size={0.8} color="#e65a10" speed={-0.8} />
-
-                {/* Bottom Right Cluster */}
-                <Gear position={[5, -2, -1]} size={1.5} color="#FC6E20" speed={-0.4} />
-                <Gear position={[6.5, -3.5, -3]} size={1} color="#c2410c" speed={0.6} />
-
-                {/* Random Floating Parts */}
-                <FeatureCylinder position={[3, 3, -5]} color="#444" />
-                <FeatureCylinder position={[-3, -3, -6]} color="#444" />
-            </Float>
-
-            <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+        <group rotation={[0, 0, Math.PI / 4]}>
+            <Points ref={ref} positions={particles} stride={3} frustumCulled={false}>
+                <PointMaterial
+                    transparent
+                    color="#FC6E20"
+                    size={0.03}
+                    sizeAttenuation={true}
+                    depthWrite={false}
+                    blending={2} // AdditiveBlending
+                />
+            </Points>
         </group>
     )
 }
 
-function FeatureCylinder({ position, color }) {
-    // Just some decorative mechanical bits
+function StarField() {
     return (
-        <mesh position={position} rotation={[Math.random(), Math.random(), 0]}>
-            <cylinderGeometry args={[0.2, 0.2, 3, 8]} />
-            <meshStandardMaterial color={color} metalness={0.8} roughness={0.2} />
-        </mesh>
+        <group>
+            <Stars radius={50} depth={50} count={3000} factor={4} saturation={0} fade speed={1} />
+        </group>
+    )
+}
+
+function Scene({ mousePos }) {
+    return (
+        <group>
+            {/* Main Galaxy - Orange/Warm */}
+            <Float speed={0.5} rotationIntensity={0.2} floatIntensity={0.2}>
+                <Galaxy mousePos={mousePos} />
+            </Float>
+
+            {/* Background stars */}
+            <StarField />
+        </group>
     )
 }
 
@@ -64,7 +82,6 @@ export default function Background3D() {
     const mousePos = useRef({ x: 0, y: 0 })
 
     const handleMouseMove = (e) => {
-        // Normalize mouse position from -1 to 1
         mousePos.current.x = (e.clientX / window.innerWidth) * 2 - 1
         mousePos.current.y = -(e.clientY / window.innerHeight) * 2 + 1
     }
@@ -78,19 +95,16 @@ export default function Background3D() {
                 width: '100vw',
                 height: '100vh',
                 zIndex: -1,
-                background: '#1B1B1B', // Dark base
-                pointerEvents: 'none' // Click through to app
+                background: 'black', // Deep space black
+                pointerEvents: 'none'
             }}
             onMouseMove={handleMouseMove}
         >
-            <Canvas camera={{ position: [0, 0, 10], fov: 45 }}>
+            <Canvas camera={{ position: [0, 0, 5], fov: 60 }}>
                 <Suspense fallback={null}>
-                    <ambientLight intensity={0.2} />
-                    <pointLight position={[10, 10, 10]} intensity={1.5} color="#FC6E20" />
-                    <pointLight position={[-10, -10, 10]} intensity={0.5} color="#4f46e5" />
+                    {/* Dark Blue ambient for space feel */}
+                    <ambientLight intensity={0.1} color="#001133" />
                     <Scene mousePos={mousePos} />
-                    {/* Environment reflection for metallic look */}
-                    <Environment preset="city" />
                 </Suspense>
             </Canvas>
         </div>
