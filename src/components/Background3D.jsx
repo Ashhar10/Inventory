@@ -29,15 +29,20 @@ function Galaxy({ mousePos }) {
     }, [])
 
     useFrame((state, delta) => {
-        ref.current.rotation.x -= delta / 100
-        ref.current.rotation.y -= delta / 150
+        // Constant cosmic rotation (very slow)
+        ref.current.rotation.z += delta * 0.05
 
-        // Mouse parallax
-        const x = (mousePos.current.x * state.viewport.width) / 50
-        const y = (mousePos.current.y * state.viewport.height) / 50
+        // Mouse Tilt Interaction
+        // Max tilt range
+        const maxTilt = 0.5
 
-        ref.current.rotation.x += y * 0.001
-        ref.current.rotation.y += x * 0.001
+        // Target rotation based on mouse position
+        const targetX = mousePos.current.y * maxTilt
+        const targetY = mousePos.current.x * maxTilt
+
+        // Smoothly interpolate current rotation to target (Lerp)
+        ref.current.rotation.x += (targetX - ref.current.rotation.x) * delta * 2
+        ref.current.rotation.y += (targetY - ref.current.rotation.y) * delta * 2
     })
 
     return (
@@ -82,6 +87,7 @@ export default function Background3D() {
     const mousePos = useRef({ x: 0, y: 0 })
 
     const handleMouseMove = (e) => {
+        // Normalize mouse position: -1 to 1
         mousePos.current.x = (e.clientX / window.innerWidth) * 2 - 1
         mousePos.current.y = -(e.clientY / window.innerHeight) * 2 + 1
     }
@@ -96,7 +102,7 @@ export default function Background3D() {
                 height: '100vh',
                 zIndex: -1,
                 background: 'black', // Deep space black
-                pointerEvents: 'none'
+                pointerEvents: 'none' // Click through to app
             }}
             onMouseMove={handleMouseMove}
         >
