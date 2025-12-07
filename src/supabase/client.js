@@ -8,10 +8,39 @@ if (!supabaseUrl || !supabaseAnonKey) {
     console.error('Missing Supabase environment variables. Please check your .env file.')
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+        persistSession: false
+    }
+})
 
-// Session storage key
 const SESSION_KEY = 'pwi_auth_session'
+
+// Safe storage helper
+const safeStorage = {
+    setItem: (key, value) => {
+        try {
+            localStorage.setItem(key, value)
+        } catch (e) {
+            console.warn('Storage access denied:', e)
+        }
+    },
+    getItem: (key) => {
+        try {
+            return localStorage.getItem(key)
+        } catch (e) {
+            console.warn('Storage access denied:', e)
+            return null
+        }
+    },
+    removeItem: (key) => {
+        try {
+            localStorage.removeItem(key)
+        } catch (e) {
+            console.warn('Storage access denied:', e)
+        }
+    }
+}
 
 // Custom Authentication helpers (no Supabase Auth)
 export const auth = {
@@ -52,7 +81,7 @@ export const auth = {
             }
 
             // Store session in localStorage
-            localStorage.setItem(SESSION_KEY, JSON.stringify(session))
+            safeStorage.setItem(SESSION_KEY, JSON.stringify(session))
 
             // Dispatch custom event for auth state listeners
             window.dispatchEvent(new CustomEvent('authStateChange', { detail: { session } }))
@@ -67,7 +96,7 @@ export const auth = {
     signOut: async () => {
         try {
             // Clear session from localStorage
-            localStorage.removeItem(SESSION_KEY)
+            safeStorage.removeItem(SESSION_KEY)
 
             // Dispatch custom event for auth state listeners
             window.dispatchEvent(new CustomEvent('authStateChange', { detail: { session: null } }))
