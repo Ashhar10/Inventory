@@ -746,27 +746,192 @@ body {
   }
 }
 
+/* ===== APP LAYOUT ===== */
+.app-container {
+  min-height: 100vh;
+}
+
+.app-layout {
+  display: flex;
+}
+
+.app-content {
+  flex: 1;
+  min-height: calc(100vh - 80px);
+  padding: var(--spacing-2xl);
+  overflow-x: hidden;
+}
+
 /* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1024px) {
+  .app-content {
+    padding: var(--spacing-lg);
+  }
+
+  .dashboard-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
 @media (max-width: 768px) {
+
+  /* Layout */
+  .app-layout {
+    flex-direction: column;
+  }
+
+  .app-content {
+    padding: var(--spacing-md);
+    width: 100%;
+  }
+
+  /* Sidebar - hide on mobile */
+  .sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: auto;
+    height: auto !important;
+    width: 100% !important;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: var(--spacing-sm) 0 !important;
+    z-index: 1000;
+    border-right: none !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .sidebar-nav {
+    flex-direction: row !important;
+    width: 100%;
+    justify-content: space-around !important;
+  }
+
+  .sidebar-nav li {
+    width: auto !important;
+    margin: 0 !important;
+  }
+
+  .sidebar-link {
+    flex-direction: column !important;
+    gap: 0.25rem !important;
+    padding: 0.5rem !important;
+    font-size: 0.7rem !important;
+    width: auto !important;
+  }
+
+  .sidebar-link.active {
+    padding: 0.5rem !important;
+    margin: 0 !important;
+  }
+
+  .sidebar-icon,
+  .sidebar-icon.active {
+    min-width: 24px !important;
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  .sidebar-label {
+    opacity: 1 !important;
+    transform: none !important;
+    font-size: 0.65rem !important;
+  }
+
+  .sidebar-active-indicator {
+    display: none;
+  }
+
+  /* Dashboard */
   .dashboard-grid {
     grid-template-columns: 1fr;
     padding: var(--spacing-md);
+    gap: var(--spacing-md);
   }
 
   .card-3d {
     padding: var(--spacing-lg);
   }
 
+  /* Navbar */
   .navbar {
     padding: var(--spacing-md);
   }
 
-  .sidebar {
-    display: none;
+  .navbar-brand {
+    font-size: 1rem !important;
+  }
+
+  .navbar img {
+    width: 24px !important;
+    height: 24px !important;
   }
 
   .page-title {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  /* Tables */
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .table {
+    min-width: 600px;
+  }
+
+  .table thead th,
+  .table tbody td {
+    padding: var(--spacing-sm) !important;
+    font-size: 0.8rem;
+  }
+
+  /* Forms */
+  .form-input,
+  .form-select,
+  .form-textarea {
+    font-size: 16px;
+    /* Prevents zoom on iOS */
+  }
+
+  /* Buttons */
+  .btn {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 0.9rem;
+  }
+
+  /* Modal */
+  .modal {
+    width: 95%;
+    padding: var(--spacing-lg);
+    max-height: 85vh;
+  }
+
+  /* Add bottom padding for fixed nav */
+  body {
+    padding-bottom: 70px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-content {
+    padding: var(--spacing-sm);
+  }
+
+  .page-title {
+    font-size: 1.25rem;
+  }
+
+  .dashboard-grid {
+    padding: var(--spacing-sm);
+  }
+
+  .btn {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.85rem;
   }
 }
 

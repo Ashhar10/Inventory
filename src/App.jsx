@@ -55,11 +55,11 @@ function App() {
                     <Route path="*" element={<Navigate to="/login" replace />} />
                 </Routes>
             ) : (
-                <div style={{ minHeight: '100vh' }}>
+                <div className="app-container">
                     <Navbar user={user} />
-                    <div style={{ display: 'flex' }}>
+                    <div className="app-layout">
                         <Sidebar />
-                        <main style={{ flex: 1, minHeight: 'calc(100vh - 80px)' }}>
+                        <main className="app-content">
                             <Routes>
                                 <Route path="/" element={<Dashboard />} />
                                 <Route path="/customers" element={<Customers />} />
