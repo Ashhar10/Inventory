@@ -110,14 +110,14 @@ export const auth = {
 
     getCurrentUser: async () => {
         try {
-            const sessionStr = localStorage.getItem(SESSION_KEY)
+            const sessionStr = safeStorage.getItem(SESSION_KEY)
             if (!sessionStr) return null
 
             const session = JSON.parse(sessionStr)
 
             // Check if session is expired
             if (session.expires_at && session.expires_at < Date.now()) {
-                localStorage.removeItem(SESSION_KEY)
+                safeStorage.removeItem(SESSION_KEY)
                 return null
             }
 
@@ -130,14 +130,14 @@ export const auth = {
 
     getSession: async () => {
         try {
-            const sessionStr = localStorage.getItem(SESSION_KEY)
+            const sessionStr = safeStorage.getItem(SESSION_KEY)
             if (!sessionStr) return null
 
             const session = JSON.parse(sessionStr)
 
             // Check if session is expired
             if (session.expires_at && session.expires_at < Date.now()) {
-                localStorage.removeItem(SESSION_KEY)
+                safeStorage.removeItem(SESSION_KEY)
                 return null
             }
 
