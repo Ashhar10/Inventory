@@ -56,88 +56,29 @@ function Sidebar() {
                         <NavLink
                             to={item.path}
                             className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-                            style={({ isActive }) => ({
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 'var(--spacing-md)',
-                                padding: isActive ? 'var(--spacing-lg)' : 'var(--spacing-md)',
-                                margin: isActive ? '8px 4px' : '0 var(--spacing-sm)',
-                                borderRadius: isActive ? 'var(--radius-xl)' : 'var(--radius-lg)',
-                                color: 'white',
-                                textDecoration: 'none',
-                                fontWeight: isActive ? '700' : '500',
-                                fontSize: isActive ? '1.05rem' : '0.95rem',
-                                transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                                position: 'relative',
-                                overflow: 'visible',
-                                whiteSpace: 'nowrap',
-                                background: isActive
-                                    ? 'linear-gradient(135deg, rgba(82, 82, 91, 0.8) 0%, rgba(63, 63, 70, 0.9) 100%)'
-                                    : 'transparent',
-                                boxShadow: isActive
-                                    ? '0 8px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-                                    : 'none',
-                                transform: isActive ? 'scale(1.08)' : 'scale(1)',
-                                zIndex: isActive ? 10 : 1
-                            })}
                         >
-                            {/* Active Indicator Glow */}
-                            {({ isActive }) => isActive && (
-                                <div style={{
-                                    position: 'absolute',
-                                    top: '50%',
-                                    left: '-4px',
-                                    width: '4px',
-                                    height: '70%',
-                                    background: 'linear-gradient(180deg, #E4E4E7 0%, #A1A1AA 100%)',
-                                    borderRadius: '0 4px 4px 0',
-                                    transform: 'translateY(-50%)',
-                                    boxShadow: '0 0 12px rgba(228, 228, 231, 0.6)',
-                                    animation: 'pulseGlow 2s ease-in-out infinite'
-                                }}></div>
+                            {({ isActive }) => (
+                                <>
+                                    {/* Active Indicator Glow */}
+                                    {isActive && (
+                                        <div className="sidebar-active-indicator"></div>
+                                    )}
+
+                                    <div className={`sidebar-icon ${isActive ? 'active' : ''}`}>
+                                        <img
+                                            src={item.icon}
+                                            alt={item.label}
+                                            onError={(e) => {
+                                                e.target.style.display = 'none'
+                                            }}
+                                        />
+                                    </div>
+
+                                    <span className="sidebar-label">
+                                        {item.label}
+                                    </span>
+                                </>
                             )}
-
-                            <div
-                                className="sidebar-icon"
-                                style={({ isActive }) => ({
-                                    minWidth: isActive ? '40px' : '32px',
-                                    width: isActive ? '40px' : '32px',
-                                    height: isActive ? '40px' : '32px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                                    filter: isActive ? 'brightness(1.4) drop-shadow(0 4px 8px rgba(228, 228, 231, 0.3))' : 'brightness(1.2)',
-                                    transform: isActive ? 'rotate(0deg)' : 'rotate(0deg)'
-                                })}
-                            >
-                                <img
-                                    src={item.icon}
-                                    alt={item.label}
-                                    style={{
-                                        width: '100%',
-                                        height: '100%',
-                                        objectFit: 'contain',
-                                        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
-                                    }}
-                                    onError={(e) => {
-                                        e.target.style.display = 'none'
-                                    }}
-                                />
-                            </div>
-
-                            <span
-                                className="sidebar-label"
-                                style={{
-                                    opacity: isExpanded ? 1 : 0,
-                                    transform: isExpanded ? 'translateX(0)' : 'translateX(-10px)',
-                                    transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                                    letterSpacing: '0.4px',
-                                    textShadow: '0 2px 4px rgba(0,0,0,0.4)'
-                                }}
-                            >
-                                {item.label}
-                            </span>
                         </NavLink>
                     </li>
                 ))}
@@ -166,10 +107,87 @@ function Sidebar() {
                     }
                 }
                 
+                .sidebar-link {
+                    display: flex;
+                    align-items: center;
+                    gap: var(--spacing-md);
+                    padding: var(--spacing-md);
+                    margin: 0 var(--spacing-sm);
+                    border-radius: var(--radius-lg);
+                    color: white;
+                    text-decoration: none;
+                    font-weight: 500;
+                    font-size: 0.95rem;
+                    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+                    position: relative;
+                    overflow: visible;
+                    whiteSpace: nowrap;
+                    background: transparent;
+                    transform: scale(1);
+                }
+                
+                .sidebar-link.active {
+                    padding: var(--spacing-lg);
+                    margin: 8px 4px;
+                    border-radius: var(--radius-xl);
+                    font-weight: 700;
+                    font-size: 1.05rem;
+                    background: linear-gradient(135deg, rgba(82, 82, 91, 0.8) 0%, rgba(63, 63, 70, 0.9) 100%);
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+                    transform: scale(1.08);
+                    z-index: 10;
+                }
+                
+                .sidebar-active-indicator {
+                    position: absolute;
+                    top: 50%;
+                    left: -4px;
+                    width: 4px;
+                    height: 70%;
+                    background: linear-gradient(180deg, #E4E4E7 0%, #A1A1AA 100%);
+                    border-radius: 0 4px 4px 0;
+                    transform: translateY(-50%);
+                    box-shadow: 0 0 12px rgba(228, 228, 231, 0.6);
+                    animation: pulseGlow 2s ease-in-out infinite;
+                }
+                
+                .sidebar-icon {
+                    min-width: 32px;
+                    width: 32px;
+                    height: 32px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+                    filter: brightness(1.2);
+                }
+                
+                .sidebar-icon.active {
+                    min-width: 40px;
+                    width: 40px;
+                    height: 40px;
+                    filter: brightness(1.4) drop-shadow(0 4px 8px rgba(228, 228, 231, 0.3));
+                }
+                
+                .sidebar-icon img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+                }
+                
+                .sidebar-label {
+                    opacity: ${isExpanded ? '1' : '0'};
+                    transform: ${isExpanded ? 'translateX(0)' : 'translateX(-10px)'};
+                    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+                    letter-spacing: 0.4px;
+                    text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+                }
+                
                 /* Hover effects for non-active items */
                 .sidebar-link:not(.active):hover {
-                    background: rgba(82, 82, 91, 0.3) !important;
-                    transform: translateX(4px) scale(1.02) !important;
+                    background: rgba(82, 82, 91, 0.3);
+                    transform: translateX(4px) scale(1.02);
                     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
                 }
                 
@@ -180,8 +198,8 @@ function Sidebar() {
                 
                 /* Active item hover enhancement */
                 .sidebar-link.active:hover {
-                    transform: scale(1.12) !important;
-                    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+                    transform: scale(1.12);
+                    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15);
                 }
                 
                 .sidebar-link.active:hover .sidebar-icon {
