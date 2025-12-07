@@ -3,11 +3,6 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Points, PointMaterial, Stars, Sparkles } from '@react-three/drei'
 import * as THREE from 'three'
 
-/* 
-   ULTRA-RESPONSIVE SOLAR SYSTEM
-   Optimized for all devices: phones, foldables, tablets, desktop
-*/
-
 function Sun() {
     const glowRef = useRef()
 
@@ -258,9 +253,9 @@ export default function Background3D() {
         const updateDeviceType = () => {
             const width = window.innerWidth
             if (width < 380) {
-                setDeviceType('small') // Foldables, small phones
+                setDeviceType('small')
             } else if (width < 768) {
-                setDeviceType('mobile') // Regular phones
+                setDeviceType('mobile')
             } else {
                 setDeviceType('desktop')
             }
@@ -298,9 +293,7 @@ export default function Background3D() {
                 top: 0,
                 left: 0,
                 width: '100vw',
-                width: '100dvw',
                 height: '100vh',
-                height: '100dvh',
                 zIndex: -1,
                 background: 'radial-gradient(ellipse at center, #18181b 0%, #09090b 100%)',
                 pointerEvents: 'none'
@@ -309,6 +302,7 @@ export default function Background3D() {
             onTouchMove={handleTouchMove}
         >
             <Canvas
+                key={deviceType}
                 camera={{ position: [0, 12, 16], fov: 50 }}
                 gl={{
                     antialias: deviceType !== 'small',
@@ -328,7 +322,7 @@ export default function Background3D() {
                     />
 
                     <ResponsiveCamera deviceType={deviceType} />
-                    <Scene mousePos={mousePos} deviceType={deviceType} />
+                    <Scene key={`scene-${deviceType}`} mousePos={mousePos} deviceType={deviceType} />
                 </Suspense>
             </Canvas>
         </div>
