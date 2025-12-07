@@ -23,7 +23,7 @@ function Sidebar() {
         const resetTimer = () => {
             setIsVisible(true)
             clearTimeout(timer)
-            timer = setTimeout(() => setIsVisible(false), 5000)
+            timer = setTimeout(() => setIsVisible(false), 1000)
         }
 
         // Listen for interactions
