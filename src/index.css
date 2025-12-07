@@ -1307,6 +1307,46 @@ body {
   body {
     padding-bottom: 70px;
   }
+
+  /* CRITICAL: Hide desktop sidebar on mobile */
+  .sidebar {
+    display: none !important;
+  }
+
+  /* Show mobile bottom nav */
+  .mobile-bottom-nav {
+    display: flex !important;
+  }
+
+  /* Adjust app layout for mobile */
+  .app-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .app-content {
+    margin-left: 0;
+    padding-bottom: 80px;
+  }
+}
+
+/* ===== DESKTOP (≥768px) - Show Sidebar, Hide Bottom Nav ===== */
+@media (min-width: 768px) {
+
+  /* Show desktop sidebar */
+  .sidebar {
+    display: flex !important;
+  }
+
+  /* Hide mobile bottom nav on desktop */
+  .mobile-bottom-nav {
+    display: none !important;
+  }
+
+  /* Desktop app layout */
+  .app-content {
+    margin-left: 80px;
+    padding-bottom: 0;
+  }
 }
 
 /* ===== ANIMATIONS ===== */
