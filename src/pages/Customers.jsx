@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react'
 import { db, auth } from '../supabase/client'
 import TableView from '../components/TableView'
 import Form from '../components/Form'
+import { useModal } from '../components/useModal'
 
 function Customers() {
     const [customers, setCustomers] = useState([])
     const [loading, setLoading] = useState(true)
     const [showModal, setShowModal] = useState(false)
     const [editingCustomer, setEditingCustomer] = useState(null)
+    const { showSuccess, showError, showConfirm, ModalComponent } = useModal()
 
     const columns = [
         { key: 'customer_code', label: 'Code' },
@@ -86,48 +88,64 @@ function Customers() {
     }
 
     const handleDelete = async (customer) => {
-        if (!window.confirm(`Are you sure you want to delete ${customer.name}?`)) return
-
-        const { error } = await db.deleteCustomer(customer.id)
-        if (!error) {
-            loadCustomers()
-            alert('Customer deleted successfully!')
-        } else {
-            alert('Error deleting customer: ' + error.message)
-        }
+        showConfirm(
+            `Are you sure you want to delete "${customer.name}"? This action cannot be undone.`,
+            async () => {
+                const { error } = await db.deleteCustomer(customer.id)
+                if (!error) {
+                    loadCustomers()
+                    showSuccess('Customer deleted successfully!')
+                } else {
+                    showError('Error deleting customer: ' + error.message)
+                }
+            },
+            'Delete Customer'
+        )
     }
 
     const handleSubmit = async (formData) => {
-        const user = await auth.getCurrentUser()
-        const customerData = {
-            ...formData,
-            credit_limit: formData.credit_limit ? parseFloat(formData.credit_limit) : 0,
-            current_balance: 0,
-            country: 'Pakistan',
-            is_active: true,
-            created_by: user?.id,
-        }
+        try {
+            const user = await auth.getCurrentUser()
+            const customerData = {
+                ...formData,
+                credit_limit: formData.credit_limit ? parseFloat(formData.credit_limit) : 0,
+                current_balance: 0,
+                country: 'Pakistan',
+                is_active: true,
+            }
 
-        let error
-        if (editingCustomer) {
-            const result = await db.updateCustomer(editingCustomer.id, customerData)
-            error = result.error
-        } else {
-            const result = await db.createCustomer(customerData)
-            error = result.error
-        }
+            // Only add created_by if user exists in database
+            if (user?.id) {
+                customerData.created_by = user.id
+            }
 
-        if (!error) {
-            setShowModal(false)
-            loadCustomers()
-            alert(editingCustomer ? 'Customer updated successfully!' : 'Customer created successfully!')
-        } else {
-            alert('Error saving customer: ' + error.message)
+            let error
+            if (editingCustomer) {
+                const result = await db.updateCustomer(editingCustomer.id, customerData)
+                error = result.error
+            } else {
+                const result = await db.createCustomer(customerData)
+                error = result.error
+            }
+
+            if (!error) {
+                setShowModal(false)
+                loadCustomers()
+                showSuccess(
+                    editingCustomer ? 'Customer updated successfully!' : 'Customer created successfully!'
+                )
+            } else {
+                showError('Error saving customer: ' + error.message)
+            }
+        } catch (err) {
+            showError('An unexpected error occurred: ' + err.message)
         }
     }
 
     return (
         <>
+            <ModalComponent />
+
             <TableView
                 title="👥 Customers Management"
                 columns={columns}

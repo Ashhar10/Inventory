@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react'
 import { db, auth } from '../supabase/client'
 import TableView from '../components/TableView'
 import Form from '../components/Form'
+import { useModal } from '../components/useModal'
 
 function Products() {
     const [products, setProducts] = useState([])
     const [loading, setLoading] = useState(true)
     const [showModal, setShowModal] = useState(false)
     const [editingProduct, setEditingProduct] = useState(null)
+    const { showSuccess, showError, showConfirm, ModalComponent } = useModal()
 
     const columns = [
         { key: 'sku', label: 'SKU' },
@@ -85,48 +87,64 @@ function Products() {
     }
 
     const handleDelete = async (product) => {
-        if (!window.confirm(`Are you sure you want to delete ${product.name}?`)) return
-
-        const { error } = await db.deleteProduct(product.id)
-        if (!error) {
-            loadProducts()
-            alert('Product deleted successfully!')
-        } else {
-            alert('Error deleting product: ' + error.message)
-        }
+        showConfirm(
+            `Are you sure you want to delete "${product.name}"? This action cannot be undone.`,
+            async () => {
+                const { error } = await db.deleteProduct(product.id)
+                if (!error) {
+                    loadProducts()
+                    showSuccess('Product deleted successfully!')
+                } else {
+                    showError('Error deleting product: ' + error.message)
+                }
+            },
+            'Delete Product'
+        )
     }
 
     const handleSubmit = async (formData) => {
-        const user = await auth.getCurrentUser()
-        const productData = {
-            ...formData,
-            unit_price: parseFloat(formData.unit_price),
-            cost_price: formData.cost_price ? parseFloat(formData.cost_price) : null,
-            reorder_level: parseInt(formData.reorder_level),
-            is_active: true,
-            created_by: user?.id,
-        }
+        try {
+            const user = await auth.getCurrentUser()
+            const productData = {
+                ...formData,
+                unit_price: parseFloat(formData.unit_price),
+                cost_price: formData.cost_price ? parseFloat(formData.cost_price) : null,
+                reorder_level: parseInt(formData.reorder_level),
+                is_active: true,
+            }
 
-        let error
-        if (editingProduct) {
-            const result = await db.updateProduct(editingProduct.id, productData)
-            error = result.error
-        } else {
-            const result = await db.createProduct(productData)
-            error = result.error
-        }
+            // Only add created_by if user exists in database
+            if (user?.id) {
+                productData.created_by = user.id
+            }
 
-        if (!error) {
-            setShowModal(false)
-            loadProducts()
-            alert(editingProduct ? 'Product updated successfully!' : 'Product created successfully!')
-        } else {
-            alert('Error saving product: ' + error.message)
+            let error
+            if (editingProduct) {
+                const result = await db.updateProduct(editingProduct.id, productData)
+                error = result.error
+            } else {
+                const result = await db.createProduct(productData)
+                error = result.error
+            }
+
+            if (!error) {
+                setShowModal(false)
+                loadProducts()
+                showSuccess(
+                    editingProduct ? 'Product updated successfully!' : 'Product created successfully!'
+                )
+            } else {
+                showError('Error saving product: ' + error.message)
+            }
+        } catch (err) {
+            showError('An unexpected error occurred: ' + err.message)
         }
     }
 
     return (
         <>
+            <ModalComponent />
+
             <TableView
                 title="📦 Products Management"
                 columns={columns}
