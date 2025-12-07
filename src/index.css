@@ -1297,13 +1297,12 @@ body {
 
   /* Thinner logout button */
   .navbar .btn {
-    padding: 4px 10px !important;
-    /* Even thinner */
+    padding: 2px 10px !important;
     font-size: 0.75rem !important;
-    min-height: 28px !important;
+    min-height: 24px !important;
     border-width: 1px !important;
-    /* Thinner border */
     line-height: 1 !important;
+    margin-top: 2px;
   }
 
   .page-title {
@@ -1663,14 +1662,13 @@ body {
 
 /* Safe Area Support (iOS Notch, Android Punch-hole, Curved Screens) */
 @supports (padding: env(safe-area-inset-top)) {
+
+  /* Removed body padding to allow background to extend under notch (Immersive) */
   body {
-    padding-top: max(0px, env(safe-area-inset-top));
-    padding-left: max(0px, env(safe-area-inset-left));
-    padding-right: max(0px, env(safe-area-inset-right));
-    padding-bottom: max(0px, env(safe-area-inset-bottom));
+    padding: 0;
   }
 
-  /* Adjust navbar for notch */
+  /* Adjust navbar for notch - content safe, background immersive */
   .navbar {
     padding-top: max(var(--spacing-md), env(safe-area-inset-top));
     padding-left: max(var(--spacing-md), env(safe-area-inset-left));
