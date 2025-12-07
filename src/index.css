@@ -98,7 +98,7 @@ html {
 body {
   font-family: var(--font-sans);
   color: var(--text-main);
-  background: var(--bg-dark);
+  /* background: var(--bg-dark); - Removed to allow 3D background */
   min-height: 100vh;
   line-height: 1.6;
   overflow-x: hidden;

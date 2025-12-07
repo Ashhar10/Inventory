@@ -48,6 +48,7 @@ function App() {
 
     return (
         <BrowserRouter>
+            <Background3D />
             {!user ? (
                 <Routes>
                     <Route path="/login" element={<Login />} />
@@ -55,7 +56,6 @@ function App() {
                 </Routes>
             ) : (
                 <div style={{ minHeight: '100vh' }}>
-                    <Background3D />
                     <Navbar user={user} />
                     <div style={{ display: 'flex' }}>
                         <Sidebar />

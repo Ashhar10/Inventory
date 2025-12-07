@@ -32,7 +32,7 @@ function Login() {
             position: 'relative',
             overflow: 'hidden'
         }}>
-            <div className="animated-background"></div>
+
 
             <div className="glass-card fade-in-up" style={{
                 maxWidth: '500px',
