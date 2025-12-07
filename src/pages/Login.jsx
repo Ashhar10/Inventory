@@ -115,19 +115,19 @@ function Login() {
                     </button>
                 </form>
 
-                <div style={{
+                {/* <div style={{
                     marginTop: 'var(--spacing-2xl)',
                     padding: 'var(--spacing-lg)',
                     background: 'rgba(255,255,255,0.1)',
                     borderRadius: 'var(--radius-lg)',
                     border: '1px solid rgba(255,255,255,0.2)'
                 }}>
-                    {/* <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.875rem', textAlign: 'center', margin: 0 }}>
+                    <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.875rem', textAlign: 'center', margin: 0 }}>
                         <strong>Demo Credentials:</strong><br />
                         Email: admin@pakistanwire.com<br />
                         Password: Admin@123
-                    </p> */}
-                </div>
+                    </p>
+                </div> */}
             </div>
         </div>
     )
