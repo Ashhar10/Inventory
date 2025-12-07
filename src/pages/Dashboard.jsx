@@ -5,56 +5,56 @@ import { db } from '../supabase/client'
 const dashboardCards = [
     {
         id: 'customers',
-        image: '/assets/icons/card-customers.png',
+        image: '/assets/icons/Customers.png',
         title: 'Customers',
         path: '/customers',
         gradient: 'linear-gradient(135deg, #FC6E20 0%, #c2410c 100%)'
     },
     {
         id: 'products',
-        image: '/assets/icons/card-products.png',
+        image: '/assets/icons/Products.png',
         title: 'Products',
         path: '/products',
         gradient: 'linear-gradient(135deg, #323232 0%, #1B1B1B 100%)'
     },
     {
         id: 'orders',
-        image: '/assets/icons/card-orders.png',
+        image: '/assets/icons/Orders.png',
         title: 'Orders',
         path: '/orders',
         gradient: 'linear-gradient(135deg, #FC6E20 0%, #c2410c 100%)'
     },
     {
         id: 'packing',
-        image: '/assets/icons/card-packing.png',
+        image: '/assets/icons/Packing.png',
         title: 'Packing',
         path: '/packing',
         gradient: 'linear-gradient(135deg, #323232 0%, #1B1B1B 100%)'
     },
     {
         id: 'sales',
-        image: '/assets/icons/card-sales.png',
+        image: '/assets/icons/Sales.png',
         title: 'Sales',
         path: '/sales',
         gradient: 'linear-gradient(135deg, #FC6E20 0%, #c2410c 100%)'
     },
     {
         id: 'inventory',
-        image: '/assets/icons/card-inventory.png',
+        image: '/assets/icons/Inventory.png',
         title: 'Inventory',
         path: '/inventory',
         gradient: 'linear-gradient(135deg, #323232 0%, #1B1B1B 100%)'
     },
     {
         id: 'stores',
-        image: '/assets/icons/card-stores.png',
+        image: '/assets/icons/Stores.png',
         title: 'Stores',
         path: '/stores',
         gradient: 'linear-gradient(135deg, #FC6E20 0%, #c2410c 100%)'
     },
     {
         id: 'users',
-        image: '/assets/icons/card-users.png',
+        image: '/assets/icons/Users.png',
         title: 'Add New User',
         path: '/users',
         gradient: 'linear-gradient(135deg, #323232 0%, #1B1B1B 100%)'
@@ -122,25 +122,25 @@ function Dashboard() {
                 marginBottom: 'var(--spacing-3xl)'
             }}>
                 <div className="glass-card fade-in-up stagger-2" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                    <img src="/assets/icons/stat-customers.png" alt="Customers" style={{ width: '48px', height: '48px', marginBottom: 'var(--spacing-sm)' }} />
+                    <img src="/assets/icons/Customers.png" alt="Customers" style={{ width: '48px', height: '48px', marginBottom: 'var(--spacing-sm)' }} />
                     <div style={{ fontSize: '2rem', fontWeight: '800', color: 'var(--text-main)' }}>{stats.customers}</div>
                     <div style={{ color: 'var(--text-main)', opacity: 0.8, fontWeight: '600' }}>Total Customers</div>
                 </div>
 
                 <div className="glass-card fade-in-up stagger-3" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                    <img src="/assets/icons/stat-products.png" alt="Products" style={{ width: '48px', height: '48px', marginBottom: 'var(--spacing-sm)' }} />
+                    <img src="/assets/icons/Products.png" alt="Products" style={{ width: '48px', height: '48px', marginBottom: 'var(--spacing-sm)' }} />
                     <div style={{ fontSize: '2rem', fontWeight: '800', color: 'var(--text-main)' }}>{stats.products}</div>
                     <div style={{ color: 'var(--text-main)', opacity: 0.8, fontWeight: '600' }}>Total Products</div>
                 </div>
 
                 <div className="glass-card fade-in-up stagger-4" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                    <img src="/assets/icons/stat-orders.png" alt="Orders" style={{ width: '48px', height: '48px', marginBottom: 'var(--spacing-sm)' }} />
+                    <img src="/assets/icons/Orders.png" alt="Orders" style={{ width: '48px', height: '48px', marginBottom: 'var(--spacing-sm)' }} />
                     <div style={{ fontSize: '2rem', fontWeight: '800', color: 'var(--text-main)' }}>{stats.pendingOrders}</div>
                     <div style={{ color: 'var(--text-main)', opacity: 0.8, fontWeight: '600' }}>Pending Orders</div>
                 </div>
 
                 <div className="glass-card fade-in-up stagger-5" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                    <img src="/assets/icons/stat-sales.png" alt="Sales" style={{ width: '48px', height: '48px', marginBottom: 'var(--spacing-sm)' }} />
+                    <img src="/assets/icons/Sales.png" alt="Sales" style={{ width: '48px', height: '48px', marginBottom: 'var(--spacing-sm)' }} />
                     <div style={{ fontSize: '2rem', fontWeight: '800', color: 'var(--text-main)' }}>
                         Rs. {stats.salesThisMonth.toLocaleString()}
                     </div>
