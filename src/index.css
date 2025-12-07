@@ -1312,14 +1312,18 @@ input:-webkit-autofill:active {
 
   /* Dashboard */
   .dashboard-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
+    /* Centered Stack */
     padding: var(--spacing-sm);
     gap: var(--spacing-sm);
   }
 
   .dashboard-card {
-    min-height: 100px;
+    min-height: 90px;
     padding: var(--spacing-md);
+    max-width: 280px;
+    width: 100%;
+    margin: 0 auto;
   }
 
   .dashboard-card h3 {
@@ -1369,7 +1373,14 @@ input:-webkit-autofill:active {
   .table-container {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    background: rgba(24, 24, 27, 0.95);
+    background: rgba(20, 20, 23, 0.98);
+    /* Max contrast background */
+  }
+
+  .table tbody td {
+    color: #ffffff !important;
+    /* Force visible text */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .table {
