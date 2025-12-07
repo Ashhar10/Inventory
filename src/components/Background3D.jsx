@@ -248,7 +248,9 @@ function Scene({ mousePos, deviceType }) {
 export default function Background3D() {
     const mousePos = useRef({ x: 0, y: 0 })
     const [deviceType, setDeviceType] = useState('desktop')
+    const containerRef = useRef(null)
 
+    // Device detection with debouncing
     useEffect(() => {
         const updateDeviceType = () => {
             const width = window.innerWidth
@@ -262,18 +264,28 @@ export default function Background3D() {
         }
 
         updateDeviceType()
-        window.addEventListener('resize', updateDeviceType)
+
+        let resizeTimeout
+        const handleResize = () => {
+            clearTimeout(resizeTimeout)
+            resizeTimeout = setTimeout(updateDeviceType, 150)
+        }
+
+        window.addEventListener('resize', handleResize)
         window.addEventListener('orientationchange', updateDeviceType)
 
         return () => {
-            window.removeEventListener('resize', updateDeviceType)
+            clearTimeout(resizeTimeout)
+            window.removeEventListener('resize', handleResize)
             window.removeEventListener('orientationchange', updateDeviceType)
         }
     }, [])
 
     const handleMouseMove = (e) => {
-        mousePos.current.x = (e.clientX / window.innerWidth) * 2 - 1
-        mousePos.current.y = -(e.clientY / window.innerHeight) * 2 + 1
+        if (deviceType === 'desktop') {
+            mousePos.current.x = (e.clientX / window.innerWidth) * 2 - 1
+            mousePos.current.y = -(e.clientY / window.innerHeight) * 2 + 1
+        }
     }
 
     const handleTouchMove = (e) => {
@@ -284,10 +296,15 @@ export default function Background3D() {
         }
     }
 
-    const pixelRatio = deviceType === 'small' ? [1, 1] : deviceType === 'mobile' ? [1, 1.5] : [1, 2]
+    const pixelRatio = deviceType === 'small'
+        ? [1, 1]
+        : deviceType === 'mobile'
+            ? [1, Math.min(1.5, window.devicePixelRatio)]
+            : [1, Math.min(2, window.devicePixelRatio)]
 
     return (
         <div
+            ref={containerRef}
             style={{
                 position: 'fixed',
                 top: 0,
@@ -308,10 +325,14 @@ export default function Background3D() {
                     antialias: deviceType !== 'small',
                     alpha: true,
                     powerPreference: deviceType === 'desktop' ? 'high-performance' : 'low-power',
-                    pixelRatio: window.devicePixelRatio
+                    pixelRatio: Math.min(2, window.devicePixelRatio || 1)
                 }}
                 shadows={deviceType === 'desktop'}
                 dpr={pixelRatio}
+                style={{
+                    width: '100%',
+                    height: '100%'
+                }}
             >
                 <Suspense fallback={null}>
                     <ambientLight intensity={0.03} color="#1e293b" />
