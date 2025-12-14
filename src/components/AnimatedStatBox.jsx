@@ -3,14 +3,17 @@ import { useState, useEffect } from 'react'
 // Animated stat box component with slideshow
 function AnimatedStatBox({ slides, autoPlayInterval = 3000 }) {
     const [currentSlide, setCurrentSlide] = useState(0)
+    const [isPaused, setIsPaused] = useState(false)
 
     useEffect(() => {
+        if (isPaused) return
+
         const timer = setInterval(() => {
             setCurrentSlide((prev) => (prev + 1) % slides.length)
         }, autoPlayInterval)
 
         return () => clearInterval(timer)
-    }, [slides.length, autoPlayInterval])
+    }, [slides.length, autoPlayInterval, isPaused])
 
     const nextSlide = () => {
         setCurrentSlide((prev) => (prev + 1) % slides.length)
@@ -21,7 +24,11 @@ function AnimatedStatBox({ slides, autoPlayInterval = 3000 }) {
     }
 
     return (
-        <div className="glass-card stat-card animated-stat-card">
+        <div
+            className="glass-card stat-card animated-stat-card"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+        >
             <div className="stat-slideshow">
                 <button className="slide-arrow slide-arrow-left" onClick={prevSlide}>
                     ‹
