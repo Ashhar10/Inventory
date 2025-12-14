@@ -1,10 +1,19 @@
 import { useState, useEffect } from 'react'
 import { db, auth } from '../supabase/client'
 import TableView from '../components/TableView'
+import Form from '../components/Form'
+import { useModal } from '../components/useModal.jsx'
 
 function Orders() {
     const [orders, setOrders] = useState([])
     const [loading, setLoading] = useState(true)
+    const [showModal, setShowModal] = useState(false)
+    const [editingOrder, setEditingOrder] = useState(null)
+    const { showSuccess, showError, showConfirm, ModalComponent } = useModal()
+
+    // For dropdowns
+    const [customers, setCustomers] = useState([])
+    const [products, setProducts] = useState([])
 
     const columns = [
         { key: 'order_number', label: 'Order #' },
@@ -74,32 +83,178 @@ function Orders() {
         },
     ]
 
+    const formFields = [
+        { name: 'order_number', label: 'Order Number', type: 'text', required: true, placeholder: 'AUTO' },
+        {
+            name: 'customer_id',
+            label: 'Customer',
+            type: 'select',
+            required: true,
+            options: customers.map(c => ({ value: c.id, label: `${c.customer_code} - ${c.name}` }))
+        },
+        { name: 'order_date', label: 'Order Date', type: 'date', required: true },
+        { name: 'delivery_date', label: 'Delivery Date', type: 'date' },
+        {
+            name: 'status',
+            label: 'Status',
+            type: 'select',
+            options: [
+                { value: 'pending', label: 'Pending' },
+                { value: 'confirmed', label: 'Confirmed' },
+                { value: 'processing', label: 'Processing' },
+                { value: 'packed', label: 'Packed' },
+                { value: 'shipped', label: 'Shipped' },
+                { value: 'delivered', label: 'Delivered' },
+                { value: 'cancelled', label: 'Cancelled' },
+            ]
+        },
+        {
+            name: 'payment_status',
+            label: 'Payment Status',
+            type: 'select',
+            options: [
+                { value: 'unpaid', label: 'Unpaid' },
+                { value: 'partial', label: 'Partial' },
+                { value: 'paid', label: 'Paid' },
+            ]
+        },
+        { name: 'total_amount', label: 'Total Amount (Rs.)', type: 'number', required: true, placeholder: '0.00' },
+        { name: 'tax_amount', label: 'Tax Amount (Rs.)', type: 'number', placeholder: '0.00' },
+        { name: 'discount_amount', label: 'Discount Amount (Rs.)', type: 'number', placeholder: '0.00' },
+        { name: 'notes', label: 'Order Notes', type: 'textarea', placeholder: 'Additional notes about this order...' },
+    ]
+
     useEffect(() => {
-        loadOrders()
+        loadData()
     }, [])
 
-    const loadOrders = async () => {
+    const loadData = async () => {
         setLoading(true)
+
         const { data, error } = await db.getOrders()
         if (!error && data) {
             setOrders(data)
         }
+
+        // Load customers for dropdown
+        const { data: customersData } = await db.getCustomers()
+        if (customersData) setCustomers(customersData)
+
+        // Load products for order items
+        const { data: productsData } = await db.getProducts()
+        if (productsData) setProducts(productsData)
+
         setLoading(false)
     }
 
+    const handleAdd = () => {
+        setEditingOrder(null)
+        setShowModal(true)
+    }
+
     const handleEdit = (order) => {
-        alert('Order editing functionality - coming soon!\nOrder: ' + order.order_number)
+        // Prepare editing data
+        const editData = {
+            ...order,
+            order_date: order.order_date ? new Date(order.order_date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+            delivery_date: order.delivery_date ? new Date(order.delivery_date).toISOString().split('T')[0] : ''
+        }
+        setEditingOrder(editData)
+        setShowModal(true)
+    }
+
+    const handleDelete = async (order) => {
+        showConfirm(
+            `Are you sure you want to delete order "${order.order_number}"? This action cannot be undone.`,
+            async () => {
+                const { error } = await db.updateOrder(order.id, { status: 'cancelled' })
+                if (!error) {
+                    loadData()
+                    showSuccess('Order cancelled successfully!')
+                } else {
+                    showError('Error cancelling order: ' + error.message)
+                }
+            },
+            'Cancel Order'
+        )
+    }
+
+    const handleSubmit = async (formData) => {
+        try {
+            const orderData = {
+                order_number: formData.order_number || `ORD-${Date.now().toString().slice(-6)}`,
+                customer_id: formData.customer_id,
+                order_date: formData.order_date || new Date().toISOString(),
+                delivery_date: formData.delivery_date || null,
+                status: formData.status || 'pending',
+                payment_status: formData.payment_status || 'unpaid',
+                total_amount: formData.total_amount ? parseFloat(formData.total_amount) : 0,
+                tax_amount: formData.tax_amount ? parseFloat(formData.tax_amount) : 0,
+                discount_amount: formData.discount_amount ? parseFloat(formData.discount_amount) : 0,
+                notes: formData.notes,
+            }
+
+            let error
+            if (editingOrder) {
+                const result = await db.updateOrder(editingOrder.id, orderData)
+                error = result.error
+            } else {
+                // For new order, create with empty order items for now
+                const result = await db.createOrder(orderData, [])
+                error = result.error
+            }
+
+            if (!error) {
+                setShowModal(false)
+                loadData()
+                showSuccess(
+                    editingOrder ? 'Order updated successfully!' : 'Order created successfully!'
+                )
+            } else {
+                showError('Error saving order: ' + error.message)
+            }
+        } catch (err) {
+            showError('An unexpected error occurred: ' + err.message)
+        }
     }
 
     return (
         <>
+            <ModalComponent />
+
             <TableView
                 title="Orders Management"
                 columns={columns}
                 data={orders}
+                onAdd={handleAdd}
                 onEdit={handleEdit}
+                onDelete={handleDelete}
                 loading={loading}
             />
+
+            {showModal && (
+                <div className="modal-overlay" onClick={() => setShowModal(false)}>
+                    <div className="modal" onClick={(e) => e.stopPropagation()}>
+                        <h2 style={{ marginBottom: 'var(--spacing-xl)' }}>
+                            {editingOrder ? 'Edit Order' : 'Create New Order'}
+                        </h2>
+                        <Form
+                            fields={formFields}
+                            initialData={editingOrder || {
+                                status: 'pending',
+                                payment_status: 'unpaid',
+                                order_date: new Date().toISOString().split('T')[0],
+                                total_amount: 0,
+                                tax_amount: 0,
+                                discount_amount: 0
+                            }}
+                            onSubmit={handleSubmit}
+                            onCancel={() => setShowModal(false)}
+                            submitLabel={editingOrder ? 'Update Order' : 'Create Order'}
+                        />
+                    </div>
+                </div>
+            )}
 
             <div className="container" style={{ marginTop: 'var(--spacing-2xl)' }}>
                 <div className="glass-card" style={{ padding: 'var(--spacing-2xl)' }}>

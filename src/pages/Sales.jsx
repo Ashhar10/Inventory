@@ -1,10 +1,19 @@
 import { useState, useEffect } from 'react'
 import { db } from '../supabase/client'
 import TableView from '../components/TableView'
+import Form from '../components/Form'
+import { useModal } from '../components/useModal.jsx'
 
 function Sales() {
     const [sales, setSales] = useState([])
     const [loading, setLoading] = useState(true)
+    const [showModal, setShowModal] = useState(false)
+    const [editingSale, setEditingSale] = useState(null)
+    const { showSuccess, showError, showConfirm, ModalComponent } = useModal()
+
+    // For dropdowns
+    const [customers, setCustomers] = useState([])
+    const [orders, setOrders] = useState([])
 
     const columns = [
         { key: 'invoice_number', label: 'Invoice #' },
@@ -71,17 +80,132 @@ function Sales() {
         },
     ]
 
+    const formFields = [
+        { name: 'invoice_number', label: 'Invoice Number', type: 'text', required: true, placeholder: 'AUTO' },
+        {
+            name: 'customer_id',
+            label: 'Customer',
+            type: 'select',
+            required: true,
+            options: customers.map(c => ({ value: c.id, label: `${c.customer_code} - ${c.name}` }))
+        },
+        {
+            name: 'order_id',
+            label: 'Related Order (Optional)',
+            type: 'select',
+            options: [{ value: '', label: 'None' }, ...orders.map(o => ({ value: o.id, label: o.order_number }))]
+        },
+        { name: 'sale_date', label: 'Sale Date', type: 'date', required: true },
+        { name: 'total_amount', label: 'Total Amount (Rs.)', type: 'number', required: true, placeholder: '0.00' },
+        { name: 'paid_amount', label: 'Paid Amount (Rs.)', type: 'number', placeholder: '0.00' },
+        {
+            name: 'payment_method',
+            label: 'Payment Method',
+            type: 'select',
+            options: [
+                { value: 'cash', label: 'Cash' },
+                { value: 'bank_transfer', label: 'Bank Transfer' },
+                { value: 'cheque', label: 'Cheque' },
+                { value: 'credit', label: 'Credit' },
+            ]
+        },
+        {
+            name: 'payment_status',
+            label: 'Payment Status',
+            type: 'select',
+            options: [
+                { value: 'unpaid', label: 'Unpaid' },
+                { value: 'partial', label: 'Partial' },
+                { value: 'paid', label: 'Paid' },
+            ]
+        },
+        { name: 'notes', label: 'Sale Notes', type: 'textarea', placeholder: 'Additional notes about this sale...' },
+    ]
+
     useEffect(() => {
-        loadSales()
+        loadData()
     }, [])
 
-    const loadSales = async () => {
+    const loadData = async () => {
         setLoading(true)
+
         const { data, error } = await db.getSales()
         if (!error && data) {
             setSales(data)
         }
+
+        // Load customers for dropdown
+        const { data: customersData } = await db.getCustomers()
+        if (customersData) setCustomers(customersData)
+
+        // Load orders for dropdown
+        const { data: ordersData } = await db.getOrders()
+        if (ordersData) setOrders(ordersData)
+
         setLoading(false)
+    }
+
+    const handleAdd = () => {
+        setEditingSale(null)
+        setShowModal(true)
+    }
+
+    const handleEdit = (sale) => {
+        // Prepare editing data
+        const editData = {
+            ...sale,
+            sale_date: sale.sale_date ? new Date(sale.sale_date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+            order_id: sale.order_id || ''
+        }
+        setEditingSale(editData)
+        setShowModal(true)
+    }
+
+    const handleDelete = async (sale) => {
+        showConfirm(
+            `Are you sure you want to delete sale invoice "${sale.invoice_number}"? This action cannot be undone.`,
+            async () => {
+                // We don't have a delete method yet, so we'll skip for now
+                showError('Delete functionality not yet implemented')
+            },
+            'Delete Sale'
+        )
+    }
+
+    const handleSubmit = async (formData) => {
+        try {
+            const saleData = {
+                invoice_number: formData.invoice_number || `INV-${Date.now().toString().slice(-6)}`,
+                customer_id: formData.customer_id,
+                order_id: formData.order_id || null,
+                sale_date: formData.sale_date || new Date().toISOString(),
+                total_amount: formData.total_amount ? parseFloat(formData.total_amount) : 0,
+                paid_amount: formData.paid_amount ? parseFloat(formData.paid_amount) : 0,
+                payment_method: formData.payment_method,
+                payment_status: formData.payment_status || 'unpaid',
+                notes: formData.notes,
+            }
+
+            let error
+            if (editingSale) {
+                // Update not implemented yet in client
+                showError('Edit functionality not yet implemented')
+                return
+            } else {
+                const result = await db.createSale(saleData)
+                error = result.error
+            }
+
+            if (!error) {
+                setShowModal(false)
+                loadData()
+                showSuccess('Sale created successfully!')
+            } else {
+                showError('Error saving sale: ' + error.message)
+            }
+        } catch (err) {
+            showError('An unexpected error occurred: ' + err.message)
+        }
     }
 
     const totalRevenue = sales.reduce((sum, sale) => sum + parseFloat(sale.total_amount || 0), 0)
@@ -90,12 +214,39 @@ function Sales() {
 
     return (
         <>
+            <ModalComponent />
+
             <TableView
                 title="Sales Management"
                 columns={columns}
                 data={sales}
+                onAdd={handleAdd}
+                onEdit={handleEdit}
                 loading={loading}
             />
+
+            {showModal && (
+                <div className="modal-overlay" onClick={() => setShowModal(false)}>
+                    <div className="modal" onClick={(e) => e.stopPropagation()}>
+                        <h2 style={{ marginBottom: 'var(--spacing-xl)' }}>
+                            {editingSale ? 'Edit Sale' : 'Create New Sale'}
+                        </h2>
+                        <Form
+                            fields={formFields}
+                            initialData={editingSale || {
+                                payment_status: 'unpaid',
+                                sale_date: new Date().toISOString().split('T')[0],
+                                total_amount: 0,
+                                paid_amount: 0,
+                                payment_method: 'cash'
+                            }}
+                            onSubmit={handleSubmit}
+                            onCancel={() => setShowModal(false)}
+                            submitLabel={editingSale ? 'Update Sale' : 'Create Sale'}
+                        />
+                    </div>
+                </div>
+            )}
 
             <div className="container" style={{ marginTop: 'var(--spacing-2xl)' }}>
                 <div className="glass-card" style={{ padding: 'var(--spacing-2xl)' }}>
