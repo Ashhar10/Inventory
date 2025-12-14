@@ -142,6 +142,12 @@ function Reports() {
                     >
                         📈 Graphical
                     </button>
+                    <button
+                        className={`toggle-btn ${viewMode === 'calendar' ? 'active' : ''}`}
+                        onClick={() => setViewMode('calendar')}
+                    >
+                        📅 Calendar
+                    </button>
                 </div>
             </div>
 
@@ -217,12 +223,37 @@ function Reports() {
                         />
                     </>
                 )}
+
+                {/* Reset Filters Button */}
+                <button
+                    onClick={() => {
+                        setDateRange('all')
+                        setCustomStartDate('')
+                        setCustomEndDate('')
+                    }}
+                    style={{
+                        padding: 'var(--spacing-sm) var(--spacing-lg)',
+                        background: 'rgba(239, 68, 68, 0.2)',
+                        border: '1px solid rgba(239, 68, 68, 0.5)',
+                        borderRadius: 'var(--radius-md)',
+                        color: 'white',
+                        fontSize: '0.9rem',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        marginLeft: 'auto'
+                    }}
+                >
+                    🔄 Reset Filters
+                </button>
             </div>
 
             {viewMode === 'statistical' ? (
                 <StatisticalView stats={stats} detailedData={detailedData} />
-            ) : (
+            ) : viewMode === 'graphical' ? (
                 <GraphicalView stats={stats} detailedData={detailedData} />
+            ) : (
+                <CalendarView stats={stats} detailedData={detailedData} />
             )}
 
             <style jsx>{`
@@ -265,22 +296,93 @@ function Reports() {
 function StatisticalView({ stats, detailedData }) {
     return (
         <>
-            {/* Overview Stats Grid */}
+            {/* Overview Stats Grid - Same as Dashboard */}
             <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
                 gap: 'var(--spacing-lg)',
                 marginBottom: 'var(--spacing-3xl)'
             }}>
-                <StatCard title="Total Customers" value={stats.customers} color="#3b82f6" />
-                <StatCard title="Total Products" value={stats.products} color="#10b981" />
-                <StatCard title="Pending Orders" value={stats.pendingOrders} color="#f59e0b" />
-                <StatCard title="Confirmed Orders" value={stats.confirmedOrders} color="#3b82f6" />
-                <StatCard title="Delivered Orders" value={stats.deliveredOrders} color="#22c55e" />
-                <StatCard title="Total Packing" value={stats.totalPacking} color="#8b5cf6" />
-                <StatCard title="Packed Items" value={stats.packedItems} color="#06b6d4" />
-                <StatCard title="Shipped Items" value={stats.shippedItems} color="#10b981" />
-                <StatCard title="Sales This Month" value={`Rs. ${stats.salesThisMonth.toLocaleString()}`} color="#22c55e" />
+                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
+                    <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#3b82f6', marginBottom: 'var(--spacing-sm)' }}>
+                        {stats.customers}
+                    </div>
+                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
+                        Total Customers
+                    </div>
+                </div>
+
+                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
+                    <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#10b981', marginBottom: 'var(--spacing-sm)' }}>
+                        {stats.products}
+                    </div>
+                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
+                        Total Products
+                    </div>
+                </div>
+
+                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
+                    <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#f59e0b', marginBottom: 'var(--spacing-sm)' }}>
+                        {stats.pendingOrders}
+                    </div>
+                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
+                        Pending Orders
+                    </div>
+                </div>
+
+                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
+                    <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#3b82f6', marginBottom: 'var(--spacing-sm)' }}>
+                        {stats.confirmedOrders}
+                    </div>
+                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
+                        Confirmed Orders
+                    </div>
+                </div>
+
+                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
+                    <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#22c55e', marginBottom: 'var(--spacing-sm)' }}>
+                        {stats.deliveredOrders}
+                    </div>
+                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
+                        Delivered Orders
+                    </div>
+                </div>
+
+                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
+                    <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#8b5cf6', marginBottom: 'var(--spacing-sm)' }}>
+                        {stats.totalPacking}
+                    </div>
+                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
+                        Total Packing
+                    </div>
+                </div>
+
+                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
+                    <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#06b6d4', marginBottom: 'var(--spacing-sm)' }}>
+                        {stats.packedItems}
+                    </div>
+                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
+                        Packed Items
+                    </div>
+                </div>
+
+                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
+                    <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#10b981', marginBottom: 'var(--spacing-sm)' }}>
+                        {stats.shippedItems}
+                    </div>
+                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
+                        Shipped Items
+                    </div>
+                </div>
+
+                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
+                    <div style={{ fontSize: '2rem', fontWeight: '800', color: '#22c55e', marginBottom: 'var(--spacing-sm)' }}>
+                        Rs. {stats.salesThisMonth.toLocaleString()}
+                    </div>
+                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
+                        Sales This Month
+                    </div>
+                </div>
             </div>
 
             {/* Detailed Reports Sections */}
@@ -293,6 +395,300 @@ function StatisticalView({ stats, detailedData }) {
                 <ReportSection title="Sales Report" data={detailedData.sales} count={detailedData.sales.length} />
             </div>
         </>
+    )
+}
+
+// Calendar View Component
+function CalendarView({ stats, detailedData }) {
+    const [currentMonth, setCurrentMonth] = useState(new Date())
+    const [hoveredDate, setHoveredDate] = useState(null)
+    const [selectedDate, setSelectedDate] = useState(null)
+
+    // Get calendar days for the current month
+    const getCalendarDays = () => {
+        const year = currentMonth.getFullYear()
+        const month = currentMonth.getMonth()
+        const firstDay = new Date(year, month, 1)
+        const lastDay = new Date(year, month + 1, 0)
+        const daysInMonth = lastDay.getDate()
+        const startingDayOfWeek = firstDay.getDay()
+
+        const days = []
+        // Add empty cells for days before the month starts
+        for (let i = 0; i < startingDayOfWeek; i++) {
+            days.push(null)
+        }
+        // Add all days of the month
+        for (let day = 1; day <= daysInMonth; day++) {
+            days.push(new Date(year, month, day))
+        }
+        return days
+    }
+
+    // Get data for a specific date
+    const getDateData = (date) => {
+        if (!date) return null
+
+        const dateStr = date.toISOString().split('T')[0]
+
+        const orders = detailedData.orders.filter(o => {
+            const orderDate = new Date(o.order_date || o.created_at).toISOString().split('T')[0]
+            return orderDate === dateStr
+        })
+
+        const sales = detailedData.sales.filter(s => {
+            const saleDate = new Date(s.sale_date || s.created_at).toISOString().split('T')[0]
+            return saleDate === dateStr
+        })
+
+        const packing = detailedData.packing.filter(p => {
+            const packDate = new Date(p.packed_date || p.created_at).toISOString().split('T')[0]
+            return packDate === dateStr
+        })
+
+        return {
+            date: date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+            orders: orders.length,
+            sales: sales.length,
+            salesAmount: sales.reduce((sum, s) => sum + parseFloat(s.total_amount || 0), 0),
+            packing: packing.length,
+            hasActivity: orders.length > 0 || sales.length > 0 || packing.length > 0
+        }
+    }
+
+    const days = getCalendarDays()
+    const monthName = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+
+    const goToPreviousMonth = () => {
+        setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))
+    }
+
+    const goToNextMonth = () => {
+        setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))
+    }
+
+    return (
+        <div style={{ position: 'relative' }}>
+            {/* Calendar Header */}
+            <div className="glass-card" style={{ padding: 'var(--spacing-2xl)', marginBottom: 'var(--spacing-2xl)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <button
+                        onClick={goToPreviousMonth}
+                        style={{
+                            padding: 'var(--spacing-md) var(--spacing-lg)',
+                            background: 'rgba(255, 255, 255, 0.1)',
+                            border: '1px solid rgba(255, 255, 255, 0.2)',
+                            borderRadius: 'var(--radius-md)',
+                            color: 'white',
+                            fontSize: '1.5rem',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        ‹
+                    </button>
+                    <h2 style={{ color: 'white', fontSize: '1.5rem', margin: 0 }}>{monthName}</h2>
+                    <button
+                        onClick={goToNextMonth}
+                        style={{
+                            padding: 'var(--spacing-md) var(--spacing-lg)',
+                            background: 'rgba(255, 255, 255, 0.1)',
+                            border: '1px solid rgba(255, 255, 255, 0.2)',
+                            borderRadius: 'var(--radius-md)',
+                            color: 'white',
+                            fontSize: '1.5rem',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        ›
+                    </button>
+                </div>
+
+                {/* Calendar Grid */}
+                <div style={{ marginTop: 'var(--spacing-2xl)' }}>
+                    {/* Days of week header */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 'var(--spacing-sm)', marginBottom: 'var(--spacing-md)' }}>
+                        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                            <div key={day} style={{ textAlign: 'center', color: 'rgba(255,255,255,0.6)', fontWeight: '600', padding: 'var(--spacing-sm)' }}>
+                                {day}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Calendar days */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 'var(--spacing-sm)' }}>
+                        {days.map((date, index) => {
+                            if (!date) {
+                                return <div key={`empty-${index}`} style={{ aspectRatio: '1', minHeight: '80px' }}></div>
+                            }
+
+                            const dateData = getDateData(date)
+                            const isToday = date.toDateString() === new Date().toDateString()
+                            const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString()
+                            const isHovered = hoveredDate && date.toDateString() === hoveredDate.toDateString()
+
+                            return (
+                                <div
+                                    key={index}
+                                    onMouseEnter={() => setHoveredDate(date)}
+                                    onMouseLeave={() => setHoveredDate(null)}
+                                    onClick={() => setSelectedDate(date)}
+                                    style={{
+                                        aspectRatio: '1',
+                                        minHeight: '80px',
+                                        background: isSelected
+                                            ? 'rgba(59, 130, 246, 0.3)'
+                                            : isToday
+                                                ? 'rgba(16, 185, 129, 0.2)'
+                                                : dateData.hasActivity
+                                                    ? 'rgba(255, 255, 255, 0.1)'
+                                                    : 'rgba(255, 255, 255, 0.05)',
+                                        border: isHovered ? '2px solid rgba(59, 130, 246, 0.5)' : isToday ? '2px solid rgba(16, 185, 129, 0.5)' : '1px solid rgba(255, 255, 255, 0.1)',
+                                        borderRadius: 'var(--radius-md)',
+                                        padding: 'var(--spacing-sm)',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.3s ease',
+                                        position: 'relative',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        transform: isHovered ? 'scale(1.05)' : 'scale(1)',
+                                        zIndex: isHovered ? 10 : 1
+                                    }}
+                                >
+                                    <div style={{ color: 'white', fontWeight: '700', fontSize: '1.1rem' }}>
+                                        {date.getDate()}
+                                    </div>
+                                    {dateData.hasActivity && (
+                                        <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.8)', marginTop: '4px' }}>
+                                            {dateData.orders > 0 && <div>📦 {dateData.orders}</div>}
+                                            {dateData.sales > 0 && <div>💰 {dateData.sales}</div>}
+                                            {dateData.packing > 0 && <div>📋 {dateData.packing}</div>}
+                                        </div>
+                                    )}
+                                </div>
+                            )
+                        })}
+                    </div>
+                </div>
+            </div>
+
+            {/* Hover Overlay */}
+            {hoveredDate && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'rgba(0, 0, 0, 0.7)',
+                    backdropFilter: 'blur(8px)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 100,
+                    pointerEvents: 'none'
+                }}>
+                    <div className="glass-card" style={{ padding: 'var(--spacing-2xl)', maxWidth: '400px', width: '90%' }}>
+                        <h3 style={{ color: 'white', marginBottom: 'var(--spacing-lg)', fontSize: '1.3rem' }}>
+                            {getDateData(hoveredDate).date}
+                        </h3>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--spacing-sm)', background: 'rgba(255, 255, 255, 0.05)', borderRadius: 'var(--radius-sm)' }}>
+                                <span style={{ color: 'rgba(255,255,255,0.8)' }}>Orders:</span>
+                                <span style={{ color: 'white', fontWeight: '700' }}>{getDateData(hoveredDate).orders}</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--spacing-sm)', background: 'rgba(255, 255, 255, 0.05)', borderRadius: 'var(--radius-sm)' }}>
+                                <span style={{ color: 'rgba(255,255,255,0.8)' }}>Sales:</span>
+                                <span style={{ color: 'white', fontWeight: '700' }}>{getDateData(hoveredDate).sales}</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--spacing-sm)', background: 'rgba(255, 255, 255, 0.05)', borderRadius: 'var(--radius-sm)' }}>
+                                <span style={{ color: 'rgba(255,255,255,0.8)' }}>Sales Amount:</span>
+                                <span style={{ color: '#22c55e', fontWeight: '700' }}>Rs. {getDateData(hoveredDate).salesAmount.toLocaleString()}</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--spacing-sm)', background: 'rgba(255, 255, 255, 0.05)', borderRadius: 'var(--radius-sm)' }}>
+                                <span style={{ color: 'rgba(255,255,255,0.8)' }}>Packing:</span>
+                                <span style={{ color: 'white', fontWeight: '700' }}>{getDateData(hoveredDate).packing}</span>
+                            </div>
+                        </div>
+                        <div style={{ marginTop: 'var(--spacing-lg)', color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem', textAlign: 'center' }}>
+                            Click to view detailed report
+                        </div>
+                    </div>
+                </div>
+            )
+            }
+
+            {/* Selected Date Detailed Report */}
+            {
+                selectedDate && !hoveredDate && (
+                    <div className="glass-card" style={{ padding: 'var(--spacing-2xl)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-xl)' }}>
+                            <h3 style={{ color: 'white', fontSize: '1.5rem', margin: 0 }}>
+                                Detailed Report - {getDateData(selectedDate).date}
+                            </h3>
+                            <button
+                                onClick={() => setSelectedDate(null)}
+                                style={{
+                                    padding: 'var(--spacing-sm) var(--spacing-lg)',
+                                    background: 'rgba(239, 68, 68, 0.2)',
+                                    border: '1px solid rgba(239, 68, 68, 0.5)',
+                                    borderRadius: 'var(--radius-md)',
+                                    color: 'white',
+                                    fontSize: '0.9rem',
+                                    fontWeight: '600',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                ✕ Close
+                            </button>
+                        </div>
+
+                        {/* Statistics Grid for Selected Date */}
+                        <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                            gap: 'var(--spacing-lg)',
+                            marginBottom: 'var(--spacing-2xl)'
+                        }}>
+                            <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
+                                <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#f59e0b', marginBottom: 'var(--spacing-sm)' }}>
+                                    {getDateData(selectedDate).orders}
+                                </div>
+                                <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
+                                    Total Orders
+                                </div>
+                            </div>
+
+                            <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
+                                <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#10b981', marginBottom: 'var(--spacing-sm)' }}>
+                                    {getDateData(selectedDate).sales}
+                                </div>
+                                <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
+                                    Total Sales
+                                </div>
+                            </div>
+
+                            <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
+                                <div style={{ fontSize: '1.8rem', fontWeight: '800', color: '#22c55e', marginBottom: 'var(--spacing-sm)' }}>
+                                    Rs. {getDateData(selectedDate).salesAmount.toLocaleString()}
+                                </div>
+                                <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
+                                    Sales Amount
+                                </div>
+                            </div>
+
+                            <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
+                                <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#8b5cf6', marginBottom: 'var(--spacing-sm)' }}>
+                                    {getDateData(selectedDate).packing}
+                                </div>
+                                <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
+                                    Packing Items
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+        </div>
     )
 }
 
