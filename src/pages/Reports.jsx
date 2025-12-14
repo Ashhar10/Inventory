@@ -134,19 +134,19 @@ function Reports() {
                         className={`toggle-btn ${viewMode === 'statistical' ? 'active' : ''}`}
                         onClick={() => setViewMode('statistical')}
                     >
-                        <img src="/assets/icons/Reports.png" alt="Statistical" style={{ width: '20px', height: '20px', marginRight: '8px' }} /> Statistical
+                        <img src="/assets/icons/Statistical.png" alt="Statistical" style={{ width: '20px', height: '20px', marginRight: '8px' }} /> Statistical
                     </button>
                     <button
                         className={`toggle-btn ${viewMode === 'graphical' ? 'active' : ''}`}
                         onClick={() => setViewMode('graphical')}
                     >
-                        <img src="/assets/icons/Reports.png" alt="Graphical" style={{ width: '20px', height: '20px', marginRight: '8px' }} /> Graphical
+                        <img src="/assets/icons/Graphical.png" alt="Graphical" style={{ width: '20px', height: '20px', marginRight: '8px' }} /> Graphical
                     </button>
                     <button
                         className={`toggle-btn ${viewMode === 'calendar' ? 'active' : ''}`}
                         onClick={() => setViewMode('calendar')}
                     >
-                        <img src="/assets/icons/Dashboard.png" alt="Calendar" style={{ width: '20px', height: '20px', marginRight: '8px' }} /> Calendar
+                        <img src="/assets/icons/Calendar.png" alt="Calendar" style={{ width: '20px', height: '20px', marginRight: '8px' }} /> Calendar
                     </button>
                 </div>
             </div>
@@ -244,7 +244,7 @@ function Reports() {
                         marginLeft: 'auto'
                     }}
                 >
-                    <img src="/assets/icons/Dashboard.png" alt="Reset" style={{ width: '16px', height: '16px', marginRight: '6px' }} /> Reset Filters
+                    <img src="/assets/icons/Reset.png" alt="Reset" style={{ width: '16px', height: '16px', marginRight: '6px' }} /> Reset Filters
                 </button>
             </div>
 
@@ -484,7 +484,7 @@ function CalendarView({ stats, detailedData }) {
                             cursor: 'pointer'
                         }}
                     >
-                        <img src="/assets/icons/Dashboard.png" alt="Previous" style={{ width: '20px', height: '20px' }} />
+                        <img src="/assets/icons/Previous.png" alt="Previous" style={{ width: '20px', height: '20px' }} />
                     </button>
                     <h2 style={{ color: 'white', fontSize: '1.5rem', margin: 0 }}>{monthName}</h2>
                     <button
@@ -499,7 +499,7 @@ function CalendarView({ stats, detailedData }) {
                             cursor: 'pointer'
                         }}
                     >
-                        <img src="/assets/icons/Dashboard.png" alt="Next" style={{ width: '20px', height: '20px' }} />
+                        <img src="/assets/icons/Next.png" alt="Next" style={{ width: '20px', height: '20px' }} />
                     </button>
                 </div>
 
@@ -559,9 +559,9 @@ function CalendarView({ stats, detailedData }) {
                                     </div>
                                     {dateData.hasActivity && (
                                         <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.8)', marginTop: '4px' }}>
-                                            {dateData.orders > 0 && <div><img src="/assets/icons/Orders.png" alt="Orders" style={{ width: '14px', height: '14px', display: 'inline', marginRight: '4px' }} />{dateData.orders}</div>}
-                                            {dateData.sales > 0 && <div><img src="/assets/icons/Sales.png" alt="Sales" style={{ width: '14px', height: '14px', display: 'inline', marginRight: '4px' }} />{dateData.sales}</div>}
-                                            {dateData.packing > 0 && <div><img src="/assets/icons/Packing.png" alt="Packing" style={{ width: '14px', height: '14px', display: 'inline', marginRight: '4px' }} />{dateData.packing}</div>}
+                                            {dateData.orders > 0 && <div><img src="/assets/icons/Package.png" alt="Orders" style={{ width: '14px', height: '14px', display: 'inline', marginRight: '4px' }} />{dateData.orders}</div>}
+                                            {dateData.sales > 0 && <div><img src="/assets/icons/Money.png" alt="Sales" style={{ width: '14px', height: '14px', display: 'inline', marginRight: '4px' }} />{dateData.sales}</div>}
+                                            {dateData.packing > 0 && <div><img src="/assets/icons/Clipboard.png" alt="Packing" style={{ width: '14px', height: '14px', display: 'inline', marginRight: '4px' }} />{dateData.packing}</div>}
                                         </div>
                                     )}
                                 </div>
@@ -638,7 +638,7 @@ function CalendarView({ stats, detailedData }) {
                                     cursor: 'pointer'
                                 }}
                             >
-                                <img src="/assets/icons/Dashboard.png" alt="Close" style={{ width: '16px', height: '16px', marginRight: '6px' }} /> Close
+                                <img src="/assets/icons/Close.png" alt="Close" style={{ width: '16px', height: '16px', marginRight: '6px' }} /> Close
                             </button>
                         </div>
 
@@ -818,7 +818,7 @@ function ChartBox({ title, barData, pieData }) {
                             transition: 'all 0.3s ease'
                         }}
                     >
-                        <img src="/assets/icons/Reports.png" alt="Bar" style={{ width: '16px', height: '16px', marginRight: '6px' }} /> Bar
+                        <img src="/assets/icons/BarChart.png" alt="Bar" style={{ width: '16px', height: '16px', marginRight: '6px' }} /> Bar
                     </button>
                     <button
                         onClick={() => setChartType('pie')}
@@ -834,7 +834,7 @@ function ChartBox({ title, barData, pieData }) {
                             transition: 'all 0.3s ease'
                         }}
                     >
-                        <img src="/assets/icons/Reports.png" alt="Pie" style={{ width: '16px', height: '16px', marginRight: '6px' }} /> Pie
+                        <img src="/assets/icons/PieChart.png" alt="Pie" style={{ width: '16px', height: '16px', marginRight: '6px' }} /> Pie
                     </button>
                 </div>
             </div>
