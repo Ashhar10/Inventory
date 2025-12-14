@@ -302,220 +302,239 @@ function Reports() {
 function StatisticalView({ stats, detailedData }) {
     return (
         <>
-            {/* Animated Stats Grid - Dashboard Style */}
+            {/* Overview Stats Grid - Dashboard Style with Slideshows */}
             <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                gridTemplateColumns: 'repeat(4, 1fr)',
                 gap: 'var(--spacing-lg)',
                 marginBottom: 'var(--spacing-3xl)'
             }}>
+                {/* Customers & Products */}
+                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
+                    <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#3b82f6', marginBottom: 'var(--spacing-sm)' }}>
+                        {stats.customers}
+                    </div>
+                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
+                        Total Customers
+                    </div>
+                </div>
+
+                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
+                    <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#10b981', marginBottom: 'var(--spacing-sm)' }}>
+                        {stats.products}
+                    </div>
+                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
+                        Total Products
+                    </div>
+                </div>
+
+                {/* Orders Slideshow */}
                 <AnimatedStatBox
-                    value={stats.customers}
-                    label="Total Customers"
-                    color="#3b82f6"
-                    percent={0}
-                    icon="/assets/icons/Customers.png"
+                    slides={[
+                        { value: stats.pendingOrders, label: 'Pending Orders' },
+                        { value: stats.confirmedOrders || 0, label: 'Confirmed Orders' },
+                        { value: stats.deliveredOrders || 0, label: 'Delivered Orders' },
+                    ]}
                 />
+
+                {/* Sales */}
+                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
+                    <div style={{ fontSize: '1.8rem', fontWeight: '800', color: '#22c55e', marginBottom: 'var(--spacing-sm)' }}>
+                        Rs. {stats.salesThisMonth.toLocaleString()}
+                    </div>
+                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
+                        Sales This Month
+                    </div>
+                </div>
+
+                {/* Packing Slideshow */}
                 <AnimatedStatBox
-                    value={stats.products}
-                    label="Total Products"
-                    color="#10b981"
-                    percent={0}
-                    icon="/assets/icons/Products.png"
+                    slides={[
+                        { value: stats.totalPacking || 0, label: 'Total Packing' },
+                        { value: stats.packedItems || 0, label: 'Packed Items' },
+                        { value: stats.shippedItems || 0, label: 'Shipped Items' },
+                    ]}
                 />
-                <AnimatedStatBox
-                    value={stats.pendingOrders}
-                    label="Pending Orders"
-                    color="#f59e0b"
-                    percent={0}
-                    icon="/assets/icons/Orders.png"
-                />
-                <AnimatedStatBox
-                    value={stats.confirmedOrders}
-                    label="Confirmed Orders"
-                    color="#3b82f6"
-                    percent={0}
-                    icon="/assets/icons/Orders.png"
-                />
-                <AnimatedStatBox
-                    value={stats.deliveredOrders}
-                    label="Delivered Orders"
-                    color="#22c55e"
-                    percent={0}
-                    icon="/assets/icons/Orders.png"
-                />
-                <AnimatedStatBox
-                    value={stats.totalPacking}
-                    label="Total Packing"
-                    color="#8b5cf6"
-                    percent={0}
-                    icon="/assets/icons/Packing.png"
-                />
-                <AnimatedStatBox
-                    value={stats.packedItems}
-                    label="Packed Items"
-                    color="#06b6d4"
-                    percent={0}
-                    icon="/assets/icons/Packing.png"
-                />
-                <AnimatedStatBox
-                    value={stats.shippedItems}
-                    label="Shipped Items"
-                    color="#10b981"
-                    percent={0}
-                    icon="/assets/icons/Packing.png"
-                />
-                <AnimatedStatBox
-                    value={`Rs. ${stats.salesThisMonth.toLocaleString()}`}
-                    label="Sales This Month"
-                    color="#22c55e"
-                    percent={0}
-                    icon="/assets/icons/Sales.png"
-                />
+
+                {/* Inventory */}
+                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
+                    <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#8b5cf6', marginBottom: 'var(--spacing-sm)' }}>
+                        {detailedData.inventory.length}
+                    </div>
+                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
+                        Inventory Items
+                    </div>
+                </div>
+
+                {/* Orders Total */}
+                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
+                    <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#f59e0b', marginBottom: 'var(--spacing-sm)' }}>
+                        {detailedData.orders.length}
+                    </div>
+                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
+                        Total Orders
+                    </div>
+                </div>
+
+                {/* Sales Count */}
+                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
+                    <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#06b6d4', marginBottom: 'var(--spacing-sm)' }}>
+                        {detailedData.sales.length}
+                    </div>
+                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
+                        Total Sales
+                    </div>
+                </div>
             </div>
 
-            {/* Professional Report Sections */}
-            <div style={{
-                background: 'rgba(255, 255, 255, 0.03)',
-                padding: 'var(--spacing-2xl)',
-                borderRadius: 'var(--radius-xl)',
-                border: '1px solid rgba(255, 255, 255, 0.1)'
-            }}>
-                <h2 style={{
-                    color: 'white',
-                    fontSize: '1.5rem',
-                    marginBottom: 'var(--spacing-2xl)',
-                    fontWeight: '700',
-                    borderBottom: '2px solid rgba(255, 255, 255, 0.1)',
-                    paddingBottom: 'var(--spacing-md)'
-                }}>
+            {/* Professional Reports Section */}
+            <div className="glass-card" style={{ padding: 'var(--spacing-2xl)' }}>
+                <h2 style={{ color: 'white', fontSize: '1.5rem', marginBottom: 'var(--spacing-xl)', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: 'var(--spacing-md)' }}>
+                    <img src="/assets/icons/Reports.png" alt="Reports" style={{ width: '24px', height: '24px', marginRight: '12px', verticalAlign: 'middle' }} />
                     Detailed Reports
                 </h2>
 
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--spacing-lg)' }}>
+                    {/* Customer Report */}
+                    <div style={{
+                        background: 'rgba(59, 130, 246, 0.1)',
+                        border: '1px solid rgba(59, 130, 246, 0.3)',
+                        borderRadius: 'var(--radius-lg)',
+                        padding: 'var(--spacing-xl)',
+                        transition: 'all 0.3s ease'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: 'var(--spacing-md)' }}>
+                            <img src="/assets/icons/Customers.png" alt="Customers" style={{ width: '32px', height: '32px', marginRight: '12px' }} />
+                            <h3 style={{ color: 'white', margin: 0, fontSize: '1.2rem' }}>Customer Report</h3>
+                        </div>
+                        <div style={{ fontSize: '2rem', fontWeight: '800', color: '#3b82f6', marginBottom: 'var(--spacing-sm)' }}>
+                            {stats.customers}
+                        </div>
+                        <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)' }}>
+                            Total registered customers
+                        </div>
+                        <div style={{ marginTop: 'var(--spacing-md)', fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>
+                            Last updated: {new Date().toLocaleDateString()}
+                        </div>
+                    </div>
 
-                <div style={{ display: 'grid', gap: 'var(--spacing-2xl)' }}>
-                    <ReportSection title="Customer Report" data={detailedData.customers || []} count={stats.customers} icon="/assets/icons/Customers.png" />
-                    <ReportSection title="Product Report" data={detailedData.products || []} count={stats.products} icon="/assets/icons/Products.png" />
-                    <ReportSection title="Order Report" data={detailedData.orders || []} count={detailedData.orders?.length || 0} icon="/assets/icons/Orders.png" />
-                    <ReportSection title="Packing Report" data={detailedData.packing || []} count={stats.totalPacking} icon="/assets/icons/Packing.png" />
-                    <ReportSection title="Inventory Report" data={detailedData.inventory || []} count={detailedData.inventory?.length || 0} icon="/assets/icons/Inventory.png" />
-                    <ReportSection title="Sales Report" data={detailedData.sales || []} count={detailedData.sales?.length || 0} icon="/assets/icons/Sales.png" />
+                    {/* Product Report */}
+                    <div style={{
+                        background: 'rgba(16, 185, 129, 0.1)',
+                        border: '1px solid rgba(16, 185, 129, 0.3)',
+                        borderRadius: 'var(--radius-lg)',
+                        padding: 'var(--spacing-xl)',
+                        transition: 'all 0.3s ease'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: 'var(--spacing-md)' }}>
+                            <img src="/assets/icons/Products.png" alt="Products" style={{ width: '32px', height: '32px', marginRight: '12px' }} />
+                            <h3 style={{ color: 'white', margin: 0, fontSize: '1.2rem' }}>Product Report</h3>
+                        </div>
+                        <div style={{ fontSize: '2rem', fontWeight: '800', color: '#10b981', marginBottom: 'var(--spacing-sm)' }}>
+                            {stats.products}
+                        </div>
+                        <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)' }}>
+                            Total products in catalog
+                        </div>
+                        <div style={{ marginTop: 'var(--spacing-md)', fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>
+                            Last updated: {new Date().toLocaleDateString()}
+                        </div>
+                    </div>
+
+                    {/* Order Report */}
+                    <div style={{
+                        background: 'rgba(245, 158, 11, 0.1)',
+                        border: '1px solid rgba(245, 158, 11, 0.3)',
+                        borderRadius: 'var(--radius-lg)',
+                        padding: 'var(--spacing-xl)',
+                        transition: 'all 0.3s ease'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: 'var(--spacing-md)' }}>
+                            <img src="/assets/icons/Orders.png" alt="Orders" style={{ width: '32px', height: '32px', marginRight: '12px' }} />
+                            <h3 style={{ color: 'white', margin: 0, fontSize: '1.2rem' }}>Order Report</h3>
+                        </div>
+                        <div style={{ fontSize: '2rem', fontWeight: '800', color: '#f59e0b', marginBottom: 'var(--spacing-sm)' }}>
+                            {detailedData.orders.length}
+                        </div>
+                        <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)' }}>
+                            Total orders processed
+                        </div>
+                        <div style={{ marginTop: 'var(--spacing-md)', fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>
+                            Pending: {stats.pendingOrders} | Confirmed: {stats.confirmedOrders} | Delivered: {stats.deliveredOrders}
+                        </div>
+                    </div>
+
+                    {/* Packing Report */}
+                    <div style={{
+                        background: 'rgba(139, 92, 246, 0.1)',
+                        border: '1px solid rgba(139, 92, 246, 0.3)',
+                        borderRadius: 'var(--radius-lg)',
+                        padding: 'var(--spacing-xl)',
+                        transition: 'all 0.3s ease'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: 'var(--spacing-md)' }}>
+                            <img src="/assets/icons/Packing.png" alt="Packing" style={{ width: '32px', height: '32px', marginRight: '12px' }} />
+                            <h3 style={{ color: 'white', margin: 0, fontSize: '1.2rem' }}>Packing Report</h3>
+                        </div>
+                        <div style={{ fontSize: '2rem', fontWeight: '800', color: '#8b5cf6', marginBottom: 'var(--spacing-sm)' }}>
+                            {stats.totalPacking}
+                        </div>
+                        <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)' }}>
+                            Total packing operations
+                        </div>
+                        <div style={{ marginTop: 'var(--spacing-md)', fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>
+                            Packed: {stats.packedItems} | Shipped: {stats.shippedItems}
+                        </div>
+                    </div>
+
+                    {/* Inventory Report */}
+                    <div style={{
+                        background: 'rgba(6, 182, 212, 0.1)',
+                        border: '1px solid rgba(6, 182, 212, 0.3)',
+                        borderRadius: 'var(--radius-lg)',
+                        padding: 'var(--spacing-xl)',
+                        transition: 'all 0.3s ease'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: 'var(--spacing-md)' }}>
+                            <img src="/assets/icons/Inventory.png" alt="Inventory" style={{ width: '32px', height: '32px', marginRight: '12px' }} />
+                            <h3 style={{ color: 'white', margin: 0, fontSize: '1.2rem' }}>Inventory Report</h3>
+                        </div>
+                        <div style={{ fontSize: '2rem', fontWeight: '800', color: '#06b6d4', marginBottom: 'var(--spacing-sm)' }}>
+                            {detailedData.inventory.length}
+                        </div>
+                        <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)' }}>
+                            Inventory items tracked
+                        </div>
+                        <div style={{ marginTop: 'var(--spacing-md)', fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>
+                            Last updated: {new Date().toLocaleDateString()}
+                        </div>
+                    </div>
+
+                    {/* Sales Report */}
+                    <div style={{
+                        background: 'rgba(34, 197, 94, 0.1)',
+                        border: '1px solid rgba(34, 197, 94, 0.3)',
+                        borderRadius: 'var(--radius-lg)',
+                        padding: 'var(--spacing-xl)',
+                        transition: 'all 0.3s ease'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: 'var(--spacing-md)' }}>
+                            <img src="/assets/icons/Sales.png" alt="Sales" style={{ width: '32px', height: '32px', marginRight: '12px' }} />
+                            <h3 style={{ color: 'white', margin: 0, fontSize: '1.2rem' }}>Sales Report</h3>
+                        </div>
+                        <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#22c55e', marginBottom: 'var(--spacing-sm)' }}>
+                            Rs. {stats.salesThisMonth.toLocaleString()}
+                        </div>
+                        <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)' }}>
+                            Total sales: {detailedData.sales.length} transactions
+                        </div>
+                        <div style={{ marginTop: 'var(--spacing-md)', fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>
+                            This month's revenue
+                        </div>
+                    </div>
                 </div>
             </div>
         </>
-    )
-}
-
-// Professional Report Section Component
-function ReportSection({ title, data, count, icon }) {
-    if (!data || data.length === 0) {
-        return null
-    }
-
-    // Get table headers from first item
-    const headers = Object.keys(data[0] || {}).filter(key => key !== 'id')
-
-    return (
-        <div style={{
-            background: 'rgba(255, 255, 255, 0.05)',
-            borderRadius: 'var(--radius-lg)',
-            padding: 'var(--spacing-xl)',
-            border: '1px solid rgba(255, 255, 255, 0.1)'
-        }}>
-            {/* Section Header with Icon */}
-            <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 'var(--spacing-md)',
-                marginBottom: 'var(--spacing-lg)',
-                paddingBottom: 'var(--spacing-md)',
-                borderBottom: '2px solid rgba(255, 255, 255, 0.1)'
-            }}>
-                {icon && (
-                    <img
-                        src={icon}
-                        alt={title}
-                        style={{
-                            width: '32px',
-                            height: '32px',
-                            filter: 'brightness(1.2)'
-                        }}
-                    />
-                )}
-                <div>
-                    <h3 style={{
-                        color: 'white',
-                        fontSize: '1.2rem',
-                        fontWeight: '700',
-                        margin: 0
-                    }}>
-                        {title}
-                    </h3>
-                    <span style={{
-                        color: 'rgba(255,255,255,0.6)',
-                        fontSize: '0.85rem',
-                        fontWeight: '500'
-                    }}>
-                        Total: {count} {count === 1 ? 'item' : 'items'}
-                    </span>
-                </div>
-            </div>
-
-            {/* Table */}
-            <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead>
-                        <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.2)' }}>
-                            {headers.map(header => (
-                                <th key={header} style={{
-                                    textAlign: 'left',
-                                    padding: 'var(--spacing-md)',
-                                    color: 'rgba(255,255,255,0.9)',
-                                    fontWeight: '600',
-                                    fontSize: '0.9rem',
-                                    textTransform: 'capitalize'
-                                }}>
-                                    {header.replace(/_/g, ' ')}
-                                </th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.slice(0, 10).map((item, index) => (
-                            <tr key={index} style={{
-                                borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-                                transition: 'background 0.2s ease'
-                            }}
-                                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'}
-                                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
-                                {headers.map(header => (
-                                    <td key={header} style={{
-                                        padding: 'var(--spacing-md)',
-                                        color: 'rgba(255,255,255,0.8)',
-                                        fontSize: '0.85rem'
-                                    }}>
-                                        {item[header] || 'N/A'}
-                                    </td>
-                                ))}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-
-            {/* Show More Indicator */}
-            {data.length > 10 && (
-                <div style={{
-                    marginTop: 'var(--spacing-md)',
-                    textAlign: 'center',
-                    color: 'rgba(255,255,255,0.5)',
-                    fontSize: '0.85rem',
-                    fontStyle: 'italic'
-                }}>
-                    Showing 10 of {data.length} items
-                </div>
-            )}
-        </div>
     )
 }
 
@@ -1039,6 +1058,26 @@ function StatCard({ title, value, color }) {
     )
 }
 
+// Report Section Component
+function ReportSection({ title, data, count }) {
+    return (
+        <div className="glass-card" style={{ padding: 'var(--spacing-2xl)' }}>
+            <h3 style={{ color: 'white', marginBottom: 'var(--spacing-lg)', fontSize: '1.5rem' }}>
+                {title}
+            </h3>
+            <div style={{ color: 'rgba(255,255,255,0.9)', fontSize: '1.1rem', marginBottom: 'var(--spacing-md)' }}>
+                Total Records: <strong>{count}</strong>
+            </div>
+            <div style={{ color: 'rgba(255,255,255,0.7)' }}>
+                {data.length > 0 ? (
+                    <div>Last updated: {new Date().toLocaleString()}</div>
+                ) : (
+                    <div>No data available</div>
+                )}
+            </div>
+        </div>
+    )
+}
 
 // Simple Bar Chart Component
 function BarChart({ data }) {
