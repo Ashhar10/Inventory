@@ -1,19 +1,9 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 
 function Modal({ isOpen, onClose, title, message, type = 'info', onConfirm, showCancel = false }) {
-    const hasHandledRef = useRef(false)
-
-    useEffect(() => {
-        // Reset handled flag when modal opens
-        if (isOpen) {
-            hasHandledRef.current = false
-        }
-    }, [isOpen])
-
     useEffect(() => {
         const handleEscape = (e) => {
-            if (e.key === 'Escape' && isOpen && !hasHandledRef.current) {
-                hasHandledRef.current = true
+            if (e.key === 'Escape' && isOpen) {
                 onClose()
             }
         }
@@ -23,14 +13,6 @@ function Modal({ isOpen, onClose, title, message, type = 'info', onConfirm, show
 
     if (!isOpen) return null
 
-    const icons = {
-        success: '',
-        error: '',
-        warning: '',
-        info: '',
-        confirm: '',
-    }
-
     const colors = {
         success: '#10b981',
         error: '#ef4444',
@@ -39,30 +21,8 @@ function Modal({ isOpen, onClose, title, message, type = 'info', onConfirm, show
         confirm: '#8b5cf6',
     }
 
-    const handleOverlayClick = () => {
-        if (!hasHandledRef.current) {
-            hasHandledRef.current = true
-            onClose()
-        }
-    }
-
-    const handleConfirmClick = () => {
-        if (!hasHandledRef.current) {
-            hasHandledRef.current = true
-            if (onConfirm) onConfirm()
-            onClose()
-        }
-    }
-
-    const handleCancelClick = () => {
-        if (!hasHandledRef.current) {
-            hasHandledRef.current = true
-            onClose()
-        }
-    }
-
     return (
-        <div className="modal-overlay" onClick={handleOverlayClick} style={{ zIndex: 30000 }}>
+        <div className="modal-overlay" onClick={onClose} style={{ zIndex: 30000 }}>
             <div
                 className="modal"
                 onClick={(e) => e.stopPropagation()}
@@ -98,7 +58,7 @@ function Modal({ isOpen, onClose, title, message, type = 'info', onConfirm, show
                 }}>
                     {showCancel && (
                         <button
-                            onClick={handleCancelClick}
+                            onClick={onClose}
                             className="btn btn-secondary"
                             style={{ minWidth: '120px' }}
                         >
@@ -106,7 +66,10 @@ function Modal({ isOpen, onClose, title, message, type = 'info', onConfirm, show
                         </button>
                     )}
                     <button
-                        onClick={handleConfirmClick}
+                        onClick={() => {
+                            if (onConfirm) onConfirm()
+                            onClose()
+                        }}
                         className={`btn ${type === 'error' ? 'btn-danger' : 'btn-primary'}`}
                         style={{ minWidth: '120px' }}
                     >

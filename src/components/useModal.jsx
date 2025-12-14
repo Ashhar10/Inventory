@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef } from 'react'
 import Modal from './Modal'
 
-// Custom hook for modal dialogs
+// Custom hook for modal dialogs with duplicate prevention
 export function useModal() {
     const [modalState, setModalState] = useState({
         isOpen: false,
@@ -12,12 +12,17 @@ export function useModal() {
         showCancel: false,
     })
 
-    const isClosingRef = useRef(false)
+    // Track if modal is currently being shown to prevent duplicates
+    const isShowingRef = useRef(false)
+    const timeoutRef = useRef(null)
 
     const showAlert = useCallback((message, title = '', type = 'info') => {
         // Prevent duplicate modals
-        if (isClosingRef.current) return
+        if (isShowingRef.current) {
+            return
+        }
 
+        isShowingRef.current = true
         setModalState({
             isOpen: true,
             title,
@@ -26,12 +31,21 @@ export function useModal() {
             onConfirm: null,
             showCancel: false,
         })
+
+        // Auto-reset after showing
+        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+        timeoutRef.current = setTimeout(() => {
+            isShowingRef.current = false
+        }, 500)
     }, [])
 
     const showConfirm = useCallback((message, onConfirm, title = 'Confirm') => {
         // Prevent duplicate modals
-        if (isClosingRef.current) return
+        if (isShowingRef.current) {
+            return
+        }
 
+        isShowingRef.current = true
         setModalState({
             isOpen: true,
             title,
@@ -40,6 +54,12 @@ export function useModal() {
             onConfirm,
             showCancel: true,
         })
+
+        // Auto-reset after showing
+        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+        timeoutRef.current = setTimeout(() => {
+            isShowingRef.current = false
+        }, 500)
     }, [])
 
     const showSuccess = useCallback((message, title = 'Success') => {
@@ -55,15 +75,11 @@ export function useModal() {
     }, [showAlert])
 
     const closeModal = useCallback(() => {
-        // Prevent duplicate close calls
-        if (isClosingRef.current) return
-
-        isClosingRef.current = true
         setModalState((prev) => ({ ...prev, isOpen: false }))
-
-        // Reset the closing flag after a short delay
-        setTimeout(() => {
-            isClosingRef.current = false
+        // Reset showing flag when modal closes
+        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+        timeoutRef.current = setTimeout(() => {
+            isShowingRef.current = false
         }, 300)
     }, [])
 
