@@ -301,96 +301,46 @@ function Reports() {
 function StatisticalView({ stats, detailedData }) {
     return (
         <>
-            {/* Overview Stats Grid - Same as Dashboard */}
-            <div style={{
+            {/* Dashboard-Style Stats Grid */}
+            <div className="stats-grid fade-in-up" style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
                 gap: 'var(--spacing-lg)',
                 marginBottom: 'var(--spacing-3xl)'
             }}>
-                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                    <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#3b82f6', marginBottom: 'var(--spacing-sm)' }}>
-                        {stats.customers}
-                    </div>
-                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
-                        Total Customers
-                    </div>
+                <div className="glass-card stat-card">
+                    <div className="stat-value">{stats.customers}</div>
+                    <div className="stat-label">Total Customers</div>
                 </div>
 
-                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                    <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#10b981', marginBottom: 'var(--spacing-sm)' }}>
-                        {stats.products}
-                    </div>
-                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
-                        Total Products
-                    </div>
+                <div className="glass-card stat-card">
+                    <div className="stat-value">{stats.products}</div>
+                    <div className="stat-label">Total Products</div>
                 </div>
 
-                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                    <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#f59e0b', marginBottom: 'var(--spacing-sm)' }}>
-                        {stats.pendingOrders}
-                    </div>
-                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
-                        Pending Orders
-                    </div>
+                <AnimatedStatBox
+                    slides={[
+                        { value: stats.pendingOrders, label: 'Pending Orders' },
+                        { value: stats.confirmedOrders, label: 'Confirmed Orders' },
+                        { value: stats.deliveredOrders, label: 'Delivered Orders' },
+                    ]}
+                />
+
+                <div className="glass-card stat-card">
+                    <div className="stat-value">Rs. {stats.salesThisMonth.toLocaleString()}</div>
+                    <div className="stat-label">Sales This Month</div>
                 </div>
 
-                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                    <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#3b82f6', marginBottom: 'var(--spacing-sm)' }}>
-                        {stats.confirmedOrders}
-                    </div>
-                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
-                        Confirmed Orders
-                    </div>
-                </div>
-
-                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                    <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#22c55e', marginBottom: 'var(--spacing-sm)' }}>
-                        {stats.deliveredOrders}
-                    </div>
-                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
-                        Delivered Orders
-                    </div>
-                </div>
-
-                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                    <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#8b5cf6', marginBottom: 'var(--spacing-sm)' }}>
-                        {stats.totalPacking}
-                    </div>
-                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
-                        Total Packing
-                    </div>
-                </div>
-
-                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                    <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#06b6d4', marginBottom: 'var(--spacing-sm)' }}>
-                        {stats.packedItems}
-                    </div>
-                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
-                        Packed Items
-                    </div>
-                </div>
-
-                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                    <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#10b981', marginBottom: 'var(--spacing-sm)' }}>
-                        {stats.shippedItems}
-                    </div>
-                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
-                        Shipped Items
-                    </div>
-                </div>
-
-                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                    <div style={{ fontSize: '2rem', fontWeight: '800', color: '#22c55e', marginBottom: 'var(--spacing-sm)' }}>
-                        Rs. {stats.salesThisMonth.toLocaleString()}
-                    </div>
-                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
-                        Sales This Month
-                    </div>
-                </div>
+                <AnimatedStatBox
+                    slides={[
+                        { value: stats.totalPacking, label: 'Total Packing' },
+                        { value: stats.packedItems, label: 'Packed Items' },
+                        { value: stats.shippedItems, label: 'Shipped Items' },
+                    ]}
+                />
             </div>
 
-            {/* Detailed Reports Sections */}
+            {/* Professional Report Tables */}
             <div style={{ display: 'grid', gap: 'var(--spacing-2xl)' }}>
                 <ReportSection title="Customer Report" data={detailedData.customers} count={stats.customers} />
                 <ReportSection title="Product Report" data={detailedData.products} count={stats.products} />
@@ -400,6 +350,38 @@ function StatisticalView({ stats, detailedData }) {
                 <ReportSection title="Sales Report" data={detailedData.sales} count={detailedData.sales.length} />
             </div>
         </>
+    )
+}
+
+// Animated Stat Box Component (same as Dashboard)
+function AnimatedStatBox({ slides }) {
+    const [currentSlide, setCurrentSlide] = useState(0)
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentSlide((prev) => (prev + 1) % slides.length)
+        }, 3000) // Change slide every 3 seconds
+
+        return () => clearInterval(interval)
+    }, [slides.length])
+
+    return (
+        <div className="glass-card stat-card animated-stat-box">
+            <div className="stat-value slide-animation">
+                {slides[currentSlide].value}
+            </div>
+            <div className="stat-label slide-animation">
+                {slides[currentSlide].label}
+            </div>
+            <div className="slide-indicators">
+                {slides.map((_, index) => (
+                    <div
+                        key={index}
+                        className={`indicator ${index === currentSlide ? 'active' : ''}`}
+                    />
+                ))}
+            </div>
+        </div>
     )
 }
 
