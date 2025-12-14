@@ -224,6 +224,14 @@ function Dashboard() {
                     text-align: center;
                     overflow: hidden;
                     text-overflow: ellipsis;
+                    transition: all 0.3s ease;
+                }
+
+                .dashboard-card:hover .card-title {
+                    white-space: normal;
+                    overflow: visible;
+                    text-overflow: unset;
+                    word-break: break-word;
                 }
 
                 @media (max-width: 768px) {
