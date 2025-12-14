@@ -60,6 +60,9 @@ function Dashboard() {
         products: 0,
         pendingOrders: 0,
         salesThisMonth: 0,
+        totalPacking: 0,
+        packedItems: 0,
+        shippedItems: 0,
     })
     const [loading, setLoading] = useState(true)
 
@@ -121,6 +124,21 @@ function Dashboard() {
                     <div className="glass-card stat-card">
                         <div className="stat-value">Rs. {stats.salesThisMonth.toLocaleString()}</div>
                         <div className="stat-label">Sales This Month</div>
+                    </div>
+
+                    <div className="glass-card stat-card">
+                        <div className="stat-value">{stats.totalPacking || 0}</div>
+                        <div className="stat-label">Total Packing</div>
+                    </div>
+
+                    <div className="glass-card stat-card">
+                        <div className="stat-value">{stats.packedItems || 0}</div>
+                        <div className="stat-label">Packed Items</div>
+                    </div>
+
+                    <div className="glass-card stat-card">
+                        <div className="stat-value">{stats.shippedItems || 0}</div>
+                        <div className="stat-label">Shipped Items</div>
                     </div>
                 </div>
 

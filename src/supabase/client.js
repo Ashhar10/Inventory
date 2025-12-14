@@ -589,11 +589,30 @@ export const db = {
 
         const totalSales = salesData?.reduce((sum, sale) => sum + parseFloat(sale.total_amount || 0), 0) || 0
 
+        // Get total packing records
+        const { count: packingCount } = await supabase
+            .from('packing')
+            .select('*', { count: 'exact', head: true })
+
+        // Get packing by status
+        const { count: packedCount } = await supabase
+            .from('packing')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'packed')
+
+        const { count: shippedCount } = await supabase
+            .from('packing')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'shipped')
+
         return {
             customers: customersCount || 0,
             products: productsCount || 0,
             pendingOrders: pendingOrders || 0,
             salesThisMonth: totalSales,
+            totalPacking: packingCount || 0,
+            packedItems: packedCount || 0,
+            shippedItems: shippedCount || 0,
         }
     },
 }
