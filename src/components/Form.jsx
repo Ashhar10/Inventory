@@ -1,9 +1,43 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import formCache from '../utils/formCache'
 
-function Form({ fields, onSubmit, onCancel, initialData = {}, submitLabel = 'Submit' }) {
-    const [formData, setFormData] = useState(initialData)
+function Form({ fields, onSubmit, onCancel, initialData = {}, submitLabel = 'Submit', formId }) {
+    // Restore cached data if available
+    const getCachedOrInitialData = () => {
+        if (formId) {
+            const cached = formCache.load(formId)
+            if (cached) {
+                // Merge cached data with initial data (cached takes priority)
+                return { ...initialData, ...cached }
+            }
+        }
+        return initialData
+    }
+
+    const [formData, setFormData] = useState(getCachedOrInitialData())
     const [errors, setErrors] = useState({})
     const [loading, setLoading] = useState(false)
+    const [hasCachedData, setHasCachedData] = useState(false)
+
+    // Check if we loaded cached data on mount
+    useEffect(() => {
+        if (formId) {
+            const cached = formCache.load(formId)
+            setHasCachedData(!!cached)
+        }
+    }, [formId])
+
+    // Auto-save form data when it changes
+    useEffect(() => {
+        if (formId && Object.keys(formData).length > 0) {
+            // Debounce the save operation
+            const timeoutId = setTimeout(() => {
+                formCache.save(formId, formData)
+            }, 500) // Save after 500ms of inactivity
+
+            return () => clearTimeout(timeoutId)
+        }
+    }, [formData, formId])
 
     const handleChange = (name, value) => {
         setFormData((prev) => ({ ...prev, [name]: value }))
@@ -31,6 +65,11 @@ function Form({ fields, onSubmit, onCancel, initialData = {}, submitLabel = 'Sub
         setLoading(true)
         try {
             await onSubmit(formData)
+            // Clear cache on successful submission
+            if (formId) {
+                formCache.clear(formId)
+                setHasCachedData(false)
+            }
         } catch (error) {
             console.error('Form submission error:', error)
         } finally {
@@ -38,8 +77,56 @@ function Form({ fields, onSubmit, onCancel, initialData = {}, submitLabel = 'Sub
         }
     }
 
+    const handleCancel = () => {
+        // Clear cache when user explicitly cancels
+        if (formId) {
+            formCache.clear(formId)
+            setHasCachedData(false)
+        }
+        if (onCancel) onCancel()
+    }
+
+    const handleClearCache = () => {
+        if (formId) {
+            formCache.clear(formId)
+            setFormData(initialData)
+            setHasCachedData(false)
+        }
+    }
+
     return (
         <form onSubmit={handleSubmit}>
+            {hasCachedData && (
+                <div style={{
+                    padding: 'var(--spacing-md)',
+                    marginBottom: 'var(--spacing-lg)',
+                    background: '#3b82f6',
+                    color: 'white',
+                    borderRadius: 'var(--radius-lg)',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    fontSize: '0.9rem'
+                }}>
+                    <span>💾 Restored unsaved data from previous session</span>
+                    <button
+                        type="button"
+                        onClick={handleClearCache}
+                        style={{
+                            background: 'rgba(255,255,255,0.2)',
+                            border: 'none',
+                            color: 'white',
+                            padding: '0.25rem 0.75rem',
+                            borderRadius: 'var(--radius-md)',
+                            cursor: 'pointer',
+                            fontSize: '0.85rem'
+                        }}
+                    >
+                        Clear
+                    </button>
+                </div>
+            )}
+
             {fields.map((field) => (
                 <div key={field.name} className="form-group">
                     <label className="form-label">
@@ -91,7 +178,7 @@ function Form({ fields, onSubmit, onCancel, initialData = {}, submitLabel = 'Sub
                     {loading ? 'Saving...' : submitLabel}
                 </button>
                 {onCancel && (
-                    <button type="button" onClick={onCancel} className="btn btn-secondary">
+                    <button type="button" onClick={handleCancel} className="btn btn-secondary">
                         Cancel
                     </button>
                 )}

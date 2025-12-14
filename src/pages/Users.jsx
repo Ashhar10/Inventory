@@ -162,6 +162,7 @@ function Users() {
                             {editingUser ? 'Edit User' : 'Add New User'}
                         </h2>
                         <Form
+                            formId={editingUser ? `user-edit-${editingUser.id}` : 'user-create'}
                             fields={formFields}
                             initialData={editingUser || { role: 'user' }}
                             onSubmit={handleSubmit}

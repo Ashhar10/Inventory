@@ -239,6 +239,7 @@ function Orders() {
                             {editingOrder ? 'Edit Order' : 'Create New Order'}
                         </h2>
                         <Form
+                            formId={editingOrder ? `order-edit-${editingOrder.id}` : 'order-create'}
                             fields={formFields}
                             initialData={editingOrder || {
                                 status: 'pending',

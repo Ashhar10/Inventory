@@ -265,6 +265,7 @@ function Inventory() {
                             {editingInventory ? 'Update Inventory' : 'Add Inventory Record'}
                         </h2>
                         <Form
+                            formId={editingInventory ? `inventory-edit-${editingInventory.id}` : 'inventory-create'}
                             fields={formFields}
                             initialData={editingInventory || { quantity: 0, reserved_quantity: 0 }}
                             onSubmit={handleSubmit}

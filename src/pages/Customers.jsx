@@ -178,6 +178,7 @@ function Customers() {
                             {editingCustomer ? 'Edit Customer' : 'Add New Customer'}
                         </h2>
                         <Form
+                            formId={editingCustomer ? `customer-edit-${editingCustomer.id}` : 'customer-create'}
                             fields={formFields}
                             initialData={editingCustomer || {}}
                             onSubmit={handleSubmit}

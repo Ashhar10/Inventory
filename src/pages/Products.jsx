@@ -162,6 +162,7 @@ function Products() {
                             {editingProduct ? 'Edit Product' : 'Add New Product'}
                         </h2>
                         <Form
+                            formId={editingProduct ? `product-edit-${editingProduct.id}` : 'product-create'}
                             fields={formFields}
                             initialData={editingProduct || {}}
                             onSubmit={handleSubmit}

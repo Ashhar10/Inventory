@@ -208,6 +208,7 @@ function Packing() {
                             {editingPacking ? 'Edit Packing Record' : 'Create Packing Record'}
                         </h2>
                         <Form
+                            formId={editingPacking ? `packing-edit-${editingPacking.id}` : 'packing-create'}
                             fields={formFields}
                             initialData={editingPacking || { status: 'pending', total_packages: 1, packed_date: new Date().toISOString().split('T')[0] }}
                             onSubmit={handleSubmit}

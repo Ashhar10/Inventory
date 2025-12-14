@@ -129,6 +129,7 @@ function Stores() {
                             {editingStore ? 'Edit Store' : 'Add New Store'}
                         </h2>
                         <Form
+                            formId={editingStore ? `store-edit-${editingStore.id}` : 'store-create'}
                             fields={formFields}
                             initialData={editingStore || {}}
                             onSubmit={handleSubmit}

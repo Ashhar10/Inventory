@@ -232,6 +232,7 @@ function Sales() {
                             {editingSale ? 'Edit Sale' : 'Create New Sale'}
                         </h2>
                         <Form
+                            formId={editingSale ? `sale-edit-${editingSale.id}` : 'sale-create'}
                             fields={formFields}
                             initialData={editingSale || {
                                 payment_status: 'unpaid',
