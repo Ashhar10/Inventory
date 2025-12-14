@@ -134,19 +134,19 @@ function Reports() {
                         className={`toggle-btn ${viewMode === 'statistical' ? 'active' : ''}`}
                         onClick={() => setViewMode('statistical')}
                     >
-                        📊 Statistical
+                        <img src="/assets/icons/Reports.png" alt="Statistical" style={{ width: '20px', height: '20px', marginRight: '8px' }} /> Statistical
                     </button>
                     <button
                         className={`toggle-btn ${viewMode === 'graphical' ? 'active' : ''}`}
                         onClick={() => setViewMode('graphical')}
                     >
-                        📈 Graphical
+                        <img src="/assets/icons/Reports.png" alt="Graphical" style={{ width: '20px', height: '20px', marginRight: '8px' }} /> Graphical
                     </button>
                     <button
                         className={`toggle-btn ${viewMode === 'calendar' ? 'active' : ''}`}
                         onClick={() => setViewMode('calendar')}
                     >
-                        📅 Calendar
+                        <img src="/assets/icons/Dashboard.png" alt="Calendar" style={{ width: '20px', height: '20px', marginRight: '8px' }} /> Calendar
                     </button>
                 </div>
             </div>
