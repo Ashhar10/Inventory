@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { db } from '../supabase/client'
+import AnimatedStatBox from '../components/AnimatedStatBox'
 
 function Reports() {
     const [viewMode, setViewMode] = useState('statistical') // 'statistical' or 'graphical'
@@ -301,86 +302,218 @@ function Reports() {
 function StatisticalView({ stats, detailedData }) {
     return (
         <>
-            {/* Dashboard-Style Stats Grid */}
-            <div className="stats-grid fade-in-up" style={{
+            {/* Animated Stats Grid - Dashboard Style */}
+            <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
                 gap: 'var(--spacing-lg)',
                 marginBottom: 'var(--spacing-3xl)'
             }}>
-                <div className="glass-card stat-card">
-                    <div className="stat-value">{stats.customers}</div>
-                    <div className="stat-label">Total Customers</div>
-                </div>
-
-                <div className="glass-card stat-card">
-                    <div className="stat-value">{stats.products}</div>
-                    <div className="stat-label">Total Products</div>
-                </div>
-
                 <AnimatedStatBox
-                    slides={[
-                        { value: stats.pendingOrders, label: 'Pending Orders' },
-                        { value: stats.confirmedOrders, label: 'Confirmed Orders' },
-                        { value: stats.deliveredOrders, label: 'Delivered Orders' },
-                    ]}
+                    value={stats.customers}
+                    label="Total Customers"
+                    color="#3b82f6"
+                    percent={0}
+                    icon="/assets/icons/Customers.png"
                 />
-
-                <div className="glass-card stat-card">
-                    <div className="stat-value">Rs. {stats.salesThisMonth.toLocaleString()}</div>
-                    <div className="stat-label">Sales This Month</div>
-                </div>
-
                 <AnimatedStatBox
-                    slides={[
-                        { value: stats.totalPacking, label: 'Total Packing' },
-                        { value: stats.packedItems, label: 'Packed Items' },
-                        { value: stats.shippedItems, label: 'Shipped Items' },
-                    ]}
+                    value={stats.products}
+                    label="Total Products"
+                    color="#10b981"
+                    percent={0}
+                    icon="/assets/icons/Products.png"
+                />
+                <AnimatedStatBox
+                    value={stats.pendingOrders}
+                    label="Pending Orders"
+                    color="#f59e0b"
+                    percent={0}
+                    icon="/assets/icons/Orders.png"
+                />
+                <AnimatedStatBox
+                    value={stats.confirmedOrders}
+                    label="Confirmed Orders"
+                    color="#3b82f6"
+                    percent={0}
+                    icon="/assets/icons/Orders.png"
+                />
+                <AnimatedStatBox
+                    value={stats.deliveredOrders}
+                    label="Delivered Orders"
+                    color="#22c55e"
+                    percent={0}
+                    icon="/assets/icons/Orders.png"
+                />
+                <AnimatedStatBox
+                    value={stats.totalPacking}
+                    label="Total Packing"
+                    color="#8b5cf6"
+                    percent={0}
+                    icon="/assets/icons/Packing.png"
+                />
+                <AnimatedStatBox
+                    value={stats.packedItems}
+                    label="Packed Items"
+                    color="#06b6d4"
+                    percent={0}
+                    icon="/assets/icons/Packing.png"
+                />
+                <AnimatedStatBox
+                    value={stats.shippedItems}
+                    label="Shipped Items"
+                    color="#10b981"
+                    percent={0}
+                    icon="/assets/icons/Packing.png"
+                />
+                <AnimatedStatBox
+                    value={`Rs. ${stats.salesThisMonth.toLocaleString()}`}
+                    label="Sales This Month"
+                    color="#22c55e"
+                    percent={0}
+                    icon="/assets/icons/Sales.png"
                 />
             </div>
 
-            {/* Professional Report Tables */}
-            <div style={{ display: 'grid', gap: 'var(--spacing-2xl)' }}>
-                <ReportSection title="Customer Report" data={detailedData.customers} count={stats.customers} />
-                <ReportSection title="Product Report" data={detailedData.products} count={stats.products} />
-                <ReportSection title="Order Report" data={detailedData.orders} count={detailedData.orders.length} />
-                <ReportSection title="Packing Report" data={detailedData.packing} count={stats.totalPacking} />
-                <ReportSection title="Inventory Report" data={detailedData.inventory} count={detailedData.inventory.length} />
-                <ReportSection title="Sales Report" data={detailedData.sales} count={detailedData.sales.length} />
+            {/* Professional Report Sections */}
+            <div style={{
+                background: 'rgba(255, 255, 255, 0.03)',
+                padding: 'var(--spacing-2xl)',
+                borderRadius: 'var(--radius-xl)',
+                border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}>
+                <h2 style={{
+                    color: 'white',
+                    fontSize: '1.5rem',
+                    marginBottom: 'var(--spacing-2xl)',
+                    fontWeight: '700',
+                    borderBottom: '2px solid rgba(255, 255, 255, 0.1)',
+                    paddingBottom: 'var(--spacing-md)'
+                }}>
+                    Detailed Reports
+                </h2>
+
+                <div style={{ display: 'grid', gap: 'var(--spacing-2xl)' }}>
+                    <ReportSection title="Customer Report" data={detailedData.customers} count={stats.customers} icon="/assets/icons/Customers.png" />
+                    <ReportSection title="Product Report" data={detailedData.products} count={stats.products} icon="/assets/icons/Products.png" />
+                    <ReportSection title="Order Report" data={detailedData.orders} count={detailedData.orders.length} icon="/assets/icons/Orders.png" />
+                    <ReportSection title="Packing Report" data={detailedData.packing} count={stats.totalPacking} icon="/assets/icons/Packing.png" />
+                    <ReportSection title="Inventory Report" data={detailedData.inventory} count={detailedData.inventory.length} icon="/assets/icons/Inventory.png" />
+                    <ReportSection title="Sales Report" data={detailedData.sales} count={detailedData.sales.length} icon="/assets/icons/Sales.png" />
+                </div>
             </div>
         </>
     )
 }
 
-// Animated Stat Box Component (same as Dashboard)
-function AnimatedStatBox({ slides }) {
-    const [currentSlide, setCurrentSlide] = useState(0)
+// Professional Report Section Component
+function ReportSection({ title, data, count, icon }) {
+    if (!data || data.length === 0) {
+        return null
+    }
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentSlide((prev) => (prev + 1) % slides.length)
-        }, 3000) // Change slide every 3 seconds
-
-        return () => clearInterval(interval)
-    }, [slides.length])
+    // Get table headers from first item
+    const headers = Object.keys(data[0] || {}).filter(key => key !== 'id')
 
     return (
-        <div className="glass-card stat-card animated-stat-box">
-            <div className="stat-value slide-animation">
-                {slides[currentSlide].value}
-            </div>
-            <div className="stat-label slide-animation">
-                {slides[currentSlide].label}
-            </div>
-            <div className="slide-indicators">
-                {slides.map((_, index) => (
-                    <div
-                        key={index}
-                        className={`indicator ${index === currentSlide ? 'active' : ''}`}
+        <div style={{
+            background: 'rgba(255, 255, 255, 0.05)',
+            borderRadius: 'var(--radius-lg)',
+            padding: 'var(--spacing-xl)',
+            border: '1px solid rgba(255, 255, 255, 0.1)'
+        }}>
+            {/* Section Header with Icon */}
+            <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--spacing-md)',
+                marginBottom: 'var(--spacing-lg)',
+                paddingBottom: 'var(--spacing-md)',
+                borderBottom: '2px solid rgba(255, 255, 255, 0.1)'
+            }}>
+                {icon && (
+                    <img
+                        src={icon}
+                        alt={title}
+                        style={{
+                            width: '32px',
+                            height: '32px',
+                            filter: 'brightness(1.2)'
+                        }}
                     />
-                ))}
+                )}
+                <div>
+                    <h3 style={{
+                        color: 'white',
+                        fontSize: '1.2rem',
+                        fontWeight: '700',
+                        margin: 0
+                    }}>
+                        {title}
+                    </h3>
+                    <span style={{
+                        color: 'rgba(255,255,255,0.6)',
+                        fontSize: '0.85rem',
+                        fontWeight: '500'
+                    }}>
+                        Total: {count} {count === 1 ? 'item' : 'items'}
+                    </span>
+                </div>
             </div>
+
+            {/* Table */}
+            <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                        <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.2)' }}>
+                            {headers.map(header => (
+                                <th key={header} style={{
+                                    textAlign: 'left',
+                                    padding: 'var(--spacing-md)',
+                                    color: 'rgba(255,255,255,0.9)',
+                                    fontWeight: '600',
+                                    fontSize: '0.9rem',
+                                    textTransform: 'capitalize'
+                                }}>
+                                    {header.replace(/_/g, ' ')}
+                                </th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {data.slice(0, 10).map((item, index) => (
+                            <tr key={index} style={{
+                                borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                                transition: 'background 0.2s ease'
+                            }}
+                                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'}
+                                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
+                                {headers.map(header => (
+                                    <td key={header} style={{
+                                        padding: 'var(--spacing-md)',
+                                        color: 'rgba(255,255,255,0.8)',
+                                        fontSize: '0.85rem'
+                                    }}>
+                                        {item[header] || 'N/A'}
+                                    </td>
+                                ))}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Show More Indicator */}
+            {data.length > 10 && (
+                <div style={{
+                    marginTop: 'var(--spacing-md)',
+                    textAlign: 'center',
+                    color: 'rgba(255,255,255,0.5)',
+                    fontSize: '0.85rem',
+                    fontStyle: 'italic'
+                }}>
+                    Showing 10 of {data.length} items
+                </div>
+            )}
         </div>
     )
 }
@@ -905,151 +1038,22 @@ function StatCard({ title, value, color }) {
     )
 }
 
-// Report Section Component with Graphical Visualization
+// Report Section Component
 function ReportSection({ title, data, count }) {
-    const [chartType, setChartType] = useState('bar')
-
-    // Generate chart data based on section type
-    const getChartData = () => {
-        if (title.includes('Customer')) {
-            return {
-                barData: [
-                    { label: 'Total Customers', value: count, color: '#3b82f6' }
-                ],
-                pieData: [
-                    { label: 'Active Customers', value: count, color: '#3b82f6' }
-                ]
-            }
-        } else if (title.includes('Product')) {
-            return {
-                barData: [
-                    { label: 'Total Products', value: count, color: '#10b981' }
-                ],
-                pieData: [
-                    { label: 'Available Products', value: count, color: '#10b981' }
-                ]
-            }
-        } else if (title.includes('Order')) {
-            const pending = data.filter(o => o.order_status === 'Pending').length
-            const confirmed = data.filter(o => o.order_status === 'Confirmed').length
-            const delivered = data.filter(o => o.order_status === 'Delivered').length
-
-            return {
-                barData: [
-                    { label: 'Pending', value: pending, color: '#f59e0b' },
-                    { label: 'Confirmed', value: confirmed, color: '#3b82f6' },
-                    { label: 'Delivered', value: delivered, color: '#22c55e' }
-                ],
-                pieData: [
-                    { label: 'Pending', value: pending, color: '#f59e0b' },
-                    { label: 'Confirmed', value: confirmed, color: '#3b82f6' },
-                    { label: 'Delivered', value: delivered, color: '#22c55e' }
-                ].filter(item => item.value > 0)
-            }
-        } else if (title.includes('Packing')) {
-            return {
-                barData: [
-                    { label: 'Total Items', value: count, color: '#8b5cf6' }
-                ],
-                pieData: [
-                    { label: 'Packing Items', value: count, color: '#8b5cf6' }
-                ]
-            }
-        } else if (title.includes('Inventory')) {
-            const lowStock = data.filter(i => i.quantity <= i.reorder_level).length
-            const normalStock = data.filter(i => i.quantity > i.reorder_level).length
-
-            return {
-                barData: [
-                    { label: 'Low Stock', value: lowStock, color: '#ef4444' },
-                    { label: 'Normal Stock', value: normalStock, color: '#10b981' }
-                ],
-                pieData: [
-                    { label: 'Low Stock', value: lowStock, color: '#ef4444' },
-                    { label: 'Normal Stock', value: normalStock, color: '#10b981' }
-                ].filter(item => item.value > 0)
-            }
-        } else if (title.includes('Sales')) {
-            const totalAmount = data.reduce((sum, s) => sum + parseFloat(s.total_amount || 0), 0)
-
-            return {
-                barData: [
-                    { label: 'Total Sales', value: data.length, color: '#22c55e' },
-                    { label: 'Total Amount', value: Math.round(totalAmount), color: '#10b981' }
-                ],
-                pieData: [
-                    { label: 'Sales Count', value: data.length, color: '#22c55e' }
-                ]
-            }
-        }
-
-        return { barData: [], pieData: [] }
-    }
-
-    const { barData, pieData } = getChartData()
-
     return (
         <div className="glass-card" style={{ padding: 'var(--spacing-2xl)' }}>
-            {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-xl)' }}>
-                <div>
-                    <h3 style={{ color: 'white', marginBottom: 'var(--spacing-sm)', fontSize: '1.5rem' }}>
-                        {title}
-                    </h3>
-                    <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.95rem' }}>
-                        Total Records: <strong style={{ color: 'white' }}>{count}</strong>
-                    </div>
-                </div>
-
-                {/* Chart Type Toggle */}
-                <div style={{ display: 'flex', gap: 'var(--spacing-sm)' }}>
-                    <button
-                        onClick={() => setChartType('bar')}
-                        style={{
-                            padding: 'var(--spacing-sm) var(--spacing-md)',
-                            background: chartType === 'bar' ? 'rgba(59, 130, 246, 0.3)' : 'rgba(255, 255, 255, 0.1)',
-                            border: chartType === 'bar' ? '1px solid rgba(59, 130, 246, 0.5)' : '1px solid rgba(255, 255, 255, 0.2)',
-                            borderRadius: 'var(--radius-md)',
-                            color: 'white',
-                            fontSize: '0.9rem',
-                            fontWeight: '600',
-                            cursor: 'pointer',
-                            transition: 'all 0.3s ease'
-                        }}
-                    >
-                        <img src="/assets/icons/BarChart.png" alt="Bar" style={{ width: '16px', height: '16px', marginRight: '6px' }} /> Bar
-                    </button>
-                    <button
-                        onClick={() => setChartType('pie')}
-                        style={{
-                            padding: 'var(--spacing-sm) var(--spacing-md)',
-                            background: chartType === 'pie' ? 'rgba(59, 130, 246, 0.3)' : 'rgba(255, 255, 255, 0.1)',
-                            border: chartType === 'pie' ? '1px solid rgba(59, 130, 246, 0.5)' : '1px solid rgba(255, 255, 255, 0.2)',
-                            borderRadius: 'var(--radius-md)',
-                            color: 'white',
-                            fontSize: '0.9rem',
-                            fontWeight: '600',
-                            cursor: 'pointer',
-                            transition: 'all 0.3s ease'
-                        }}
-                    >
-                        <img src="/assets/icons/PieChart.png" alt="Pie" style={{ width: '16px', height: '16px', marginRight: '6px' }} /> Pie
-                    </button>
-                </div>
+            <h3 style={{ color: 'white', marginBottom: 'var(--spacing-lg)', fontSize: '1.5rem' }}>
+                {title}
+            </h3>
+            <div style={{ color: 'rgba(255,255,255,0.9)', fontSize: '1.1rem', marginBottom: 'var(--spacing-md)' }}>
+                Total Records: <strong>{count}</strong>
             </div>
-
-            {/* Chart Display */}
-            <div style={{ minHeight: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {chartType === 'bar' ? (
-                    barData.length > 0 ? <BarChart data={barData} /> : <div style={{ color: 'rgba(255,255,255,0.5)' }}>No data available</div>
+            <div style={{ color: 'rgba(255,255,255,0.7)' }}>
+                {data.length > 0 ? (
+                    <div>Last updated: {new Date().toLocaleString()}</div>
                 ) : (
-                    pieData.length > 0 ? <PieChart data={pieData} /> : <div style={{ color: 'rgba(255,255,255,0.5)' }}>No data available</div>
+                    <div>No data available</div>
                 )}
-            </div>
-
-            {/* Footer Info */}
-            <div style={{ marginTop: 'var(--spacing-xl)', color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem', textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 'var(--spacing-md)' }}>
-                {data.length > 0 ? `Last updated: ${new Date().toLocaleString()}` : 'No data available'}
             </div>
         </div>
     )
