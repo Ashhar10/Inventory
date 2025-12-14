@@ -760,116 +760,136 @@ function CalendarView({ stats, detailedData, isMobile }) {
                                         }}></div>
                                     )}
 
-                                    {/* Hover Popup - Triangle + Box with Icons - Responsive to cell size */}
-                                    {dateData.hasActivity && (
-                                        <div className="calendar-hover-popup" style={{
-                                            display: 'none',
-                                            position: 'absolute',
-                                            top: '100%',
-                                            left: '50%',
-                                            transform: 'translateX(-50%)',
-                                            paddingTop: isMobile ? '4px' : '6px',
-                                            zIndex: 100
-                                        }}>
-                                            {/* Triangle pointer - smaller on mobile */}
-                                            <div style={{
+                                    {/* Hover Popup - Dynamic sizing based on content count */}
+                                    {dateData.hasActivity && (() => {
+                                        // Count active icons
+                                        const iconCount = (dateData.orders > 0 ? 1 : 0) + (dateData.sales > 0 ? 1 : 0) + (dateData.packing > 0 ? 1 : 0)
+                                        const iconsPerRow = 3
+                                        const rowCount = Math.ceil(iconCount / iconsPerRow)
+
+                                        // Sizing based on rows - reduce icon size for multiple rows
+                                        const iconScale = rowCount >= 3 ? 0.6 : rowCount >= 2 ? 0.7 : 1
+                                        const baseIconSize = isMobile ? 14 : 18
+                                        const iconSize = Math.round(baseIconSize * iconScale)
+                                        const imgSize = Math.round((isMobile ? 8 : 10) * iconScale)
+                                        const fontSize = isMobile ? (0.45 * iconScale) : (0.55 * iconScale)
+
+                                        // Width based on icon count (1 cell per icon, max 3)
+                                        const widthMultiplier = Math.min(iconCount, 3)
+                                        const cellWidth = isMobile ? 35 : 45
+                                        const popupWidth = cellWidth * widthMultiplier
+
+                                        return (
+                                            <div className="calendar-hover-popup" style={{
+                                                display: 'none',
                                                 position: 'absolute',
-                                                top: '0',
+                                                top: '100%',
                                                 left: '50%',
                                                 transform: 'translateX(-50%)',
-                                                width: 0,
-                                                height: 0,
-                                                borderLeft: isMobile ? '5px solid transparent' : '6px solid transparent',
-                                                borderRight: isMobile ? '5px solid transparent' : '6px solid transparent',
-                                                borderBottom: isMobile ? '5px solid rgba(30, 30, 45, 0.95)' : '6px solid rgba(30, 30, 45, 0.95)'
-                                            }}></div>
-
-                                            {/* Popup box - compact on mobile */}
-                                            <div style={{
-                                                background: 'rgba(30, 30, 45, 0.95)',
-                                                border: '1px solid rgba(255, 255, 255, 0.2)',
-                                                borderRadius: isMobile ? '4px' : 'var(--radius-md)',
-                                                padding: isMobile ? '4px 6px' : '6px 8px',
-                                                minWidth: isMobile ? '40px' : '50px',
-                                                backdropFilter: 'blur(8px)'
+                                                paddingTop: isMobile ? '4px' : '5px',
+                                                zIndex: 100
                                             }}>
-                                                {/* Date centered */}
+                                                {/* Triangle pointer */}
                                                 <div style={{
-                                                    textAlign: 'center',
-                                                    color: 'white',
-                                                    fontWeight: '700',
-                                                    fontSize: isMobile ? '0.55rem' : '0.7rem',
-                                                    marginBottom: isMobile ? '3px' : '4px',
-                                                    borderBottom: '1px solid rgba(255,255,255,0.1)',
-                                                    paddingBottom: isMobile ? '2px' : '3px'
-                                                }}>
-                                                    {date.getDate()}
-                                                </div>
+                                                    position: 'absolute',
+                                                    top: '0',
+                                                    left: '50%',
+                                                    transform: 'translateX(-50%)',
+                                                    width: 0,
+                                                    height: 0,
+                                                    borderLeft: `${isMobile ? 4 : 5}px solid transparent`,
+                                                    borderRight: `${isMobile ? 4 : 5}px solid transparent`,
+                                                    borderBottom: `${isMobile ? 4 : 5}px solid rgba(30, 30, 45, 0.95)`
+                                                }}></div>
 
-                                                {/* Icons row - horizontal, smaller on mobile */}
+                                                {/* Popup box - width based on icon count */}
                                                 <div style={{
-                                                    display: 'flex',
-                                                    justifyContent: 'center',
-                                                    gap: isMobile ? '4px' : '6px'
+                                                    background: 'rgba(30, 30, 45, 0.95)',
+                                                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                                                    borderRadius: isMobile ? '3px' : '4px',
+                                                    padding: isMobile ? '3px 4px' : '4px 5px',
+                                                    width: `${popupWidth}px`,
+                                                    backdropFilter: 'blur(8px)'
                                                 }}>
-                                                    {dateData.orders > 0 && (
-                                                        <div style={{ textAlign: 'center' }}>
-                                                            <div style={{
-                                                                width: isMobile ? '14px' : '18px',
-                                                                height: isMobile ? '14px' : '18px',
-                                                                borderRadius: '50%',
-                                                                background: 'rgba(245, 158, 11, 0.3)',
-                                                                border: '1px solid rgba(245, 158, 11, 0.6)',
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                justifyContent: 'center',
-                                                                margin: '0 auto 1px'
-                                                            }}>
-                                                                <img src="/assets/icons/Package.png" alt="O" style={{ width: isMobile ? '8px' : '10px', height: isMobile ? '8px' : '10px' }} />
+                                                    {/* Date centered */}
+                                                    <div style={{
+                                                        textAlign: 'center',
+                                                        color: 'white',
+                                                        fontWeight: '700',
+                                                        fontSize: isMobile ? '0.5rem' : '0.6rem',
+                                                        marginBottom: isMobile ? '2px' : '3px',
+                                                        borderBottom: '1px solid rgba(255,255,255,0.1)',
+                                                        paddingBottom: isMobile ? '2px' : '2px'
+                                                    }}>
+                                                        {date.getDate()}
+                                                    </div>
+
+                                                    {/* Icons - wrap after 3, reduce size for multiple rows */}
+                                                    <div style={{
+                                                        display: 'flex',
+                                                        flexWrap: 'wrap',
+                                                        justifyContent: 'center',
+                                                        gap: isMobile ? '2px' : '3px'
+                                                    }}>
+                                                        {dateData.orders > 0 && (
+                                                            <div style={{ textAlign: 'center', width: `${isMobile ? 12 : 14}px` }}>
+                                                                <div style={{
+                                                                    width: `${iconSize}px`,
+                                                                    height: `${iconSize}px`,
+                                                                    borderRadius: '50%',
+                                                                    background: 'rgba(245, 158, 11, 0.3)',
+                                                                    border: '1px solid rgba(245, 158, 11, 0.6)',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                    margin: '0 auto 1px'
+                                                                }}>
+                                                                    <img src="/assets/icons/Package.png" alt="O" style={{ width: `${imgSize}px`, height: `${imgSize}px` }} />
+                                                                </div>
+                                                                <div style={{ color: '#f59e0b', fontSize: `${fontSize}rem`, fontWeight: '700' }}>{dateData.orders}</div>
                                                             </div>
-                                                            <div style={{ color: '#f59e0b', fontSize: isMobile ? '0.45rem' : '0.55rem', fontWeight: '700' }}>{dateData.orders}</div>
-                                                        </div>
-                                                    )}
-                                                    {dateData.sales > 0 && (
-                                                        <div style={{ textAlign: 'center' }}>
-                                                            <div style={{
-                                                                width: isMobile ? '14px' : '18px',
-                                                                height: isMobile ? '14px' : '18px',
-                                                                borderRadius: '50%',
-                                                                background: 'rgba(16, 185, 129, 0.3)',
-                                                                border: '1px solid rgba(16, 185, 129, 0.6)',
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                justifyContent: 'center',
-                                                                margin: '0 auto 1px'
-                                                            }}>
-                                                                <img src="/assets/icons/Money.png" alt="S" style={{ width: isMobile ? '8px' : '10px', height: isMobile ? '8px' : '10px' }} />
+                                                        )}
+                                                        {dateData.sales > 0 && (
+                                                            <div style={{ textAlign: 'center', width: `${isMobile ? 12 : 14}px` }}>
+                                                                <div style={{
+                                                                    width: `${iconSize}px`,
+                                                                    height: `${iconSize}px`,
+                                                                    borderRadius: '50%',
+                                                                    background: 'rgba(16, 185, 129, 0.3)',
+                                                                    border: '1px solid rgba(16, 185, 129, 0.6)',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                    margin: '0 auto 1px'
+                                                                }}>
+                                                                    <img src="/assets/icons/Money.png" alt="S" style={{ width: `${imgSize}px`, height: `${imgSize}px` }} />
+                                                                </div>
+                                                                <div style={{ color: '#10b981', fontSize: `${fontSize}rem`, fontWeight: '700' }}>{dateData.sales}</div>
                                                             </div>
-                                                            <div style={{ color: '#10b981', fontSize: isMobile ? '0.45rem' : '0.55rem', fontWeight: '700' }}>{dateData.sales}</div>
-                                                        </div>
-                                                    )}
-                                                    {dateData.packing > 0 && (
-                                                        <div style={{ textAlign: 'center' }}>
-                                                            <div style={{
-                                                                width: isMobile ? '14px' : '18px',
-                                                                height: isMobile ? '14px' : '18px',
-                                                                borderRadius: '50%',
-                                                                background: 'rgba(139, 92, 246, 0.3)',
-                                                                border: '1px solid rgba(139, 92, 246, 0.6)',
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                justifyContent: 'center',
-                                                                margin: '0 auto 1px'
-                                                            }}>
-                                                                <img src="/assets/icons/Clipboard.png" alt="P" style={{ width: isMobile ? '8px' : '10px', height: isMobile ? '8px' : '10px' }} />
+                                                        )}
+                                                        {dateData.packing > 0 && (
+                                                            <div style={{ textAlign: 'center', width: `${isMobile ? 12 : 14}px` }}>
+                                                                <div style={{
+                                                                    width: `${iconSize}px`,
+                                                                    height: `${iconSize}px`,
+                                                                    borderRadius: '50%',
+                                                                    background: 'rgba(139, 92, 246, 0.3)',
+                                                                    border: '1px solid rgba(139, 92, 246, 0.6)',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                    margin: '0 auto 1px'
+                                                                }}>
+                                                                    <img src="/assets/icons/Clipboard.png" alt="P" style={{ width: `${imgSize}px`, height: `${imgSize}px` }} />
+                                                                </div>
+                                                                <div style={{ color: '#8b5cf6', fontSize: `${fontSize}rem`, fontWeight: '700' }}>{dateData.packing}</div>
                                                             </div>
-                                                            <div style={{ color: '#8b5cf6', fontSize: isMobile ? '0.45rem' : '0.55rem', fontWeight: '700' }}>{dateData.packing}</div>
-                                                        </div>
-                                                    )}
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    )}
+                                        )
+                                    })()}
                                 </div>
                             )
                         })}
