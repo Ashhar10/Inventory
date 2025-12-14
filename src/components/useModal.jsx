@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import Modal from './Modal'
 
 // Custom hook for modal dialogs
@@ -12,7 +12,12 @@ export function useModal() {
         showCancel: false,
     })
 
-    const showAlert = (message, title = '', type = 'info') => {
+    const isClosingRef = useRef(false)
+
+    const showAlert = useCallback((message, title = '', type = 'info') => {
+        // Prevent duplicate modals
+        if (isClosingRef.current) return
+
         setModalState({
             isOpen: true,
             title,
@@ -21,9 +26,12 @@ export function useModal() {
             onConfirm: null,
             showCancel: false,
         })
-    }
+    }, [])
 
-    const showConfirm = (message, onConfirm, title = 'Confirm') => {
+    const showConfirm = useCallback((message, onConfirm, title = 'Confirm') => {
+        // Prevent duplicate modals
+        if (isClosingRef.current) return
+
         setModalState({
             isOpen: true,
             title,
@@ -32,23 +40,32 @@ export function useModal() {
             onConfirm,
             showCancel: true,
         })
-    }
+    }, [])
 
-    const showSuccess = (message, title = 'Success') => {
+    const showSuccess = useCallback((message, title = 'Success') => {
         showAlert(message, title, 'success')
-    }
+    }, [showAlert])
 
-    const showError = (message, title = 'Error') => {
+    const showError = useCallback((message, title = 'Error') => {
         showAlert(message, title, 'error')
-    }
+    }, [showAlert])
 
-    const showWarning = (message, title = 'Warning') => {
+    const showWarning = useCallback((message, title = 'Warning') => {
         showAlert(message, title, 'warning')
-    }
+    }, [showAlert])
 
-    const closeModal = () => {
+    const closeModal = useCallback(() => {
+        // Prevent duplicate close calls
+        if (isClosingRef.current) return
+
+        isClosingRef.current = true
         setModalState((prev) => ({ ...prev, isOpen: false }))
-    }
+
+        // Reset the closing flag after a short delay
+        setTimeout(() => {
+            isClosingRef.current = false
+        }, 300)
+    }, [])
 
     const ModalComponent = () => (
         <Modal
