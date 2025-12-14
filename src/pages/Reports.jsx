@@ -302,28 +302,29 @@ function Reports() {
 function StatisticalView({ stats, detailedData }) {
     return (
         <>
-            {/* Overview Stats Grid - Dashboard Style with Slideshows */}
-            <div style={{
+            {/* Overview Stats Grid - Same as Dashboard */}
+            <div className="stats-grid" style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(4, 1fr)',
+                gridTemplateColumns: 'repeat(5, 1fr)',
                 gap: 'var(--spacing-lg)',
                 marginBottom: 'var(--spacing-3xl)'
             }}>
-                {/* Customers & Products */}
+                {/* Total Customers */}
                 <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                    <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#3b82f6', marginBottom: 'var(--spacing-sm)' }}>
+                    <div className="stat-value" style={{ fontSize: '2.5rem', fontWeight: '800', color: '#3b82f6', marginBottom: 'var(--spacing-sm)' }}>
                         {stats.customers}
                     </div>
-                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
+                    <div className="stat-label" style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
                         Total Customers
                     </div>
                 </div>
 
+                {/* Total Products */}
                 <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                    <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#10b981', marginBottom: 'var(--spacing-sm)' }}>
+                    <div className="stat-value" style={{ fontSize: '2.5rem', fontWeight: '800', color: '#10b981', marginBottom: 'var(--spacing-sm)' }}>
                         {stats.products}
                     </div>
-                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
+                    <div className="stat-label" style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
                         Total Products
                     </div>
                 </div>
@@ -337,12 +338,12 @@ function StatisticalView({ stats, detailedData }) {
                     ]}
                 />
 
-                {/* Sales */}
+                {/* Sales This Month */}
                 <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                    <div style={{ fontSize: '1.8rem', fontWeight: '800', color: '#22c55e', marginBottom: 'var(--spacing-sm)' }}>
+                    <div className="stat-value" style={{ fontSize: '1.8rem', fontWeight: '800', color: '#22c55e', marginBottom: 'var(--spacing-sm)' }}>
                         Rs. {stats.salesThisMonth.toLocaleString()}
                     </div>
-                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
+                    <div className="stat-label" style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
                         Sales This Month
                     </div>
                 </div>
@@ -355,36 +356,6 @@ function StatisticalView({ stats, detailedData }) {
                         { value: stats.shippedItems || 0, label: 'Shipped Items' },
                     ]}
                 />
-
-                {/* Inventory */}
-                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                    <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#8b5cf6', marginBottom: 'var(--spacing-sm)' }}>
-                        {detailedData.inventory.length}
-                    </div>
-                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
-                        Inventory Items
-                    </div>
-                </div>
-
-                {/* Orders Total */}
-                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                    <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#f59e0b', marginBottom: 'var(--spacing-sm)' }}>
-                        {detailedData.orders.length}
-                    </div>
-                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
-                        Total Orders
-                    </div>
-                </div>
-
-                {/* Sales Count */}
-                <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                    <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#06b6d4', marginBottom: 'var(--spacing-sm)' }}>
-                        {detailedData.sales.length}
-                    </div>
-                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
-                        Total Sales
-                    </div>
-                </div>
             </div>
 
             {/* Professional Reports Section */}
@@ -533,7 +504,7 @@ function StatisticalView({ stats, detailedData }) {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div >
         </>
     )
 }
