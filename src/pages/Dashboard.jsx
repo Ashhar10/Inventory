@@ -225,14 +225,14 @@ function Dashboard() {
                     overflow: hidden;
                     text-overflow: ellipsis;
                     transition: all 0.3s ease;
-                    max-width: 100%;
+                    width: 100%;
+                    display: block;
                 }
 
                 .dashboard-card:hover .card-title {
-                    overflow: visible;
-                    text-overflow: unset;
-                    font-size: 1.1rem;
-                    padding: 0 var(--spacing-xs);
+                    text-overflow: clip;
+                    font-size: 1rem;
+                    letter-spacing: -0.02em;
                 }
 
                 @media (max-width: 768px) {
