@@ -209,6 +209,7 @@ function Dashboard() {
                     width: 64px;
                     height: 64px;
                     object-fit: contain;
+                    filter: brightness(0);
                 }
 
                 .card-title {
