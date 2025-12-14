@@ -850,6 +850,52 @@ function CalendarView({ stats, detailedData }) {
                                     Packing Items
                                 </div>
                             </div>
+
+                            {/* Inventory Summary */}
+                            <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
+                                <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#06b6d4', marginBottom: 'var(--spacing-sm)' }}>
+                                    {detailedData.inventory.length}
+                                </div>
+                                <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
+                                    Inventory Items
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Inventory Products Section */}
+                        <div style={{ marginTop: 'var(--spacing-xl)' }}>
+                            <h4 style={{ color: 'white', marginBottom: 'var(--spacing-md)', display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
+                                <img src="/assets/icons/Inventory.png" alt="Inventory" style={{ width: '20px', height: '20px' }} />
+                                Current Inventory (Top Products)
+                            </h4>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 'var(--spacing-md)' }}>
+                                {detailedData.inventory
+                                    .filter(item => item.product && item.quantity > 0)
+                                    .sort((a, b) => b.quantity - a.quantity)
+                                    .slice(0, 6)
+                                    .map((item, index) => (
+                                        <div key={index} style={{
+                                            background: 'rgba(6, 182, 212, 0.1)',
+                                            border: '1px solid rgba(6, 182, 212, 0.3)',
+                                            borderRadius: 'var(--radius-md)',
+                                            padding: 'var(--spacing-md)',
+                                            textAlign: 'center'
+                                        }}>
+                                            <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#06b6d4' }}>
+                                                {item.quantity}
+                                            </div>
+                                            <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)', marginTop: 'var(--spacing-xs)' }}>
+                                                {item.product?.name || 'Unknown Product'}
+                                            </div>
+                                        </div>
+                                    ))
+                                }
+                                {detailedData.inventory.filter(item => item.product && item.quantity > 0).length === 0 && (
+                                    <div style={{ color: 'rgba(255,255,255,0.5)', padding: 'var(--spacing-lg)', textAlign: 'center', gridColumn: '1 / -1' }}>
+                                        No inventory data available
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 )
@@ -916,9 +962,16 @@ function GraphicalView({ stats, detailedData }) {
                 ]}
             />
 
-            {/* Inventory Chart Box */}
+            {/* Products Chart Box - By Category */}
             <ChartBox
-                title="Inventory Analysis"
+                title="Products by Category"
+                barData={calculateProductsByCategory(detailedData.products)}
+                pieData={calculateProductsByCategory(detailedData.products)}
+            />
+
+            {/* Inventory Chart Box - Individual Products */}
+            <ChartBox
+                title="Inventory by Product (Top 10)"
                 barData={calculateInventoryDistribution(detailedData.inventory)}
                 pieData={calculateInventoryDistribution(detailedData.inventory)}
             />
@@ -946,15 +999,58 @@ function calculateSalesDistribution(sales) {
     })).filter(item => item.value > 0)
 }
 
-// Helper function to calculate inventory distribution
-function calculateInventoryDistribution(inventory) {
-    const lowStock = inventory.filter(item => item.quantity <= item.reorder_level).length
-    const normalStock = inventory.filter(item => item.quantity > item.reorder_level).length
+// Helper function to calculate products by category
+function calculateProductsByCategory(products) {
+    const colors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4', '#ec4899', '#14b8a6']
 
-    return [
-        { label: 'Low Stock', value: lowStock, color: '#ef4444' },
-        { label: 'Normal Stock', value: normalStock, color: '#10b981' },
-    ].filter(item => item.value > 0)
+    // Group products by category
+    const categoryMap = {}
+    products.forEach(product => {
+        const category = product.category || 'Uncategorized'
+        if (!categoryMap[category]) {
+            categoryMap[category] = 0
+        }
+        categoryMap[category]++
+    })
+
+    // Convert to chart data format
+    return Object.entries(categoryMap)
+        .sort((a, b) => b[1] - a[1]) // Sort by count descending
+        .map(([category, count], index) => ({
+            label: category,
+            value: count,
+            color: colors[index % colors.length]
+        }))
+}
+
+// Helper function to calculate inventory distribution by individual products
+function calculateInventoryDistribution(inventory) {
+    // Show individual products with their quantities
+    const colors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4', '#ec4899', '#14b8a6', '#f97316', '#6366f1']
+
+    // Get product data and sort by quantity
+    const productData = inventory
+        .filter(item => item.product && item.quantity > 0)
+        .sort((a, b) => b.quantity - a.quantity)
+        .slice(0, 10) // Top 10 products
+        .map((item, index) => ({
+            label: item.product?.name || `Product ${index + 1}`,
+            value: item.quantity || 0,
+            color: colors[index % colors.length]
+        }))
+
+    // If no products with quantity, show stock status
+    if (productData.length === 0) {
+        const lowStock = inventory.filter(item => (item.quantity || 0) <= (item.reorder_level || 0)).length
+        const normalStock = inventory.filter(item => (item.quantity || 0) > (item.reorder_level || 0)).length
+
+        return [
+            { label: 'Low Stock', value: lowStock, color: '#ef4444' },
+            { label: 'Normal Stock', value: normalStock, color: '#10b981' },
+        ].filter(item => item.value > 0)
+    }
+
+    return productData
 }
 
 // Chart Box Component with Toggle
