@@ -211,17 +211,23 @@ function Inventory() {
                 const result = await db.updateInventory(editingInventory.id, inventoryData)
                 error = result.error
             } else {
-                // Note: We don't have a createInventory method yet, so show message
-                showError('Creating new inventory records requires database support. Please update existing records.')
-                return
+                // Create new inventory record
+                const result = await db.createInventory(inventoryData)
+                error = result.error
             }
 
             if (!error) {
                 setShowModal(false)
                 loadData()
-                showSuccess('Inventory updated successfully!')
+                showSuccess(
+                    editingInventory ? 'Inventory updated successfully!' : 'Inventory record created successfully!'
+                )
             } else {
-                showError('Error saving inventory: ' + error.message)
+                if (error.message.includes('duplicate') || error.message.includes('unique')) {
+                    showError('An inventory record already exists for this product and store combination')
+                } else {
+                    showError('Error saving inventory: ' + error.message)
+                }
             }
         } catch (err) {
             showError('An unexpected error occurred: ' + err.message)

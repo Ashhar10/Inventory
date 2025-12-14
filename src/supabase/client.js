@@ -273,6 +273,20 @@ export const db = {
         return { data, error }
     },
 
+    createInventory: async (inventoryData) => {
+        const currentUser = await auth.getCurrentUser()
+        const dataWithCreator = {
+            ...inventoryData,
+            updated_by: currentUser?.id
+        }
+
+        const { data, error } = await supabase
+            .from('inventory')
+            .insert([dataWithCreator])
+            .select()
+        return { data, error }
+    },
+
     updateInventory: async (id, inventoryData) => {
         // Get current user for updated_by field
         const currentUser = await auth.getCurrentUser()
