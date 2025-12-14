@@ -971,7 +971,7 @@ function GraphicalView({ stats, detailedData }) {
 
             {/* Inventory Chart Box - Individual Products */}
             <ChartBox
-                title="Inventory by Product (Top 10)"
+                title="Inventory by Product (Newest First)"
                 barData={calculateInventoryDistribution(detailedData.inventory)}
                 pieData={calculateInventoryDistribution(detailedData.inventory)}
             />
@@ -1023,16 +1023,19 @@ function calculateProductsByCategory(products) {
         }))
 }
 
-// Helper function to calculate inventory distribution by individual products
+// Helper function to calculate inventory distribution by individual products (ALL products, sorted by newest first)
 function calculateInventoryDistribution(inventory) {
-    // Show individual products with their quantities
-    const colors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4', '#ec4899', '#14b8a6', '#f97316', '#6366f1']
+    const colors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4', '#ec4899', '#14b8a6', '#f97316', '#6366f1', '#a855f7', '#22d3ee', '#fb923c', '#4ade80']
 
-    // Get product data and sort by quantity
+    // Get ALL products sorted by most recently added first (created_at)
     const productData = inventory
         .filter(item => item.product && item.quantity > 0)
-        .sort((a, b) => b.quantity - a.quantity)
-        .slice(0, 10) // Top 10 products
+        .sort((a, b) => {
+            // Sort by created_at date (newest first)
+            const dateA = new Date(a.created_at || a.updated_at || 0)
+            const dateB = new Date(b.created_at || b.updated_at || 0)
+            return dateB - dateA
+        })
         .map((item, index) => ({
             label: item.product?.name || `Product ${index + 1}`,
             value: item.quantity || 0,
@@ -1053,19 +1056,48 @@ function calculateInventoryDistribution(inventory) {
     return productData
 }
 
-// Chart Box Component with Toggle
+// Chart Box Component with Toggle and Expand/Collapse
 function ChartBox({ title, barData, pieData }) {
     const [chartType, setChartType] = useState('bar')
+    const [isExpanded, setIsExpanded] = useState(false)
+
+    // Get data to display based on expanded state
+    const displayBarData = isExpanded ? barData : barData.slice(0, 2)
+    const displayPieData = isExpanded ? pieData : pieData.slice(0, 2)
 
     return (
-        <div className="glass-card" style={{ padding: 'var(--spacing-2xl)' }}>
+        <div
+            className="glass-card"
+            style={{
+                padding: 'var(--spacing-2xl)',
+                cursor: barData.length > 2 ? 'pointer' : 'default',
+                transition: 'all 0.3s ease'
+            }}
+            onClick={() => barData.length > 2 && setIsExpanded(!isExpanded)}
+        >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-xl)' }}>
-                <h3 style={{ color: 'white', fontSize: '1.5rem', margin: 0 }}>
-                    {title}
-                </h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
+                    <h3 style={{ color: 'white', fontSize: '1.5rem', margin: 0 }}>
+                        {title}
+                    </h3>
+                    {barData.length > 2 && (
+                        <span style={{
+                            fontSize: '0.75rem',
+                            color: 'rgba(255,255,255,0.6)',
+                            padding: '4px 8px',
+                            background: 'rgba(255,255,255,0.1)',
+                            borderRadius: 'var(--radius-sm)'
+                        }}>
+                            {isExpanded ? `Showing all ${barData.length}` : `Click to expand (${barData.length} items)`}
+                        </span>
+                    )}
+                </div>
 
                 {/* Chart Type Toggle */}
-                <div style={{ display: 'flex', gap: 'var(--spacing-sm)', background: 'rgba(255, 255, 255, 0.1)', padding: '4px', borderRadius: 'var(--radius-md)' }}>
+                <div
+                    style={{ display: 'flex', gap: 'var(--spacing-sm)', background: 'rgba(255, 255, 255, 0.1)', padding: '4px', borderRadius: 'var(--radius-md)' }}
+                    onClick={(e) => e.stopPropagation()}
+                >
                     <button
                         onClick={() => setChartType('bar')}
                         style={{
@@ -1103,9 +1135,9 @@ function ChartBox({ title, barData, pieData }) {
 
             {/* Chart Display */}
             {chartType === 'bar' ? (
-                <BarChart data={barData} />
+                <BarChart data={displayBarData} />
             ) : (
-                <PieChart data={pieData} />
+                <PieChart data={displayPieData} />
             )}
         </div>
     )
