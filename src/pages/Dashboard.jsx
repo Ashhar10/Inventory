@@ -195,6 +195,10 @@ function Dashboard() {
                     opacity: 0.8;
                     font-weight: 500;
                     font-size: 0.85rem;
+                    line-height: 1.4;
+                    text-align: center;
+                    word-wrap: break-word;
+                    max-width: 100%;
                 }
 
                 .dashboard-card .icon-container {
