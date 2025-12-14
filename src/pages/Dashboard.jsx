@@ -102,27 +102,23 @@ function Dashboard() {
                     </p>
                 </div>
 
-                <div className="stats- fade-in-up stagger-2">
+                <div className="stats-grid fade-in-up stagger-2">
                     <div className="glass-card stat-card">
-                        <img src="/assets/icons/Customers.png" alt="Customers" className="stat-icon" />
                         <div className="stat-value">{stats.customers}</div>
                         <div className="stat-label">Total Customers</div>
                     </div>
 
                     <div className="glass-card stat-card">
-                        <img src="/assets/icons/Products.png" alt="Products" className="stat-icon" />
                         <div className="stat-value">{stats.products}</div>
                         <div className="stat-label">Total Products</div>
                     </div>
 
                     <div className="glass-card stat-card">
-                        <img src="/assets/icons/Orders.png" alt="Orders" className="stat-icon" />
                         <div className="stat-value">{stats.pendingOrders}</div>
                         <div className="stat-label">Pending Orders</div>
                     </div>
 
                     <div className="glass-card stat-card">
-                        <img src="/assets/icons/Sales.png" alt="Sales" className="stat-icon" />
                         <div className="stat-value">Rs. {stats.salesThisMonth.toLocaleString()}</div>
                         <div className="stat-label">Sales This Month</div>
                     </div>
@@ -166,15 +162,15 @@ function Dashboard() {
 
                 .stats-grid {
                     display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    grid-template-columns: repeat(4, 1fr);
                     gap: var(--spacing-lg);
                     margin-bottom: var(--spacing-3xl);
                 }
 
                 .stat-card {
-                    padding: var(--spacing-xl);
+                    padding: var(--spacing-lg);
                     text-align: center;
-                    min-height: 150px;
+                    min-height: 100px;
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
@@ -188,17 +184,17 @@ function Dashboard() {
                 }
 
                 .stat-value {
-                    font-size: 2rem;
+                    font-size: 1.75rem;
                     font-weight: 800;
                     color: var(--text-main);
-                    margin: var(--spacing-sm) 0;
+                    margin-bottom: var(--spacing-xs);
                 }
 
                 .stat-label {
                     color: var(--text-main);
                     opacity: 0.8;
-                    font-weight: 600;
-                    font-size: 0.9rem;
+                    font-weight: 500;
+                    font-size: 0.85rem;
                 }
 
                 .dashboard-card .icon-container {
