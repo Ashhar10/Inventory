@@ -151,110 +151,115 @@ function Reports() {
                 </div>
             </div>
 
-            {/* Date Range Filter */}
-            <div style={{
-                display: 'flex',
-                gap: 'var(--spacing-md)',
-                marginBottom: 'var(--spacing-2xl)',
-                flexWrap: 'wrap',
-                alignItems: 'center',
-                background: 'rgba(255, 255, 255, 0.05)',
-                padding: 'var(--spacing-lg)',
-                borderRadius: 'var(--radius-lg)'
-            }}>
-                <span style={{ color: 'white', fontWeight: '600', fontSize: '0.95rem' }}>Date Range:</span>
+            {/* Date Range Filter - Hidden in Calendar View */}
+            {viewMode !== 'calendar' && (
+                <div style={{
+                    display: 'flex',
+                    gap: 'var(--spacing-md)',
+                    marginBottom: 'var(--spacing-2xl)',
+                    flexWrap: 'wrap',
+                    alignItems: 'center',
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    padding: 'var(--spacing-lg)',
+                    borderRadius: 'var(--radius-lg)'
+                }}>
+                    <span style={{ color: 'white', fontWeight: '600', fontSize: '0.95rem' }}>Date Range:</span>
 
-                {['all', 'today', 'week', 'month', 'quarter', 'year', 'custom'].map((range) => (
+                    {['all', 'today', 'week', 'month', 'quarter', 'year', 'custom'].map((range) => (
+                        <button
+                            key={range}
+                            onClick={() => setDateRange(range)}
+                            style={{
+                                padding: 'var(--spacing-sm) var(--spacing-lg)',
+                                background: dateRange === range
+                                    ? 'rgba(59, 130, 246, 0.3)'
+                                    : 'rgba(255, 255, 255, 0.1)',
+                                border: dateRange === range ? '1px solid rgba(59, 130, 246, 0.5)' : '1px solid transparent',
+                                borderRadius: 'var(--radius-md)',
+                                color: 'white',
+                                fontSize: '0.9rem',
+                                fontWeight: '600',
+                                cursor: 'pointer',
+                                transition: 'all 0.3s ease'
+                            }}
+                        >
+                            {range === 'all' && 'All Time'}
+                            {range === 'today' && 'Today'}
+                            {range === 'week' && 'Last 7 Days'}
+                            {range === 'month' && 'Last 30 Days'}
+                            {range === 'quarter' && 'Last 90 Days'}
+                            {range === 'year' && 'Last Year'}
+                            {range === 'custom' && 'Custom Range'}
+                        </button>
+                    ))}
+
+                    {dateRange === 'custom' && (
+                        <>
+                            <input
+                                type="date"
+                                value={customStartDate}
+                                onChange={(e) => setCustomStartDate(e.target.value)}
+                                style={{
+                                    padding: 'var(--spacing-sm) var(--spacing-md)',
+                                    background: 'rgba(255, 255, 255, 0.1)',
+                                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                                    borderRadius: 'var(--radius-md)',
+                                    color: 'white',
+                                    fontSize: '0.9rem'
+                                }}
+                            />
+                            <span style={{ color: 'rgba(255,255,255,0.7)' }}>to</span>
+                            <input
+                                type="date"
+                                value={customEndDate}
+                                onChange={(e) => setCustomEndDate(e.target.value)}
+                                style={{
+                                    padding: 'var(--spacing-sm) var(--spacing-md)',
+                                    background: 'rgba(255, 255, 255, 0.1)',
+                                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                                    borderRadius: 'var(--radius-md)',
+                                    color: 'white',
+                                    fontSize: '0.9rem'
+                                }}
+                            />
+                        </>
+                    )}
+
+                    {/* Reset Filters Button */}
                     <button
-                        key={range}
-                        onClick={() => setDateRange(range)}
+                        onClick={() => {
+                            setDateRange('all')
+                            setCustomStartDate('')
+                            setCustomEndDate('')
+                        }}
                         style={{
                             padding: 'var(--spacing-sm) var(--spacing-lg)',
-                            background: dateRange === range
-                                ? 'rgba(59, 130, 246, 0.3)'
-                                : 'rgba(255, 255, 255, 0.1)',
-                            border: dateRange === range ? '1px solid rgba(59, 130, 246, 0.5)' : '1px solid transparent',
+                            background: 'rgba(239, 68, 68, 0.2)',
+                            border: '1px solid rgba(239, 68, 68, 0.5)',
                             borderRadius: 'var(--radius-md)',
                             color: 'white',
                             fontSize: '0.9rem',
                             fontWeight: '600',
                             cursor: 'pointer',
-                            transition: 'all 0.3s ease'
+                            transition: 'all 0.3s ease',
+                            marginLeft: 'auto'
                         }}
                     >
-                        {range === 'all' && 'All Time'}
-                        {range === 'today' && 'Today'}
-                        {range === 'week' && 'Last 7 Days'}
-                        {range === 'month' && 'Last 30 Days'}
-                        {range === 'quarter' && 'Last 90 Days'}
-                        {range === 'year' && 'Last Year'}
-                        {range === 'custom' && 'Custom Range'}
+                        <img src="/assets/icons/Reset.png" alt="Reset" style={{ width: '16px', height: '16px', marginRight: '6px' }} /> Reset Filters
                     </button>
-                ))}
+                </div>
+            )
+            }
 
-                {dateRange === 'custom' && (
-                    <>
-                        <input
-                            type="date"
-                            value={customStartDate}
-                            onChange={(e) => setCustomStartDate(e.target.value)}
-                            style={{
-                                padding: 'var(--spacing-sm) var(--spacing-md)',
-                                background: 'rgba(255, 255, 255, 0.1)',
-                                border: '1px solid rgba(255, 255, 255, 0.2)',
-                                borderRadius: 'var(--radius-md)',
-                                color: 'white',
-                                fontSize: '0.9rem'
-                            }}
-                        />
-                        <span style={{ color: 'rgba(255,255,255,0.7)' }}>to</span>
-                        <input
-                            type="date"
-                            value={customEndDate}
-                            onChange={(e) => setCustomEndDate(e.target.value)}
-                            style={{
-                                padding: 'var(--spacing-sm) var(--spacing-md)',
-                                background: 'rgba(255, 255, 255, 0.1)',
-                                border: '1px solid rgba(255, 255, 255, 0.2)',
-                                borderRadius: 'var(--radius-md)',
-                                color: 'white',
-                                fontSize: '0.9rem'
-                            }}
-                        />
-                    </>
-                )}
-
-                {/* Reset Filters Button */}
-                <button
-                    onClick={() => {
-                        setDateRange('all')
-                        setCustomStartDate('')
-                        setCustomEndDate('')
-                    }}
-                    style={{
-                        padding: 'var(--spacing-sm) var(--spacing-lg)',
-                        background: 'rgba(239, 68, 68, 0.2)',
-                        border: '1px solid rgba(239, 68, 68, 0.5)',
-                        borderRadius: 'var(--radius-md)',
-                        color: 'white',
-                        fontSize: '0.9rem',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease',
-                        marginLeft: 'auto'
-                    }}
-                >
-                    <img src="/assets/icons/Reset.png" alt="Reset" style={{ width: '16px', height: '16px', marginRight: '6px' }} /> Reset Filters
-                </button>
-            </div>
-
-            {viewMode === 'statistical' ? (
-                <StatisticalView stats={stats} detailedData={detailedData} />
-            ) : viewMode === 'graphical' ? (
-                <GraphicalView stats={stats} detailedData={detailedData} />
-            ) : (
-                <CalendarView stats={stats} detailedData={detailedData} />
-            )}
+            {
+                viewMode === 'statistical' ? (
+                    <StatisticalView stats={stats} detailedData={detailedData} />
+                ) : viewMode === 'graphical' ? (
+                    <GraphicalView stats={stats} detailedData={detailedData} />
+                ) : (
+                    <CalendarView stats={stats} detailedData={detailedData} />
+                )
+            }
 
             <style jsx>{`
                 .view-toggle {
@@ -288,7 +293,7 @@ function Reports() {
                     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
                 }
             `}</style>
-        </div>
+        </div >
     )
 }
 
@@ -403,6 +408,23 @@ function CalendarView({ stats, detailedData }) {
     const [currentMonth, setCurrentMonth] = useState(new Date())
     const [hoveredDate, setHoveredDate] = useState(null)
     const [selectedDate, setSelectedDate] = useState(null)
+    const [hoverTimeout, setHoverTimeout] = useState(null)
+
+    // Handle hover with delay
+    const handleMouseEnter = (date) => {
+        const timeout = setTimeout(() => {
+            setHoveredDate(date)
+        }, 300) // 0.3 second delay
+        setHoverTimeout(timeout)
+    }
+
+    const handleMouseLeave = () => {
+        if (hoverTimeout) {
+            clearTimeout(hoverTimeout)
+            setHoverTimeout(null)
+        }
+        setHoveredDate(null)
+    }
 
     // Get calendar days for the current month
     const getCalendarDays = () => {
@@ -471,7 +493,7 @@ function CalendarView({ stats, detailedData }) {
         <div style={{ position: 'relative' }}>
             {/* Calendar Header */}
             <div className="glass-card" style={{ padding: 'var(--spacing-2xl)', marginBottom: 'var(--spacing-2xl)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-lg)' }}>
                     <button
                         onClick={goToPreviousMonth}
                         style={{
@@ -486,7 +508,48 @@ function CalendarView({ stats, detailedData }) {
                     >
                         <img src="/assets/icons/Previous.png" alt="Previous" style={{ width: '20px', height: '20px' }} />
                     </button>
-                    <h2 style={{ color: 'white', fontSize: '1.5rem', margin: 0 }}>{monthName}</h2>
+
+                    {/* Month/Year Selector */}
+                    <div style={{ display: 'flex', gap: 'var(--spacing-md)', alignItems: 'center' }}>
+                        <select
+                            value={currentMonth.getMonth()}
+                            onChange={(e) => setCurrentMonth(new Date(currentMonth.getFullYear(), parseInt(e.target.value), 1))}
+                            style={{
+                                padding: 'var(--spacing-sm) var(--spacing-md)',
+                                background: 'rgba(255, 255, 255, 0.1)',
+                                border: '1px solid rgba(255, 255, 255, 0.2)',
+                                borderRadius: 'var(--radius-md)',
+                                color: 'white',
+                                fontSize: '1rem',
+                                fontWeight: '600',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            {['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map((month, index) => (
+                                <option key={index} value={index} style={{ background: '#1a1a2e', color: 'white' }}>{month}</option>
+                            ))}
+                        </select>
+
+                        <select
+                            value={currentMonth.getFullYear()}
+                            onChange={(e) => setCurrentMonth(new Date(parseInt(e.target.value), currentMonth.getMonth(), 1))}
+                            style={{
+                                padding: 'var(--spacing-sm) var(--spacing-md)',
+                                background: 'rgba(255, 255, 255, 0.1)',
+                                border: '1px solid rgba(255, 255, 255, 0.2)',
+                                borderRadius: 'var(--radius-md)',
+                                color: 'white',
+                                fontSize: '1rem',
+                                fontWeight: '600',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            {Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - 5 + i).map(year => (
+                                <option key={year} value={year} style={{ background: '#1a1a2e', color: 'white' }}>{year}</option>
+                            ))}
+                        </select>
+                    </div>
+
                     <button
                         onClick={goToNextMonth}
                         style={{
@@ -529,8 +592,8 @@ function CalendarView({ stats, detailedData }) {
                             return (
                                 <div
                                     key={index}
-                                    onMouseEnter={() => setHoveredDate(date)}
-                                    onMouseLeave={() => setHoveredDate(null)}
+                                    onMouseEnter={() => handleMouseEnter(date)}
+                                    onMouseLeave={handleMouseLeave}
                                     onClick={() => setSelectedDate(date)}
                                     style={{
                                         aspectRatio: '1',
@@ -608,9 +671,6 @@ function CalendarView({ stats, detailedData }) {
                                 <span style={{ color: 'rgba(255,255,255,0.8)' }}>Packing:</span>
                                 <span style={{ color: 'white', fontWeight: '700' }}>{getDateData(hoveredDate).packing}</span>
                             </div>
-                        </div>
-                        <div style={{ marginTop: 'var(--spacing-lg)', color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem', textAlign: 'center' }}>
-                            Click to view detailed report
                         </div>
                     </div>
                 </div>
