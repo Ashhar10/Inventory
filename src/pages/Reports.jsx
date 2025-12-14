@@ -166,45 +166,46 @@ function Reports() {
                 </div>
             </div>
 
-            {/* Date Range Filter - Hidden on mobile and in Calendar View */}
-            {!isMobile && viewMode !== 'calendar' && (
+            {/* Date Range Filter - Compact on mobile, hidden in Calendar View */}
+            {viewMode !== 'calendar' && (
                 <div style={{
                     display: 'flex',
-                    gap: 'var(--spacing-md)',
-                    marginBottom: 'var(--spacing-2xl)',
+                    gap: isMobile ? '4px' : 'var(--spacing-md)',
+                    marginBottom: isMobile ? 'var(--spacing-lg)' : 'var(--spacing-2xl)',
                     flexWrap: 'wrap',
                     alignItems: 'center',
                     background: 'rgba(255, 255, 255, 0.05)',
-                    padding: 'var(--spacing-lg)',
+                    padding: isMobile ? 'var(--spacing-sm)' : 'var(--spacing-lg)',
                     borderRadius: 'var(--radius-lg)'
                 }}>
-                    <span style={{ color: 'white', fontWeight: '600', fontSize: '0.95rem' }}>Date Range:</span>
+                    {!isMobile && <span style={{ color: 'white', fontWeight: '600', fontSize: '0.95rem' }}>Date Range:</span>}
 
                     {['all', 'today', 'week', 'month', 'quarter', 'year', 'custom'].map((range) => (
                         <button
                             key={range}
                             onClick={() => setDateRange(range)}
                             style={{
-                                padding: 'var(--spacing-sm) var(--spacing-lg)',
+                                padding: isMobile ? '4px 8px' : 'var(--spacing-sm) var(--spacing-lg)',
                                 background: dateRange === range
                                     ? 'rgba(59, 130, 246, 0.3)'
                                     : 'rgba(255, 255, 255, 0.1)',
                                 border: dateRange === range ? '1px solid rgba(59, 130, 246, 0.5)' : '1px solid transparent',
-                                borderRadius: 'var(--radius-md)',
+                                borderRadius: 'var(--radius-sm)',
                                 color: 'white',
-                                fontSize: '0.9rem',
+                                fontSize: isMobile ? '0.65rem' : '0.9rem',
                                 fontWeight: '600',
                                 cursor: 'pointer',
                                 transition: 'all 0.3s ease'
                             }}
                         >
-                            {range === 'all' && 'All Time'}
-                            {range === 'today' && 'Today'}
-                            {range === 'week' && 'Last 7 Days'}
-                            {range === 'month' && 'Last 30 Days'}
-                            {range === 'quarter' && 'Last 90 Days'}
-                            {range === 'year' && 'Last Year'}
-                            {range === 'custom' && 'Custom Range'}
+                            {/* Short labels on mobile */}
+                            {range === 'all' && (isMobile ? 'All' : 'All Time')}
+                            {range === 'today' && (isMobile ? 'Today' : 'Today')}
+                            {range === 'week' && (isMobile ? '7D' : 'Last 7 Days')}
+                            {range === 'month' && (isMobile ? '30D' : 'Last 30 Days')}
+                            {range === 'quarter' && (isMobile ? '90D' : 'Last 90 Days')}
+                            {range === 'year' && (isMobile ? '1Y' : 'Last Year')}
+                            {range === 'custom' && (isMobile ? '...' : 'Custom Range')}
                         </button>
                     ))}
 
@@ -1176,13 +1177,13 @@ function ChartCard({ title, children }) {
     )
 }
 
-// Pie Chart Component
+// Pie Chart Component - Smaller to match bar chart width
 function PieChart({ data }) {
     const total = data.reduce((sum, item) => sum + item.value, 0)
 
     if (total === 0) {
         return (
-            <div style={{ textAlign: 'center', padding: 'var(--spacing-3xl)', color: 'rgba(255,255,255,0.5)' }}>
+            <div style={{ textAlign: 'center', padding: 'var(--spacing-xl)', color: 'rgba(255,255,255,0.5)' }}>
                 No data available
             </div>
         )
@@ -1191,10 +1192,10 @@ function PieChart({ data }) {
     let currentAngle = 0
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--spacing-xl)', padding: 'var(--spacing-lg)' }}>
-            {/* Pie Chart SVG */}
-            <div style={{ position: 'relative', width: '350px', height: '350px' }}>
-                <svg width="350" height="350" viewBox="0 0 100 100" style={{ transform: 'rotate(-90deg)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--spacing-md)', padding: 'var(--spacing-sm)' }}>
+            {/* Pie Chart SVG - Smaller to match bar chart */}
+            <div style={{ position: 'relative', width: '180px', height: '180px' }}>
+                <svg width="180" height="180" viewBox="0 0 100 100" style={{ transform: 'rotate(-90deg)' }}>
                     {/* Shadow/Border Circle */}
                     <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
 
@@ -1236,50 +1237,47 @@ function PieChart({ data }) {
                     transform: 'translate(-50%, -50%)',
                     textAlign: 'center'
                 }}>
-                    <div style={{ fontSize: '2rem', fontWeight: '800', color: 'white' }}>
+                    <div style={{ fontSize: '1.2rem', fontWeight: '800', color: 'white' }}>
                         {total}
                     </div>
-                    <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', marginTop: '4px' }}>
+                    <div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.7)' }}>
                         Total
                     </div>
                 </div>
             </div>
 
-            {/* Legend */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)', width: '100%', maxWidth: '350px' }}>
+            {/* Legend - Below pie, compact */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '100%', maxWidth: '220px' }}>
                 {data.map((item, index) => {
-                    const percentage = ((item.value / total) * 100).toFixed(1)
+                    const percentage = ((item.value / total) * 100).toFixed(0)
                     return (
                         <div key={index} style={{
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-between',
-                            padding: 'var(--spacing-sm)',
+                            padding: '4px 6px',
                             background: 'rgba(255, 255, 255, 0.05)',
                             borderRadius: 'var(--radius-sm)',
-                            borderLeft: `4px solid ${item.color}`
+                            borderLeft: `3px solid ${item.color}`
                         }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                 <div style={{
-                                    width: '12px',
-                                    height: '12px',
+                                    width: '8px',
+                                    height: '8px',
                                     borderRadius: '50%',
-                                    background: item.color,
-                                    boxShadow: `0 0 8px ${item.color}50`
+                                    background: item.color
                                 }}></div>
-                                <span style={{ color: 'white', fontSize: '0.95rem', fontWeight: '500' }}>
+                                <span style={{ color: 'white', fontSize: '0.7rem', fontWeight: '500' }}>
                                     {item.label}
                                 </span>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
-                                <span style={{ color: 'white', fontSize: '1rem', fontWeight: '700' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <span style={{ color: 'white', fontSize: '0.75rem', fontWeight: '700' }}>
                                     {item.value}
                                 </span>
                                 <span style={{
-                                    color: 'rgba(255,255,255,0.6)',
-                                    fontSize: '0.85rem',
-                                    minWidth: '45px',
-                                    textAlign: 'right'
+                                    color: 'rgba(255,255,255,0.5)',
+                                    fontSize: '0.65rem'
                                 }}>
                                     {percentage}%
                                 </span>
