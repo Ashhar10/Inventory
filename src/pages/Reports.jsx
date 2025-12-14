@@ -280,47 +280,54 @@ function GraphicalView({ stats, detailedData }) {
                 )}
 
                 {chartType === 'line' && (
-                    <ChartCard title="Trend Analysis">
+                    <ChartCard title="System Data Trends">
                         <LineChart
                             data={[
-                                { label: 'Week 1', customers: 20, products: 35, orders: 15, packing: 12 },
-                                { label: 'Week 2', customers: 30, products: 45, orders: 25, packing: 20 },
-                                { label: 'Week 3', customers: 45, products: 60, orders: 35, packing: 28 },
-                                { label: 'Week 4', customers: stats.customers, products: stats.products, orders: detailedData.orders.length, packing: stats.totalPacking },
+                                {
+                                    label: 'Current',
+                                    customers: stats.customers,
+                                    products: stats.products,
+                                    orders: detailedData.orders.length,
+                                    packing: stats.totalPacking
+                                },
                             ]}
                         />
+                        <div style={{ color: 'rgba(255,255,255,0.7)', marginTop: 'var(--spacing-lg)', textAlign: 'center' }}>
+                            Showing current system data snapshot
+                        </div>
                     </ChartCard>
                 )}
 
                 {chartType === 'scatter' && (
-                    <ChartCard title="Products vs Orders Correlation">
+                    <ChartCard title="Products Distribution">
                         <ScatterPlot
-                            data={detailedData.products.slice(0, 20).map((product, index) => ({
-                                x: index * 10 + Math.random() * 50,
-                                y: index * 5 + Math.random() * 30,
+                            data={detailedData.products.map((product, index) => ({
+                                x: parseFloat(product.unit_price || 0),
+                                y: parseFloat(product.reorder_level || 10),
                                 label: product.name || `Product ${index + 1}`
                             }))}
                         />
+                        <div style={{ color: 'rgba(255,255,255,0.7)', marginTop: 'var(--spacing-lg)', textAlign: 'center' }}>
+                            X-axis: Unit Price | Y-axis: Reorder Level
+                        </div>
                     </ChartCard>
                 )}
 
                 {chartType === 'heatmap' && (
-                    <ChartCard title="Activity Heatmap (Last 30 Days)">
-                        <Heatmap />
+                    <ChartCard title="Order Activity Heatmap (Last 30 Days)">
+                        <Heatmap orders={detailedData.orders} />
+                        <div style={{ color: 'rgba(255,255,255,0.7)', marginTop: 'var(--spacing-lg)', textAlign: 'center' }}>
+                            Showing order activity intensity over the last 30 days
+                        </div>
                     </ChartCard>
                 )}
 
                 {chartType === 'histogram' && (
-                    <ChartCard title="Data Distribution">
-                        <Histogram
-                            data={[
-                                { range: '0-20', count: 15, color: '#3b82f6' },
-                                { range: '21-40', count: 25, color: '#10b981' },
-                                { range: '41-60', count: 35, color: '#f59e0b' },
-                                { range: '61-80', count: 20, color: '#8b5cf6' },
-                                { range: '81-100', count: 10, color: '#ef4444' },
-                            ]}
-                        />
+                    <ChartCard title="Sales Amount Distribution">
+                        <Histogram sales={detailedData.sales} />
+                        <div style={{ color: 'rgba(255,255,255,0.7)', marginTop: 'var(--spacing-lg)', textAlign: 'center' }}>
+                            Distribution of sales by amount ranges
+                        </div>
                     </ChartCard>
                 )}
 
@@ -613,20 +620,34 @@ function ScatterPlot({ data }) {
 }
 
 // Heatmap Component
-function Heatmap() {
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+function Heatmap({ orders }) {
     const weeks = 5
-    const data = Array.from({ length: weeks * 7 }, () => Math.floor(Math.random() * 10))
+    const daysCount = weeks * 7
+
+    // Calculate activity from real orders
+    const activityData = Array(daysCount).fill(0)
+    const today = new Date()
+
+    orders.forEach(order => {
+        const orderDate = new Date(order.order_date || order.created_at)
+        const daysDiff = Math.floor((today - orderDate) / (1000 * 60 * 60 * 24))
+
+        if (daysDiff >= 0 && daysDiff < daysCount) {
+            activityData[daysCount - 1 - daysDiff]++
+        }
+    })
+
+    const maxActivity = Math.max(...activityData, 1)
 
     const getColor = (value) => {
-        const intensity = value / 10
-        return `rgba(16, 185, 129, ${intensity})`
+        const intensity = value / maxActivity
+        return `rgba(16, 185, 129, ${intensity * 0.9 + 0.1})`
     }
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)' }}>
             <div style={{ display: 'grid', gridTemplateColumns: `repeat(${weeks}, 1fr)`, gap: '4px' }}>
-                {data.map((value, index) => (
+                {activityData.map((value, index) => (
                     <div
                         key={index}
                         style={{
@@ -635,7 +656,7 @@ function Heatmap() {
                             borderRadius: '4px',
                             border: '1px solid rgba(255,255,255,0.1)'
                         }}
-                        title={`Activity: ${value}`}
+                        title={`Orders: ${value}`}
                     />
                 ))}
             </div>
@@ -648,7 +669,7 @@ function Heatmap() {
                             style={{
                                 width: '16px',
                                 height: '16px',
-                                background: `rgba(16, 185, 129, ${intensity})`,
+                                background: `rgba(16, 185, 129, ${intensity * 0.9 + 0.1})`,
                                 borderRadius: '2px',
                                 border: '1px solid rgba(255,255,255,0.1)'
                             }}
@@ -662,8 +683,26 @@ function Heatmap() {
 }
 
 // Histogram Component
-function Histogram({ data }) {
-    const maxCount = Math.max(...data.map(d => d.count))
+function Histogram({ sales }) {
+    // Calculate sales distribution
+    const ranges = [
+        { min: 0, max: 10000, label: '0-10k', color: '#3b82f6' },
+        { min: 10000, max: 25000, label: '10k-25k', color: '#10b981' },
+        { min: 25000, max: 50000, label: '25k-50k', color: '#f59e0b' },
+        { min: 50000, max: 100000, label: '50k-100k', color: '#8b5cf6' },
+        { min: 100000, max: Infinity, label: '100k+', color: '#ef4444' },
+    ]
+
+    const data = ranges.map(range => ({
+        range: range.label,
+        count: sales.filter(sale => {
+            const amount = parseFloat(sale.total_amount || 0)
+            return amount >= range.min && amount < range.max
+        }).length,
+        color: range.color
+    }))
+
+    const maxCount = Math.max(...data.map(d => d.count), 1)
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-lg)' }}>
