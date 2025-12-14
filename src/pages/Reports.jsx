@@ -1038,26 +1038,6 @@ function StatCard({ title, value, color }) {
     )
 }
 
-// Report Section Component
-function ReportSection({ title, data, count }) {
-    return (
-        <div className="glass-card" style={{ padding: 'var(--spacing-2xl)' }}>
-            <h3 style={{ color: 'white', marginBottom: 'var(--spacing-lg)', fontSize: '1.5rem' }}>
-                {title}
-            </h3>
-            <div style={{ color: 'rgba(255,255,255,0.9)', fontSize: '1.1rem', marginBottom: 'var(--spacing-md)' }}>
-                Total Records: <strong>{count}</strong>
-            </div>
-            <div style={{ color: 'rgba(255,255,255,0.7)' }}>
-                {data.length > 0 ? (
-                    <div>Last updated: {new Date().toLocaleString()}</div>
-                ) : (
-                    <div>No data available</div>
-                )}
-            </div>
-        </div>
-    )
-}
 
 // Simple Bar Chart Component
 function BarChart({ data }) {
