@@ -392,13 +392,14 @@ function StatisticalView({ stats, detailedData }) {
                     Detailed Reports
                 </h2>
 
+
                 <div style={{ display: 'grid', gap: 'var(--spacing-2xl)' }}>
-                    <ReportSection title="Customer Report" data={detailedData.customers} count={stats.customers} icon="/assets/icons/Customers.png" />
-                    <ReportSection title="Product Report" data={detailedData.products} count={stats.products} icon="/assets/icons/Products.png" />
-                    <ReportSection title="Order Report" data={detailedData.orders} count={detailedData.orders.length} icon="/assets/icons/Orders.png" />
-                    <ReportSection title="Packing Report" data={detailedData.packing} count={stats.totalPacking} icon="/assets/icons/Packing.png" />
-                    <ReportSection title="Inventory Report" data={detailedData.inventory} count={detailedData.inventory.length} icon="/assets/icons/Inventory.png" />
-                    <ReportSection title="Sales Report" data={detailedData.sales} count={detailedData.sales.length} icon="/assets/icons/Sales.png" />
+                    <ReportSection title="Customer Report" data={detailedData.customers || []} count={stats.customers} icon="/assets/icons/Customers.png" />
+                    <ReportSection title="Product Report" data={detailedData.products || []} count={stats.products} icon="/assets/icons/Products.png" />
+                    <ReportSection title="Order Report" data={detailedData.orders || []} count={detailedData.orders?.length || 0} icon="/assets/icons/Orders.png" />
+                    <ReportSection title="Packing Report" data={detailedData.packing || []} count={stats.totalPacking} icon="/assets/icons/Packing.png" />
+                    <ReportSection title="Inventory Report" data={detailedData.inventory || []} count={detailedData.inventory?.length || 0} icon="/assets/icons/Inventory.png" />
+                    <ReportSection title="Sales Report" data={detailedData.sales || []} count={detailedData.sales?.length || 0} icon="/assets/icons/Sales.png" />
                 </div>
             </div>
         </>
