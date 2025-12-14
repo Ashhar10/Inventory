@@ -130,6 +130,7 @@ function Dashboard() {
                             key={card.id}
                             className={`card-3d card-glow dashboard-card fade-in-up stagger-${index + 1}`}
                             onClick={() => handleCardClick(card.path)}
+                            title={card.title}
                         >
                             <div className="icon-container">
                                 <img src={card.image} alt={card.title} />
