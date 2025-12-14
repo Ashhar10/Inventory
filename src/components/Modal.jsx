@@ -30,7 +30,7 @@ function Modal({ isOpen, onClose, title, message, type = 'info', onConfirm, show
     }
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
+        <div className="modal-overlay" onClick={onClose} style={{ zIndex: 30000 }}>
             <div
                 className="modal"
                 onClick={(e) => e.stopPropagation()}
