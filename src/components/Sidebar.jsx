@@ -11,6 +11,7 @@ function Sidebar() {
         { path: '/products', label: 'Products', icon: '/assets/icons/Products.png' },
         { path: '/inventory', label: 'Inventory', icon: '/assets/icons/Inventory.png' },
         { path: '/orders', label: 'Orders', icon: '/assets/icons/Orders.png' },
+        { path: '/packing', label: 'Packing', icon: '/assets/icons/Packing.png' },
         { path: '/sales', label: 'Sales', icon: '/assets/icons/Sales.png' },
         { path: '/reports', label: 'Reports', icon: '/assets/icons/Reports.png' }
     ]

@@ -398,6 +398,136 @@ export const db = {
         return { data, error }
     },
 
+    createStore: async (storeData) => {
+        const { data, error } = await supabase
+            .from('stores')
+            .insert([storeData])
+            .select()
+        return { data, error }
+    },
+
+    updateStore: async (id, storeData) => {
+        const { data, error } = await supabase
+            .from('stores')
+            .update(storeData)
+            .eq('id', id)
+            .select()
+        return { data, error }
+    },
+
+    deleteStore: async (id) => {
+        const { error } = await supabase
+            .from('stores')
+            .delete()
+            .eq('id', id)
+        return { error }
+    },
+
+    // Packing
+    createPacking: async (packingData, packingItems) => {
+        const currentUser = await auth.getCurrentUser()
+        const dataWithPacker = {
+            ...packingData,
+            packed_by: currentUser?.id
+        }
+
+        // Create packing record
+        const { data: packing, error: packingError } = await supabase
+            .from('packing')
+            .insert([dataWithPacker])
+            .select()
+            .single()
+
+        if (packingError) return { data: null, error: packingError }
+
+        // Create packing items
+        const itemsWithPackingId = packingItems.map(item => ({
+            ...item,
+            packing_id: packing.id,
+        }))
+
+        const { error: itemsError } = await supabase
+            .from('packing_items')
+            .insert(itemsWithPackingId)
+
+        if (itemsError) {
+            // Rollback packing if items failed
+            await supabase.from('packing').delete().eq('id', packing.id)
+            return { data: null, error: itemsError }
+        }
+
+        return { data: packing, error: null }
+    },
+
+    updatePacking: async (id, packingData) => {
+        const { data, error } = await supabase
+            .from('packing')
+            .update(packingData)
+            .eq('id', id)
+            .select()
+        return { data, error }
+    },
+
+    deletePacking: async (id) => {
+        const { error } = await supabase
+            .from('packing')
+            .delete()
+            .eq('id', id)
+        return { error }
+    },
+
+    // Users Management
+    getUsers: async () => {
+        const { data, error } = await supabase
+            .from('users')
+            .select('id, email, full_name, role, phone, is_active, created_at')
+            .order('created_at', { ascending: false })
+        return { data, error }
+    },
+
+    createUser: async (userData) => {
+        // Hash password before storing
+        const passwordHash = await auth.hashPassword(userData.password)
+        const { password, ...userDataWithoutPassword } = userData
+
+        const dataWithHash = {
+            ...userDataWithoutPassword,
+            password_hash: passwordHash,
+            email: userData.email.toLowerCase()
+        }
+
+        const { data, error } = await supabase
+            .from('users')
+            .insert([dataWithHash])
+            .select('id, email, full_name, role, phone, is_active, created_at')
+        return { data, error }
+    },
+
+    updateUser: async (id, userData) => {
+        const updateData = { ...userData }
+
+        // Hash password if it's being updated
+        if (userData.password) {
+            updateData.password_hash = await auth.hashPassword(userData.password)
+            delete updateData.password
+        }
+
+        const { data, error } = await supabase
+            .from('users')
+            .update(updateData)
+            .eq('id', id)
+            .select('id, email, full_name, role, phone, is_active, created_at')
+        return { data, error }
+    },
+
+    deleteUser: async (id) => {
+        const { error } = await supabase
+            .from('users')
+            .delete()
+            .eq('id', id)
+        return { error }
+    },
+
     // Reports & Analytics
     getDashboardStats: async () => {
         // Get total customers
