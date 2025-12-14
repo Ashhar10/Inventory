@@ -218,6 +218,10 @@ function Dashboard() {
                     position: relative;
                     z-index: 2;
                     margin-top: var(--spacing-md);
+                    white-space: nowrap;
+                    text-align: center;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
 
                 @media (max-width: 768px) {
