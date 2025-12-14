@@ -58,20 +58,30 @@ function AnimatedStatBox({ slides, autoPlayInterval = 3000 }) {
                 .animated-stat-card {
                     position: relative;
                     overflow: hidden;
+                    padding: var(--spacing-lg) !important;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
                 }
 
                 .stat-slideshow {
                     display: flex;
                     align-items: center;
-                    justify-content: space-between;
-                    gap: var(--spacing-sm);
-                    min-height: 80px;
+                    justify-content: center;
+                    gap: var(--spacing-md);
+                    min-height: 60px;
+                    width: 100%;
                 }
 
                 .slide-content {
                     flex: 1;
                     text-align: center;
                     animation: fadeIn 0.5s ease-in-out;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
                 }
 
                 @keyframes fadeIn {
@@ -89,9 +99,10 @@ function AnimatedStatBox({ slides, autoPlayInterval = 3000 }) {
                     background: rgba(255, 255, 255, 0.1);
                     border: none;
                     color: white;
-                    font-size: 1.5rem;
-                    width: 32px;
-                    height: 32px;
+                    font-size: 1.2rem;
+                    width: 28px;
+                    height: 28px;
+                    min-width: 28px;
                     border-radius: 50%;
                     cursor: pointer;
                     display: flex;
