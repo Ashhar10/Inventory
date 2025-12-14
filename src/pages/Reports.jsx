@@ -7,6 +7,7 @@ function Reports() {
     const [dateRange, setDateRange] = useState('all') // 'today', 'week', 'month', 'quarter', 'year', 'custom', 'all'
     const [customStartDate, setCustomStartDate] = useState('')
     const [customEndDate, setCustomEndDate] = useState('')
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
     const [stats, setStats] = useState({
         customers: 0,
         products: 0,
@@ -27,6 +28,13 @@ function Reports() {
         inventory: [],
     })
     const [loading, setLoading] = useState(true)
+
+    // Mobile detection
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768)
+        window.addEventListener('resize', handleResize)
+        return () => window.removeEventListener('resize', handleResize)
+    }, [])
 
     useEffect(() => {
         loadAllReports()
@@ -126,34 +134,40 @@ function Reports() {
 
     return (
         <div className="container">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-xl)', flexWrap: 'wrap', gap: 'var(--spacing-lg)' }}>
-                <h1 className="page-title">Reports & Analytics</h1>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-xl)', flexWrap: 'wrap', gap: 'var(--spacing-md)' }}>
+                <h1 className="page-title" style={{ fontSize: isMobile ? '1.3rem' : undefined }}>Reports</h1>
 
-                {/* View Mode Toggle */}
-                <div className="view-toggle">
+                {/* View Mode Toggle - Icon only on mobile */}
+                <div className="view-toggle" style={{ gap: isMobile ? '4px' : undefined }}>
                     <button
                         className={`toggle-btn ${viewMode === 'statistical' ? 'active' : ''}`}
                         onClick={() => setViewMode('statistical')}
+                        style={isMobile ? { padding: '8px', minWidth: '40px' } : {}}
                     >
-                        <img src="/assets/icons/Statistical.png" alt="Statistical" style={{ width: '20px', height: '20px', marginRight: '8px' }} /> Statistical
+                        <img src="/assets/icons/Statistical.png" alt="Statistical" style={{ width: isMobile ? '18px' : '20px', height: isMobile ? '18px' : '20px', marginRight: isMobile ? 0 : '8px' }} />
+                        {!isMobile && ' Statistical'}
                     </button>
                     <button
                         className={`toggle-btn ${viewMode === 'graphical' ? 'active' : ''}`}
                         onClick={() => setViewMode('graphical')}
+                        style={isMobile ? { padding: '8px', minWidth: '40px' } : {}}
                     >
-                        <img src="/assets/icons/Graphical.png" alt="Graphical" style={{ width: '20px', height: '20px', marginRight: '8px' }} /> Graphical
+                        <img src="/assets/icons/Graphical.png" alt="Graphical" style={{ width: isMobile ? '18px' : '20px', height: isMobile ? '18px' : '20px', marginRight: isMobile ? 0 : '8px' }} />
+                        {!isMobile && ' Graphical'}
                     </button>
                     <button
                         className={`toggle-btn ${viewMode === 'calendar' ? 'active' : ''}`}
                         onClick={() => setViewMode('calendar')}
+                        style={isMobile ? { padding: '8px', minWidth: '40px' } : {}}
                     >
-                        <img src="/assets/icons/Calendar.png" alt="Calendar" style={{ width: '20px', height: '20px', marginRight: '8px' }} /> Calendar
+                        <img src="/assets/icons/Calendar.png" alt="Calendar" style={{ width: isMobile ? '18px' : '20px', height: isMobile ? '18px' : '20px', marginRight: isMobile ? 0 : '8px' }} />
+                        {!isMobile && ' Calendar'}
                     </button>
                 </div>
             </div>
 
-            {/* Date Range Filter - Hidden in Calendar View */}
-            {viewMode !== 'calendar' && (
+            {/* Date Range Filter - Hidden on mobile and in Calendar View */}
+            {!isMobile && viewMode !== 'calendar' && (
                 <div style={{
                     display: 'flex',
                     gap: 'var(--spacing-md)',
@@ -254,11 +268,11 @@ function Reports() {
 
             {
                 viewMode === 'statistical' ? (
-                    <StatisticalView stats={stats} detailedData={detailedData} />
+                    <StatisticalView stats={stats} detailedData={detailedData} isMobile={isMobile} />
                 ) : viewMode === 'graphical' ? (
-                    <GraphicalView stats={stats} detailedData={detailedData} />
+                    <GraphicalView stats={stats} detailedData={detailedData} isMobile={isMobile} />
                 ) : (
-                    <CalendarView stats={stats} detailedData={detailedData} />
+                    <CalendarView stats={stats} detailedData={detailedData} isMobile={isMobile} />
                 )
             }
 
@@ -298,16 +312,16 @@ function Reports() {
     )
 }
 
-// Statistical View Component
-function StatisticalView({ stats, detailedData }) {
+// Statistical View Component - Responsive
+function StatisticalView({ stats, detailedData, isMobile }) {
     return (
         <>
-            {/* Overview Stats Grid */}
+            {/* Overview Stats Grid - Single column on mobile */}
             <div className="stats-grid" style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(5, 1fr)',
-                gap: 'var(--spacing-lg)',
-                marginBottom: 'var(--spacing-3xl)'
+                gridTemplateColumns: isMobile ? '1fr' : 'repeat(5, 1fr)',
+                gap: isMobile ? 'var(--spacing-md)' : 'var(--spacing-lg)',
+                marginBottom: 'var(--spacing-2xl)'
             }}>
                 {/* Total Customers */}
                 <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
@@ -358,14 +372,14 @@ function StatisticalView({ stats, detailedData }) {
                 />
             </div>
 
-            {/* Professional Reports Section */}
-            <div className="glass-card" style={{ padding: 'var(--spacing-2xl)' }}>
-                <h2 style={{ color: 'white', fontSize: '1.5rem', marginBottom: 'var(--spacing-xl)', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: 'var(--spacing-md)' }}>
-                    <img src="/assets/icons/Reports.png" alt="Reports" style={{ width: '24px', height: '24px', marginRight: '12px', verticalAlign: 'middle' }} />
+            {/* Professional Reports Section - Responsive */}
+            <div className="glass-card" style={{ padding: isMobile ? 'var(--spacing-lg)' : 'var(--spacing-2xl)' }}>
+                <h2 style={{ color: 'white', fontSize: isMobile ? '1.1rem' : '1.5rem', marginBottom: 'var(--spacing-lg)', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: 'var(--spacing-md)' }}>
+                    <img src="/assets/icons/Reports.png" alt="Reports" style={{ width: isMobile ? '18px' : '24px', height: isMobile ? '18px' : '24px', marginRight: '10px', verticalAlign: 'middle' }} />
                     Detailed Reports
                 </h2>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--spacing-lg)' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: isMobile ? 'var(--spacing-md)' : 'var(--spacing-lg)' }}>
                     {/* Customer Report */}
                     <div style={{
                         background: 'rgba(59, 130, 246, 0.1)',
@@ -509,8 +523,8 @@ function StatisticalView({ stats, detailedData }) {
     )
 }
 
-// Calendar View Component - Click Modal (No Hover)
-function CalendarView({ stats, detailedData }) {
+// Calendar View Component - Click Modal (No Hover) - Responsive
+function CalendarView({ stats, detailedData, isMobile }) {
     const [currentMonth, setCurrentMonth] = useState(new Date())
     const [selectedDate, setSelectedDate] = useState(null)
 
@@ -591,22 +605,24 @@ function CalendarView({ stats, detailedData }) {
 
     return (
         <div style={{ position: 'relative' }}>
-            {/* Calendar Header */}
-            <div className="glass-card" style={{ padding: 'var(--spacing-2xl)', marginBottom: 'var(--spacing-2xl)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-lg)' }}>
+            {/* Calendar Header - Compact on mobile */}
+            <div className="glass-card" style={{ padding: isMobile ? 'var(--spacing-md)' : 'var(--spacing-2xl)', marginBottom: 'var(--spacing-lg)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-md)' }}>
                     <button
                         onClick={goToPreviousMonth}
                         style={{
-                            padding: 'var(--spacing-md) var(--spacing-lg)',
+                            padding: isMobile ? '6px' : 'var(--spacing-md) var(--spacing-lg)',
                             background: 'rgba(255, 255, 255, 0.1)',
                             border: '1px solid rgba(255, 255, 255, 0.2)',
                             borderRadius: 'var(--radius-md)',
                             color: 'white',
-                            fontSize: '1.5rem',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
                         }}
                     >
-                        <img src="/assets/icons/Previous.png" alt="Previous" style={{ width: '20px', height: '20px' }} />
+                        <img src="/assets/icons/Previous.png" alt="Previous" style={{ width: isMobile ? '16px' : '20px', height: isMobile ? '16px' : '20px' }} />
                     </button>
 
                     {/* Month/Year Selector */}
@@ -851,13 +867,13 @@ function CalendarView({ stats, detailedData }) {
     )
 }
 
-// Graphical View Component
-function GraphicalView({ stats, detailedData }) {
+// Graphical View Component - Responsive
+function GraphicalView({ stats, detailedData, isMobile }) {
     return (
         <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: 'var(--spacing-2xl)'
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
+            gap: isMobile ? 'var(--spacing-lg)' : 'var(--spacing-2xl)'
         }}>
             {/* Orders Chart Box */}
             <ChartBox
