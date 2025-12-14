@@ -905,22 +905,151 @@ function StatCard({ title, value, color }) {
     )
 }
 
-// Report Section Component
+// Report Section Component with Graphical Visualization
 function ReportSection({ title, data, count }) {
+    const [chartType, setChartType] = useState('bar')
+
+    // Generate chart data based on section type
+    const getChartData = () => {
+        if (title.includes('Customer')) {
+            return {
+                barData: [
+                    { label: 'Total Customers', value: count, color: '#3b82f6' }
+                ],
+                pieData: [
+                    { label: 'Active Customers', value: count, color: '#3b82f6' }
+                ]
+            }
+        } else if (title.includes('Product')) {
+            return {
+                barData: [
+                    { label: 'Total Products', value: count, color: '#10b981' }
+                ],
+                pieData: [
+                    { label: 'Available Products', value: count, color: '#10b981' }
+                ]
+            }
+        } else if (title.includes('Order')) {
+            const pending = data.filter(o => o.order_status === 'Pending').length
+            const confirmed = data.filter(o => o.order_status === 'Confirmed').length
+            const delivered = data.filter(o => o.order_status === 'Delivered').length
+
+            return {
+                barData: [
+                    { label: 'Pending', value: pending, color: '#f59e0b' },
+                    { label: 'Confirmed', value: confirmed, color: '#3b82f6' },
+                    { label: 'Delivered', value: delivered, color: '#22c55e' }
+                ],
+                pieData: [
+                    { label: 'Pending', value: pending, color: '#f59e0b' },
+                    { label: 'Confirmed', value: confirmed, color: '#3b82f6' },
+                    { label: 'Delivered', value: delivered, color: '#22c55e' }
+                ].filter(item => item.value > 0)
+            }
+        } else if (title.includes('Packing')) {
+            return {
+                barData: [
+                    { label: 'Total Items', value: count, color: '#8b5cf6' }
+                ],
+                pieData: [
+                    { label: 'Packing Items', value: count, color: '#8b5cf6' }
+                ]
+            }
+        } else if (title.includes('Inventory')) {
+            const lowStock = data.filter(i => i.quantity <= i.reorder_level).length
+            const normalStock = data.filter(i => i.quantity > i.reorder_level).length
+
+            return {
+                barData: [
+                    { label: 'Low Stock', value: lowStock, color: '#ef4444' },
+                    { label: 'Normal Stock', value: normalStock, color: '#10b981' }
+                ],
+                pieData: [
+                    { label: 'Low Stock', value: lowStock, color: '#ef4444' },
+                    { label: 'Normal Stock', value: normalStock, color: '#10b981' }
+                ].filter(item => item.value > 0)
+            }
+        } else if (title.includes('Sales')) {
+            const totalAmount = data.reduce((sum, s) => sum + parseFloat(s.total_amount || 0), 0)
+
+            return {
+                barData: [
+                    { label: 'Total Sales', value: data.length, color: '#22c55e' },
+                    { label: 'Total Amount', value: Math.round(totalAmount), color: '#10b981' }
+                ],
+                pieData: [
+                    { label: 'Sales Count', value: data.length, color: '#22c55e' }
+                ]
+            }
+        }
+
+        return { barData: [], pieData: [] }
+    }
+
+    const { barData, pieData } = getChartData()
+
     return (
         <div className="glass-card" style={{ padding: 'var(--spacing-2xl)' }}>
-            <h3 style={{ color: 'white', marginBottom: 'var(--spacing-lg)', fontSize: '1.5rem' }}>
-                {title}
-            </h3>
-            <div style={{ color: 'rgba(255,255,255,0.9)', fontSize: '1.1rem', marginBottom: 'var(--spacing-md)' }}>
-                Total Records: <strong>{count}</strong>
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-xl)' }}>
+                <div>
+                    <h3 style={{ color: 'white', marginBottom: 'var(--spacing-sm)', fontSize: '1.5rem' }}>
+                        {title}
+                    </h3>
+                    <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.95rem' }}>
+                        Total Records: <strong style={{ color: 'white' }}>{count}</strong>
+                    </div>
+                </div>
+
+                {/* Chart Type Toggle */}
+                <div style={{ display: 'flex', gap: 'var(--spacing-sm)' }}>
+                    <button
+                        onClick={() => setChartType('bar')}
+                        style={{
+                            padding: 'var(--spacing-sm) var(--spacing-md)',
+                            background: chartType === 'bar' ? 'rgba(59, 130, 246, 0.3)' : 'rgba(255, 255, 255, 0.1)',
+                            border: chartType === 'bar' ? '1px solid rgba(59, 130, 246, 0.5)' : '1px solid rgba(255, 255, 255, 0.2)',
+                            borderRadius: 'var(--radius-md)',
+                            color: 'white',
+                            fontSize: '0.9rem',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease'
+                        }}
+                    >
+                        <img src="/assets/icons/BarChart.png" alt="Bar" style={{ width: '16px', height: '16px', marginRight: '6px' }} /> Bar
+                    </button>
+                    <button
+                        onClick={() => setChartType('pie')}
+                        style={{
+                            padding: 'var(--spacing-sm) var(--spacing-md)',
+                            background: chartType === 'pie' ? 'rgba(59, 130, 246, 0.3)' : 'rgba(255, 255, 255, 0.1)',
+                            border: chartType === 'pie' ? '1px solid rgba(59, 130, 246, 0.5)' : '1px solid rgba(255, 255, 255, 0.2)',
+                            borderRadius: 'var(--radius-md)',
+                            color: 'white',
+                            fontSize: '0.9rem',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease'
+                        }}
+                    >
+                        <img src="/assets/icons/PieChart.png" alt="Pie" style={{ width: '16px', height: '16px', marginRight: '6px' }} /> Pie
+                    </button>
+                </div>
             </div>
-            <div style={{ color: 'rgba(255,255,255,0.7)' }}>
-                {data.length > 0 ? (
-                    <div>Last updated: {new Date().toLocaleString()}</div>
+
+            {/* Chart Display */}
+            <div style={{ minHeight: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {chartType === 'bar' ? (
+                    barData.length > 0 ? <BarChart data={barData} /> : <div style={{ color: 'rgba(255,255,255,0.5)' }}>No data available</div>
                 ) : (
-                    <div>No data available</div>
+                    pieData.length > 0 ? <PieChart data={pieData} /> : <div style={{ color: 'rgba(255,255,255,0.5)' }}>No data available</div>
                 )}
+            </div>
+
+            {/* Footer Info */}
+            <div style={{ marginTop: 'var(--spacing-xl)', color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem', textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 'var(--spacing-md)' }}>
+                {data.length > 0 ? `Last updated: ${new Date().toLocaleString()}` : 'No data available'}
             </div>
         </div>
     )
