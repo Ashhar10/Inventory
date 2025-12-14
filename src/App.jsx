@@ -12,6 +12,9 @@ import Orders from './pages/Orders'
 import Customers from './pages/Customers'
 import Sales from './pages/Sales'
 import Reports from './pages/Reports'
+import Packing from './pages/Packing'
+import Stores from './pages/Stores'
+import Users from './pages/Users'
 
 // Components
 import Navbar from './components/Navbar'
@@ -68,6 +71,9 @@ function App() {
                                 <Route path="/orders" element={<Orders />} />
                                 <Route path="/sales" element={<Sales />} />
                                 <Route path="/reports" element={<Reports />} />
+                                <Route path="/packing" element={<Packing />} />
+                                <Route path="/stores" element={<Stores />} />
+                                <Route path="/users" element={<Users />} />
                                 <Route path="*" element={<Navigate to="/" replace />} />
                             </Routes>
                         </main>
