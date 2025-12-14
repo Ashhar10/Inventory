@@ -308,6 +308,22 @@ function Reports() {
                     color: white;
                     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
                 }
+
+                /* Calendar day cell hover - expand icons */
+                .calendar-day-cell:hover .icon-rest,
+                .calendar-day-cell:focus .icon-rest {
+                    display: flex !important;
+                }
+
+                .calendar-day-cell:hover .expand-arrow,
+                .calendar-day-cell:focus .expand-arrow {
+                    display: none;
+                }
+
+                .calendar-day-cell:hover {
+                    transform: scale(1.05);
+                    z-index: 10;
+                }
             `}</style>
         </div >
     )
@@ -727,17 +743,58 @@ function CalendarView({ stats, detailedData, isMobile }) {
                                         display: 'flex',
                                         flexDirection: 'column',
                                         alignItems: 'center',
-                                        justifyContent: 'center'
+                                        justifyContent: 'center',
+                                        position: 'relative'
                                     }}
+                                    className="calendar-day-cell"
                                 >
-                                    <div style={{ color: 'white', fontWeight: '700', fontSize: '1.1rem' }}>
+                                    <div style={{ color: 'white', fontWeight: '700', fontSize: isMobile ? '0.9rem' : '1.1rem' }}>
                                         {date.getDate()}
                                     </div>
                                     {dateData.hasActivity && (
-                                        <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.8)', marginTop: '4px' }}>
-                                            {dateData.orders > 0 && <div><img src="/assets/icons/Package.png" alt="Orders" style={{ width: '14px', height: '14px', display: 'inline', marginRight: '4px' }} />{dateData.orders}</div>}
-                                            {dateData.sales > 0 && <div><img src="/assets/icons/Money.png" alt="Sales" style={{ width: '14px', height: '14px', display: 'inline', marginRight: '4px' }} />{dateData.sales}</div>}
-                                            {dateData.packing > 0 && <div><img src="/assets/icons/Clipboard.png" alt="Packing" style={{ width: '14px', height: '14px', display: 'inline', marginRight: '4px' }} />{dateData.packing}</div>}
+                                        <div className="calendar-icons-container" style={{
+                                            fontSize: '0.65rem',
+                                            color: 'rgba(255,255,255,0.8)',
+                                            marginTop: '2px',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            gap: '2px'
+                                        }}>
+                                            {/* First icon always visible */}
+                                            <div className="icon-first" style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                                {dateData.orders > 0 ? (
+                                                    <><img src="/assets/icons/Package.png" alt="Orders" style={{ width: '12px', height: '12px' }} /><span>{dateData.orders}</span></>
+                                                ) : dateData.sales > 0 ? (
+                                                    <><img src="/assets/icons/Money.png" alt="Sales" style={{ width: '12px', height: '12px' }} /><span>{dateData.sales}</span></>
+                                                ) : dateData.packing > 0 ? (
+                                                    <><img src="/assets/icons/Clipboard.png" alt="Packing" style={{ width: '12px', height: '12px' }} /><span>{dateData.packing}</span></>
+                                                ) : null}
+                                                {/* Arrow indicator if more icons */}
+                                                {((dateData.orders > 0 ? 1 : 0) + (dateData.sales > 0 ? 1 : 0) + (dateData.packing > 0 ? 1 : 0)) > 1 && (
+                                                    <span className="expand-arrow" style={{ marginLeft: '2px', fontSize: '0.5rem', opacity: 0.7 }}>▼</span>
+                                                )}
+                                            </div>
+                                            {/* Other icons - hidden by default, shown on hover */}
+                                            <div className="icon-rest" style={{
+                                                display: 'none',
+                                                flexDirection: 'column',
+                                                alignItems: 'center',
+                                                gap: '2px'
+                                            }}>
+                                                {dateData.orders > 0 && dateData.sales > 0 && (
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                                        <img src="/assets/icons/Money.png" alt="Sales" style={{ width: '12px', height: '12px' }} />
+                                                        <span>{dateData.sales}</span>
+                                                    </div>
+                                                )}
+                                                {(dateData.orders > 0 || dateData.sales > 0) && dateData.packing > 0 && (
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                                        <img src="/assets/icons/Clipboard.png" alt="Packing" style={{ width: '12px', height: '12px' }} />
+                                                        <span>{dateData.packing}</span>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     )}
                                 </div>
