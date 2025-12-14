@@ -298,16 +298,16 @@ function Reports() {
     )
 }
 
-// Statistical View Component
+// Statistical View Component - Fully Responsive
 function StatisticalView({ stats, detailedData }) {
     return (
         <>
-            {/* Overview Stats Grid - Same as Dashboard */}
+            {/* Overview Stats Grid - Responsive */}
             <div className="stats-grid" style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(5, 1fr)',
-                gap: 'var(--spacing-lg)',
-                marginBottom: 'var(--spacing-3xl)'
+                gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+                gap: 'var(--spacing-md)',
+                marginBottom: 'var(--spacing-2xl)'
             }}>
                 {/* Total Customers */}
                 <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
@@ -358,14 +358,14 @@ function StatisticalView({ stats, detailedData }) {
                 />
             </div>
 
-            {/* Professional Reports Section */}
-            <div className="glass-card" style={{ padding: 'var(--spacing-2xl)' }}>
-                <h2 style={{ color: 'white', fontSize: '1.5rem', marginBottom: 'var(--spacing-xl)', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: 'var(--spacing-md)' }}>
-                    <img src="/assets/icons/Reports.png" alt="Reports" style={{ width: '24px', height: '24px', marginRight: '12px', verticalAlign: 'middle' }} />
+            {/* Professional Reports Section - Responsive */}
+            <div className="glass-card" style={{ padding: 'var(--spacing-xl)' }}>
+                <h2 style={{ color: 'white', fontSize: '1.2rem', marginBottom: 'var(--spacing-lg)', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: 'var(--spacing-md)' }}>
+                    <img src="/assets/icons/Reports.png" alt="Reports" style={{ width: '20px', height: '20px', marginRight: '10px', verticalAlign: 'middle' }} />
                     Detailed Reports
                 </h2>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--spacing-lg)' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--spacing-md)' }}>
                     {/* Customer Report */}
                     <div style={{
                         background: 'rgba(59, 130, 246, 0.1)',
@@ -509,27 +509,21 @@ function StatisticalView({ stats, detailedData }) {
     )
 }
 
-// Calendar View Component
+// Calendar View Component - Click Modal (No Hover)
 function CalendarView({ stats, detailedData }) {
     const [currentMonth, setCurrentMonth] = useState(new Date())
-    const [hoveredDate, setHoveredDate] = useState(null)
     const [selectedDate, setSelectedDate] = useState(null)
-    const [hoverTimeout, setHoverTimeout] = useState(null)
 
-    // Handle hover with delay
-    const handleMouseEnter = (date) => {
-        const timeout = setTimeout(() => {
-            setHoveredDate(date)
-        }, 300) // 0.3 second delay
-        setHoverTimeout(timeout)
+    // Handle date click
+    const handleDateClick = (date) => {
+        setSelectedDate(date)
     }
 
-    const handleMouseLeave = () => {
-        if (hoverTimeout) {
-            clearTimeout(hoverTimeout)
-            setHoverTimeout(null)
+    // Close modal when clicking backdrop
+    const handleBackdropClick = (e) => {
+        if (e.target === e.currentTarget) {
+            setSelectedDate(null)
         }
-        setHoveredDate(null)
     }
 
     // Get calendar days for the current month
@@ -683,44 +677,40 @@ function CalendarView({ stats, detailedData }) {
                         ))}
                     </div>
 
-                    {/* Calendar days */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 'var(--spacing-sm)' }}>
+                    {/* Calendar days - Responsive */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
                         {days.map((date, index) => {
                             if (!date) {
-                                return <div key={`empty-${index}`} style={{ aspectRatio: '1', minHeight: '80px' }}></div>
+                                return <div key={`empty-${index}`} style={{ aspectRatio: '1', minHeight: '45px' }}></div>
                             }
 
                             const dateData = getDateData(date)
                             const isToday = date.toDateString() === new Date().toDateString()
                             const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString()
-                            const isHovered = hoveredDate && date.toDateString() === hoveredDate.toDateString()
 
                             return (
                                 <div
                                     key={index}
-                                    onMouseEnter={() => handleMouseEnter(date)}
-                                    onMouseLeave={handleMouseLeave}
-                                    onClick={() => setSelectedDate(date)}
+                                    onClick={() => handleDateClick(date)}
                                     style={{
                                         aspectRatio: '1',
-                                        minHeight: '80px',
+                                        minHeight: '45px',
                                         background: isSelected
-                                            ? 'rgba(59, 130, 246, 0.3)'
+                                            ? 'rgba(59, 130, 246, 0.4)'
                                             : isToday
-                                                ? 'rgba(16, 185, 129, 0.2)'
+                                                ? 'rgba(16, 185, 129, 0.3)'
                                                 : dateData.hasActivity
-                                                    ? 'rgba(255, 255, 255, 0.1)'
+                                                    ? 'rgba(59, 130, 246, 0.15)'
                                                     : 'rgba(255, 255, 255, 0.05)',
-                                        border: isHovered ? '2px solid rgba(59, 130, 246, 0.5)' : isToday ? '2px solid rgba(16, 185, 129, 0.5)' : '1px solid rgba(255, 255, 255, 0.1)',
-                                        borderRadius: 'var(--radius-md)',
-                                        padding: 'var(--spacing-sm)',
+                                        border: isToday ? '2px solid rgba(16, 185, 129, 0.6)' : '1px solid rgba(255, 255, 255, 0.1)',
+                                        borderRadius: 'var(--radius-sm)',
+                                        padding: '4px',
                                         cursor: 'pointer',
-                                        transition: 'all 0.3s ease',
-                                        position: 'relative',
+                                        transition: 'all 0.2s ease',
                                         display: 'flex',
                                         flexDirection: 'column',
-                                        transform: isHovered ? 'scale(1.05)' : 'scale(1)',
-                                        zIndex: isHovered ? 10 : 1
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
                                     }}
                                 >
                                     <div style={{ color: 'white', fontWeight: '700', fontSize: '1.1rem' }}>
@@ -740,135 +730,93 @@ function CalendarView({ stats, detailedData }) {
                 </div>
             </div>
 
-            {/* Hover Overlay */}
-            {hoveredDate && (
-                <div style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    background: 'rgba(0, 0, 0, 0.7)',
-                    backdropFilter: 'blur(8px)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    zIndex: 100,
-                    pointerEvents: 'none'
-                }}>
-                    <div className="glass-card" style={{ padding: 'var(--spacing-2xl)', maxWidth: '400px', width: '90%' }}>
-                        <h3 style={{ color: 'white', marginBottom: 'var(--spacing-lg)', fontSize: '1.3rem' }}>
-                            {getDateData(hoveredDate).date}
-                        </h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--spacing-sm)', background: 'rgba(255, 255, 255, 0.05)', borderRadius: 'var(--radius-sm)' }}>
-                                <span style={{ color: 'rgba(255,255,255,0.8)' }}>Orders:</span>
-                                <span style={{ color: 'white', fontWeight: '700' }}>{getDateData(hoveredDate).orders}</span>
-                            </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--spacing-sm)', background: 'rgba(255, 255, 255, 0.05)', borderRadius: 'var(--radius-sm)' }}>
-                                <span style={{ color: 'rgba(255,255,255,0.8)' }}>Sales:</span>
-                                <span style={{ color: 'white', fontWeight: '700' }}>{getDateData(hoveredDate).sales}</span>
-                            </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--spacing-sm)', background: 'rgba(255, 255, 255, 0.05)', borderRadius: 'var(--radius-sm)' }}>
-                                <span style={{ color: 'rgba(255,255,255,0.8)' }}>Sales Amount:</span>
-                                <span style={{ color: '#22c55e', fontWeight: '700' }}>Rs. {getDateData(hoveredDate).salesAmount.toLocaleString()}</span>
-                            </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--spacing-sm)', background: 'rgba(255, 255, 255, 0.05)', borderRadius: 'var(--radius-sm)' }}>
-                                <span style={{ color: 'rgba(255,255,255,0.8)' }}>Packing:</span>
-                                <span style={{ color: 'white', fontWeight: '700' }}>{getDateData(hoveredDate).packing}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )
-            }
-
-            {/* Selected Date Detailed Report */}
-            {
-                selectedDate && !hoveredDate && (
-                    <div className="glass-card" style={{ padding: 'var(--spacing-2xl)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-xl)' }}>
-                            <h3 style={{ color: 'white', fontSize: '1.5rem', margin: 0 }}>
-                                Detailed Report - {getDateData(selectedDate).date}
+            {/* Click Modal with Backdrop Blur */}
+            {selectedDate && (
+                <div
+                    onClick={handleBackdropClick}
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        background: 'rgba(0, 0, 0, 0.7)',
+                        backdropFilter: 'blur(8px)',
+                        WebkitBackdropFilter: 'blur(8px)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 1000,
+                        padding: 'var(--spacing-md)'
+                    }}
+                >
+                    <div
+                        className="glass-card"
+                        style={{
+                            padding: 'var(--spacing-xl)',
+                            maxWidth: '450px',
+                            width: '100%',
+                            maxHeight: '85vh',
+                            overflowY: 'auto'
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Modal Header */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-lg)' }}>
+                            <h3 style={{ color: 'white', fontSize: '1.1rem', margin: 0, fontWeight: '700' }}>
+                                {getDateData(selectedDate).date}
                             </h3>
                             <button
                                 onClick={() => setSelectedDate(null)}
                                 style={{
-                                    padding: 'var(--spacing-sm) var(--spacing-lg)',
+                                    padding: 'var(--spacing-sm)',
                                     background: 'rgba(239, 68, 68, 0.2)',
                                     border: '1px solid rgba(239, 68, 68, 0.5)',
                                     borderRadius: 'var(--radius-md)',
                                     color: 'white',
-                                    fontSize: '0.9rem',
-                                    fontWeight: '600',
-                                    cursor: 'pointer'
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '4px',
+                                    fontSize: '0.85rem'
                                 }}
                             >
-                                <img src="/assets/icons/Close.png" alt="Close" style={{ width: '16px', height: '16px', marginRight: '6px' }} /> Close
+                                <img src="/assets/icons/Close.png" alt="Close" style={{ width: '14px', height: '14px' }} /> Close
                             </button>
                         </div>
 
-                        {/* Statistics Grid for Selected Date */}
+                        {/* Stats Grid - Responsive 2x2 */}
                         <div style={{
                             display: 'grid',
-                            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                            gap: 'var(--spacing-lg)',
-                            marginBottom: 'var(--spacing-2xl)'
+                            gridTemplateColumns: 'repeat(2, 1fr)',
+                            gap: 'var(--spacing-sm)',
+                            marginBottom: 'var(--spacing-lg)'
                         }}>
-                            <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                                <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#f59e0b', marginBottom: 'var(--spacing-sm)' }}>
-                                    {getDateData(selectedDate).orders}
-                                </div>
-                                <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
-                                    Total Orders
-                                </div>
+                            <div style={{ background: 'rgba(245, 158, 11, 0.15)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: 'var(--radius-md)', padding: 'var(--spacing-md)', textAlign: 'center' }}>
+                                <div style={{ fontSize: '1.8rem', fontWeight: '700', color: '#f59e0b' }}>{getDateData(selectedDate).orders}</div>
+                                <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)' }}>Orders</div>
                             </div>
-
-                            <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                                <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#10b981', marginBottom: 'var(--spacing-sm)' }}>
-                                    {getDateData(selectedDate).sales}
-                                </div>
-                                <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
-                                    Total Sales
-                                </div>
+                            <div style={{ background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: 'var(--radius-md)', padding: 'var(--spacing-md)', textAlign: 'center' }}>
+                                <div style={{ fontSize: '1.8rem', fontWeight: '700', color: '#10b981' }}>{getDateData(selectedDate).sales}</div>
+                                <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)' }}>Sales</div>
                             </div>
-
-                            <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                                <div style={{ fontSize: '1.8rem', fontWeight: '800', color: '#22c55e', marginBottom: 'var(--spacing-sm)' }}>
-                                    Rs. {getDateData(selectedDate).salesAmount.toLocaleString()}
-                                </div>
-                                <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
-                                    Sales Amount
-                                </div>
+                            <div style={{ background: 'rgba(34, 197, 94, 0.15)', border: '1px solid rgba(34, 197, 94, 0.3)', borderRadius: 'var(--radius-md)', padding: 'var(--spacing-md)', textAlign: 'center' }}>
+                                <div style={{ fontSize: '1.1rem', fontWeight: '700', color: '#22c55e' }}>Rs. {getDateData(selectedDate).salesAmount.toLocaleString()}</div>
+                                <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)' }}>Amount</div>
                             </div>
-
-                            <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                                <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#8b5cf6', marginBottom: 'var(--spacing-sm)' }}>
-                                    {getDateData(selectedDate).packing}
-                                </div>
-                                <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
-                                    Packing Items
-                                </div>
-                            </div>
-
-                            {/* Inventory Summary */}
-                            <div className="glass-card stat-card" style={{ padding: 'var(--spacing-xl)', textAlign: 'center' }}>
-                                <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#06b6d4', marginBottom: 'var(--spacing-sm)' }}>
-                                    {detailedData.inventory.length}
-                                </div>
-                                <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', fontWeight: '600' }}>
-                                    Inventory Items
-                                </div>
+                            <div style={{ background: 'rgba(139, 92, 246, 0.15)', border: '1px solid rgba(139, 92, 246, 0.3)', borderRadius: 'var(--radius-md)', padding: 'var(--spacing-md)', textAlign: 'center' }}>
+                                <div style={{ fontSize: '1.8rem', fontWeight: '700', color: '#8b5cf6' }}>{getDateData(selectedDate).packing}</div>
+                                <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)' }}>Packing</div>
                             </div>
                         </div>
 
-                        {/* Inventory Products Section */}
-                        <div style={{ marginTop: 'var(--spacing-xl)' }}>
-                            <h4 style={{ color: 'white', marginBottom: 'var(--spacing-md)', display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
-                                <img src="/assets/icons/Inventory.png" alt="Inventory" style={{ width: '20px', height: '20px' }} />
-                                Current Inventory (Top Products)
+                        {/* Inventory Section */}
+                        <div>
+                            <h4 style={{ color: 'white', marginBottom: 'var(--spacing-sm)', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <img src="/assets/icons/Inventory.png" alt="Inventory" style={{ width: '16px', height: '16px' }} />
+                                Inventory ({detailedData.inventory.length} items)
                             </h4>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 'var(--spacing-md)' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--spacing-sm)' }}>
                                 {detailedData.inventory
                                     .filter(item => item.product && item.quantity > 0)
                                     .sort((a, b) => b.quantity - a.quantity)
@@ -877,40 +825,38 @@ function CalendarView({ stats, detailedData }) {
                                         <div key={index} style={{
                                             background: 'rgba(6, 182, 212, 0.1)',
                                             border: '1px solid rgba(6, 182, 212, 0.3)',
-                                            borderRadius: 'var(--radius-md)',
-                                            padding: 'var(--spacing-md)',
+                                            borderRadius: 'var(--radius-sm)',
+                                            padding: 'var(--spacing-sm)',
                                             textAlign: 'center'
                                         }}>
-                                            <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#06b6d4' }}>
-                                                {item.quantity}
-                                            </div>
-                                            <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)', marginTop: 'var(--spacing-xs)' }}>
-                                                {item.product?.name || 'Unknown Product'}
+                                            <div style={{ fontSize: '1rem', fontWeight: '700', color: '#06b6d4' }}>{item.quantity}</div>
+                                            <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.6)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                {item.product?.name || 'Unknown'}
                                             </div>
                                         </div>
                                     ))
                                 }
                                 {detailedData.inventory.filter(item => item.product && item.quantity > 0).length === 0 && (
-                                    <div style={{ color: 'rgba(255,255,255,0.5)', padding: 'var(--spacing-lg)', textAlign: 'center', gridColumn: '1 / -1' }}>
-                                        No inventory data available
+                                    <div style={{ color: 'rgba(255,255,255,0.5)', padding: 'var(--spacing-md)', textAlign: 'center', gridColumn: '1 / -1', fontSize: '0.8rem' }}>
+                                        No inventory data
                                     </div>
                                 )}
                             </div>
                         </div>
                     </div>
-                )
-            }
+                </div>
+            )}
         </div>
     )
 }
 
-// Graphical View Component
+// Graphical View Component - Fully Responsive
 function GraphicalView({ stats, detailedData }) {
     return (
         <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: 'var(--spacing-2xl)'
+            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gap: 'var(--spacing-lg)'
         }}>
             {/* Orders Chart Box */}
             <ChartBox
