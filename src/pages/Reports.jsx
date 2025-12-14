@@ -3,6 +3,9 @@ import { db } from '../supabase/client'
 
 function Reports() {
     const [viewMode, setViewMode] = useState('statistical') // 'statistical' or 'graphical'
+    const [dateRange, setDateRange] = useState('all') // 'today', 'week', 'month', 'quarter', 'year', 'custom', 'all'
+    const [customStartDate, setCustomStartDate] = useState('')
+    const [customEndDate, setCustomEndDate] = useState('')
     const [stats, setStats] = useState({
         customers: 0,
         products: 0,
@@ -26,11 +29,14 @@ function Reports() {
 
     useEffect(() => {
         loadAllReports()
-    }, [])
+    }, [dateRange, customStartDate, customEndDate])
 
     const loadAllReports = async () => {
         setLoading(true)
         try {
+            // Calculate date range
+            const { startDate, endDate } = getDateRange()
+
             // Load dashboard stats
             const statsData = await db.getDashboardStats()
             setStats(statsData)
@@ -45,12 +51,17 @@ function Reports() {
                 db.getInventory(),
             ])
 
+            // Filter data by date range
+            const filteredOrders = filterByDate(orders.data || [], 'order_date', startDate, endDate)
+            const filteredSales = filterByDate(sales.data || [], 'sale_date', startDate, endDate)
+            const filteredPacking = filterByDate(packing.data || [], 'packed_date', startDate, endDate)
+
             setDetailedData({
                 customers: customers.data || [],
                 products: products.data || [],
-                orders: orders.data || [],
-                sales: sales.data || [],
-                packing: packing.data || [],
+                orders: filteredOrders,
+                sales: filteredSales,
+                packing: filteredPacking,
                 inventory: inventory.data || [],
             })
         } catch (error) {
@@ -58,6 +69,50 @@ function Reports() {
         } finally {
             setLoading(false)
         }
+    }
+
+    const getDateRange = () => {
+        const now = new Date()
+        let startDate = null
+        let endDate = now
+
+        switch (dateRange) {
+            case 'today':
+                startDate = new Date(now.setHours(0, 0, 0, 0))
+                break
+            case 'week':
+                startDate = new Date(now.setDate(now.getDate() - 7))
+                break
+            case 'month':
+                startDate = new Date(now.setDate(now.getDate() - 30))
+                break
+            case 'quarter':
+                startDate = new Date(now.setDate(now.getDate() - 90))
+                break
+            case 'year':
+                startDate = new Date(now.setFullYear(now.getFullYear() - 1))
+                break
+            case 'custom':
+                startDate = customStartDate ? new Date(customStartDate) : null
+                endDate = customEndDate ? new Date(customEndDate) : new Date()
+                break
+            default: // 'all'
+                startDate = null
+                endDate = null
+        }
+
+        return { startDate, endDate }
+    }
+
+    const filterByDate = (data, dateField, startDate, endDate) => {
+        if (!startDate && !endDate) return data
+
+        return data.filter(item => {
+            const itemDate = new Date(item[dateField] || item.created_at)
+            if (startDate && itemDate < startDate) return false
+            if (endDate && itemDate > endDate) return false
+            return true
+        })
     }
 
     if (loading) {
@@ -70,7 +125,7 @@ function Reports() {
 
     return (
         <div className="container">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-2xl)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-xl)', flexWrap: 'wrap', gap: 'var(--spacing-lg)' }}>
                 <h1 className="page-title">Reports & Analytics</h1>
 
                 {/* View Mode Toggle */}
@@ -88,6 +143,80 @@ function Reports() {
                         📈 Graphical
                     </button>
                 </div>
+            </div>
+
+            {/* Date Range Filter */}
+            <div style={{
+                display: 'flex',
+                gap: 'var(--spacing-md)',
+                marginBottom: 'var(--spacing-2xl)',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                background: 'rgba(255, 255, 255, 0.05)',
+                padding: 'var(--spacing-lg)',
+                borderRadius: 'var(--radius-lg)'
+            }}>
+                <span style={{ color: 'white', fontWeight: '600', fontSize: '0.95rem' }}>Date Range:</span>
+
+                {['all', 'today', 'week', 'month', 'quarter', 'year', 'custom'].map((range) => (
+                    <button
+                        key={range}
+                        onClick={() => setDateRange(range)}
+                        style={{
+                            padding: 'var(--spacing-sm) var(--spacing-lg)',
+                            background: dateRange === range
+                                ? 'rgba(59, 130, 246, 0.3)'
+                                : 'rgba(255, 255, 255, 0.1)',
+                            border: dateRange === range ? '1px solid rgba(59, 130, 246, 0.5)' : '1px solid transparent',
+                            borderRadius: 'var(--radius-md)',
+                            color: 'white',
+                            fontSize: '0.9rem',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease'
+                        }}
+                    >
+                        {range === 'all' && 'All Time'}
+                        {range === 'today' && 'Today'}
+                        {range === 'week' && 'Last 7 Days'}
+                        {range === 'month' && 'Last 30 Days'}
+                        {range === 'quarter' && 'Last 90 Days'}
+                        {range === 'year' && 'Last Year'}
+                        {range === 'custom' && 'Custom Range'}
+                    </button>
+                ))}
+
+                {dateRange === 'custom' && (
+                    <>
+                        <input
+                            type="date"
+                            value={customStartDate}
+                            onChange={(e) => setCustomStartDate(e.target.value)}
+                            style={{
+                                padding: 'var(--spacing-sm) var(--spacing-md)',
+                                background: 'rgba(255, 255, 255, 0.1)',
+                                border: '1px solid rgba(255, 255, 255, 0.2)',
+                                borderRadius: 'var(--radius-md)',
+                                color: 'white',
+                                fontSize: '0.9rem'
+                            }}
+                        />
+                        <span style={{ color: 'rgba(255,255,255,0.7)' }}>to</span>
+                        <input
+                            type="date"
+                            value={customEndDate}
+                            onChange={(e) => setCustomEndDate(e.target.value)}
+                            style={{
+                                padding: 'var(--spacing-sm) var(--spacing-md)',
+                                background: 'rgba(255, 255, 255, 0.1)',
+                                border: '1px solid rgba(255, 255, 255, 0.2)',
+                                borderRadius: 'var(--radius-md)',
+                                color: 'white',
+                                fontSize: '0.9rem'
+                            }}
+                        />
+                    </>
+                )}
             </div>
 
             {viewMode === 'statistical' ? (
