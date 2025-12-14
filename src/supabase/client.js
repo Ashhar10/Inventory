@@ -389,6 +389,23 @@ export const db = {
         return { data, error }
     },
 
+    updateSale: async (id, saleData) => {
+        const { data, error } = await supabase
+            .from('sales')
+            .update(saleData)
+            .eq('id', id)
+            .select()
+        return { data, error }
+    },
+
+    deleteSale: async (id) => {
+        const { error } = await supabase
+            .from('sales')
+            .delete()
+            .eq('id', id)
+        return { error }
+    },
+
     // Packing
     getPacking: async () => {
         const { data, error } = await supabase

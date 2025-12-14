@@ -165,8 +165,13 @@ function Sales() {
         showConfirm(
             `Are you sure you want to delete sale invoice "${sale.invoice_number}"? This action cannot be undone.`,
             async () => {
-                // We don't have a delete method yet, so we'll skip for now
-                showError('Delete functionality not yet implemented')
+                const { error } = await db.deleteSale(sale.id)
+                if (!error) {
+                    loadData()
+                    showSuccess('Sale deleted successfully!')
+                } else {
+                    showError('Error deleting sale: ' + error.message)
+                }
             },
             'Delete Sale'
         )
@@ -188,9 +193,8 @@ function Sales() {
 
             let error
             if (editingSale) {
-                // Update not implemented yet in client
-                showError('Edit functionality not yet implemented')
-                return
+                const result = await db.updateSale(editingSale.id, saleData)
+                error = result.error
             } else {
                 const result = await db.createSale(saleData)
                 error = result.error
@@ -199,7 +203,9 @@ function Sales() {
             if (!error) {
                 setShowModal(false)
                 loadData()
-                showSuccess('Sale created successfully!')
+                showSuccess(
+                    editingSale ? 'Sale updated successfully!' : 'Sale created successfully!'
+                )
             } else {
                 showError('Error saving sale: ' + error.message)
             }
@@ -222,6 +228,7 @@ function Sales() {
                 data={sales}
                 onAdd={handleAdd}
                 onEdit={handleEdit}
+                onDelete={handleDelete}
                 loading={loading}
             />
 
