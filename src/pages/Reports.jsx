@@ -298,184 +298,154 @@ function StatisticalView({ stats, detailedData }) {
 
 // Graphical View Component
 function GraphicalView({ stats, detailedData }) {
-    const [chartType, setChartType] = useState('bar')
+    return (
+        <div style={{ display: 'grid', gap: 'var(--spacing-2xl)' }}>
+            {/* Orders Chart Box */}
+            <ChartBox
+                title="Orders Analysis"
+                barData={[
+                    { label: 'Pending', value: stats.pendingOrders, color: '#f59e0b' },
+                    { label: 'Confirmed', value: stats.confirmedOrders, color: '#3b82f6' },
+                    { label: 'Delivered', value: stats.deliveredOrders, color: '#22c55e' },
+                ]}
+                pieData={[
+                    { label: 'Pending', value: stats.pendingOrders, color: '#f59e0b' },
+                    { label: 'Confirmed', value: stats.confirmedOrders, color: '#3b82f6' },
+                    { label: 'Delivered', value: stats.deliveredOrders, color: '#22c55e' },
+                ]}
+            />
 
-    const chartTypes = [
-        { id: 'bar', label: 'Bar Chart', icon: '📊' },
-        { id: 'pie', label: 'Pie Chart', icon: '🥧' },
-        { id: 'line', label: 'Line Chart', icon: '📈' },
-        { id: 'scatter', label: 'Scatter Plot', icon: '⚫' },
-        { id: 'heatmap', label: 'Heatmap', icon: '🔥' },
-        { id: 'histogram', label: 'Histogram', icon: '📶' },
+            {/* Packing Chart Box */}
+            <ChartBox
+                title="Packing Status"
+                barData={[
+                    { label: 'Total', value: stats.totalPacking, color: '#8b5cf6' },
+                    { label: 'Packed', value: stats.packedItems, color: '#06b6d4' },
+                    { label: 'Shipped', value: stats.shippedItems, color: '#10b981' },
+                ]}
+                pieData={[
+                    { label: 'Packed', value: stats.packedItems, color: '#06b6d4' },
+                    { label: 'Shipped', value: stats.shippedItems, color: '#10b981' },
+                    { label: 'Pending', value: stats.totalPacking - stats.packedItems - stats.shippedItems, color: '#f59e0b' },
+                ]}
+            />
+
+            {/* Sales Chart Box */}
+            <ChartBox
+                title="Sales Distribution"
+                barData={calculateSalesDistribution(detailedData.sales)}
+                pieData={calculateSalesDistribution(detailedData.sales)}
+            />
+
+            {/* Customers Chart Box */}
+            <ChartBox
+                title="Customer Overview"
+                barData={[
+                    { label: 'Total Customers', value: stats.customers, color: '#3b82f6' },
+                    { label: 'Active Orders', value: detailedData.orders.length, color: '#10b981' },
+                ]}
+                pieData={[
+                    { label: 'With Orders', value: detailedData.orders.length, color: '#10b981' },
+                    { label: 'Without Orders', value: Math.max(0, stats.customers - detailedData.orders.length), color: '#94a3b8' },
+                ]}
+            />
+
+            {/* Inventory Chart Box */}
+            <ChartBox
+                title="Inventory Analysis"
+                barData={calculateInventoryDistribution(detailedData.inventory)}
+                pieData={calculateInventoryDistribution(detailedData.inventory)}
+            />
+        </div>
+    )
+}
+
+// Helper function to calculate sales distribution
+function calculateSalesDistribution(sales) {
+    const ranges = [
+        { min: 0, max: 10000, label: '0-10k', color: '#3b82f6' },
+        { min: 10000, max: 25000, label: '10k-25k', color: '#10b981' },
+        { min: 25000, max: 50000, label: '25k-50k', color: '#f59e0b' },
+        { min: 50000, max: 100000, label: '50k-100k', color: '#8b5cf6' },
+        { min: 100000, max: Infinity, label: '100k+', color: '#ef4444' },
     ]
 
+    return ranges.map(range => ({
+        label: range.label,
+        value: sales.filter(sale => {
+            const amount = parseFloat(sale.total_amount || 0)
+            return amount >= range.min && amount < range.max
+        }).length,
+        color: range.color
+    })).filter(item => item.value > 0)
+}
+
+// Helper function to calculate inventory distribution
+function calculateInventoryDistribution(inventory) {
+    const lowStock = inventory.filter(item => item.quantity <= item.reorder_level).length
+    const normalStock = inventory.filter(item => item.quantity > item.reorder_level).length
+
+    return [
+        { label: 'Low Stock', value: lowStock, color: '#ef4444' },
+        { label: 'Normal Stock', value: normalStock, color: '#10b981' },
+    ].filter(item => item.value > 0)
+}
+
+// Chart Box Component with Toggle
+function ChartBox({ title, barData, pieData }) {
+    const [chartType, setChartType] = useState('bar')
+
     return (
-        <>
-            {/* Chart Type Selector */}
-            <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-                gap: 'var(--spacing-md)',
-                marginBottom: 'var(--spacing-2xl)'
-            }}>
-                {chartTypes.map((type) => (
+        <div className="glass-card" style={{ padding: 'var(--spacing-2xl)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-xl)' }}>
+                <h3 style={{ color: 'white', fontSize: '1.5rem', margin: 0 }}>
+                    {title}
+                </h3>
+
+                {/* Chart Type Toggle */}
+                <div style={{ display: 'flex', gap: 'var(--spacing-sm)', background: 'rgba(255, 255, 255, 0.1)', padding: '4px', borderRadius: 'var(--radius-md)' }}>
                     <button
-                        key={type.id}
-                        onClick={() => setChartType(type.id)}
-                        className={`chart-type-btn ${chartType === type.id ? 'active' : ''}`}
+                        onClick={() => setChartType('bar')}
                         style={{
-                            padding: 'var(--spacing-lg)',
-                            background: chartType === type.id
-                                ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(16, 185, 129, 0.3))'
-                                : 'rgba(255, 255, 255, 0.1)',
-                            border: chartType === type.id ? '2px solid rgba(59, 130, 246, 0.5)' : '2px solid transparent',
-                            borderRadius: 'var(--radius-lg)',
+                            padding: 'var(--spacing-sm) var(--spacing-lg)',
+                            background: chartType === 'bar' ? 'rgba(59, 130, 246, 0.3)' : 'transparent',
+                            border: 'none',
+                            borderRadius: 'var(--radius-sm)',
                             color: 'white',
-                            fontSize: '1rem',
+                            fontSize: '0.9rem',
                             fontWeight: '600',
                             cursor: 'pointer',
-                            transition: 'all 0.3s ease',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            gap: 'var(--spacing-sm)'
+                            transition: 'all 0.3s ease'
                         }}
                     >
-                        <span style={{ fontSize: '2rem' }}>{type.icon}</span>
-                        <span>{type.label}</span>
+                        📊 Bar
                     </button>
-                ))}
+                    <button
+                        onClick={() => setChartType('pie')}
+                        style={{
+                            padding: 'var(--spacing-sm) var(--spacing-lg)',
+                            background: chartType === 'pie' ? 'rgba(59, 130, 246, 0.3)' : 'transparent',
+                            border: 'none',
+                            borderRadius: 'var(--radius-sm)',
+                            color: 'white',
+                            fontSize: '0.9rem',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease'
+                        }}
+                    >
+                        🥧 Pie
+                    </button>
+                </div>
             </div>
 
-            {/* Charts Display */}
-            <div style={{ display: 'grid', gap: 'var(--spacing-2xl)' }}>
-                {chartType === 'bar' && (
-                    <>
-                        <ChartCard title="System Overview">
-                            <BarChart
-                                data={[
-                                    { label: 'Customers', value: stats.customers, color: '#3b82f6' },
-                                    { label: 'Products', value: stats.products, color: '#10b981' },
-                                    { label: 'Orders', value: detailedData.orders.length, color: '#f59e0b' },
-                                    { label: 'Packing', value: stats.totalPacking, color: '#8b5cf6' },
-                                ]}
-                            />
-                        </ChartCard>
-
-                        <ChartCard title="Orders by Status">
-                            <BarChart
-                                data={[
-                                    { label: 'Pending', value: stats.pendingOrders, color: '#f59e0b' },
-                                    { label: 'Confirmed', value: stats.confirmedOrders, color: '#3b82f6' },
-                                    { label: 'Delivered', value: stats.deliveredOrders, color: '#22c55e' },
-                                ]}
-                            />
-                        </ChartCard>
-
-                        <ChartCard title="Packing Status">
-                            <BarChart
-                                data={[
-                                    { label: 'Total', value: stats.totalPacking, color: '#8b5cf6' },
-                                    { label: 'Packed', value: stats.packedItems, color: '#06b6d4' },
-                                    { label: 'Shipped', value: stats.shippedItems, color: '#10b981' },
-                                ]}
-                            />
-                        </ChartCard>
-                    </>
-                )}
-
-                {chartType === 'pie' && (
-                    <>
-                        <ChartCard title="Order Status Distribution">
-                            <PieChart
-                                data={[
-                                    { label: 'Pending', value: stats.pendingOrders, color: '#f59e0b' },
-                                    { label: 'Confirmed', value: stats.confirmedOrders, color: '#3b82f6' },
-                                    { label: 'Delivered', value: stats.deliveredOrders, color: '#22c55e' },
-                                ]}
-                            />
-                        </ChartCard>
-
-                        <ChartCard title="Packing Status Distribution">
-                            <PieChart
-                                data={[
-                                    { label: 'Packed', value: stats.packedItems, color: '#06b6d4' },
-                                    { label: 'Shipped', value: stats.shippedItems, color: '#10b981' },
-                                    { label: 'Pending', value: stats.totalPacking - stats.packedItems - stats.shippedItems, color: '#f59e0b' },
-                                ]}
-                            />
-                        </ChartCard>
-                    </>
-                )}
-
-                {chartType === 'line' && (
-                    <ChartCard title="System Data Trends">
-                        <LineChart
-                            data={[
-                                {
-                                    label: 'Current',
-                                    customers: stats.customers,
-                                    products: stats.products,
-                                    orders: detailedData.orders.length,
-                                    packing: stats.totalPacking
-                                },
-                            ]}
-                        />
-                        <div style={{ color: 'rgba(255,255,255,0.7)', marginTop: 'var(--spacing-lg)', textAlign: 'center' }}>
-                            Showing current system data snapshot
-                        </div>
-                    </ChartCard>
-                )}
-
-                {chartType === 'scatter' && (
-                    <ChartCard title="Products Distribution">
-                        <ScatterPlot
-                            data={detailedData.products.map((product, index) => ({
-                                x: parseFloat(product.unit_price || 0),
-                                y: parseFloat(product.reorder_level || 10),
-                                label: product.name || `Product ${index + 1}`
-                            }))}
-                        />
-                        <div style={{ color: 'rgba(255,255,255,0.7)', marginTop: 'var(--spacing-lg)', textAlign: 'center' }}>
-                            X-axis: Unit Price | Y-axis: Reorder Level
-                        </div>
-                    </ChartCard>
-                )}
-
-                {chartType === 'heatmap' && (
-                    <ChartCard title="Order Activity Heatmap (Last 30 Days)">
-                        <Heatmap orders={detailedData.orders} />
-                        <div style={{ color: 'rgba(255,255,255,0.7)', marginTop: 'var(--spacing-lg)', textAlign: 'center' }}>
-                            Showing order activity intensity over the last 30 days
-                        </div>
-                    </ChartCard>
-                )}
-
-                {chartType === 'histogram' && (
-                    <ChartCard title="Sales Amount Distribution">
-                        <Histogram sales={detailedData.sales} />
-                        <div style={{ color: 'rgba(255,255,255,0.7)', marginTop: 'var(--spacing-lg)', textAlign: 'center' }}>
-                            Distribution of sales by amount ranges
-                        </div>
-                    </ChartCard>
-                )}
-
-                {/* Sales Performance - Always Visible */}
-                <ChartCard title="Sales Performance">
-                    <div style={{ textAlign: 'center', padding: 'var(--spacing-2xl)' }}>
-                        <div style={{ fontSize: '3rem', fontWeight: '800', color: '#22c55e' }}>
-                            Rs. {stats.salesThisMonth.toLocaleString()}
-                        </div>
-                        <div style={{ fontSize: '1.25rem', color: 'rgba(255,255,255,0.8)', marginTop: 'var(--spacing-md)' }}>
-                            Total Sales This Month
-                        </div>
-                        <div style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.6)', marginTop: 'var(--spacing-sm)' }}>
-                            Based on {detailedData.sales.length} transactions
-                        </div>
-                    </div>
-                </ChartCard>
-            </div>
-        </>
+            {/* Chart Display */}
+            {chartType === 'bar' ? (
+                <BarChart data={barData} />
+            ) : (
+                <PieChart data={pieData} />
+            )}
+        </div>
     )
 }
 
