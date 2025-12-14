@@ -299,7 +299,11 @@ function StatisticalView({ stats, detailedData }) {
 // Graphical View Component
 function GraphicalView({ stats, detailedData }) {
     return (
-        <div style={{ display: 'grid', gap: 'var(--spacing-2xl)' }}>
+        <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: 'var(--spacing-2xl)'
+        }}>
             {/* Orders Chart Box */}
             <ChartBox
                 title="Orders Analysis"
@@ -534,42 +538,114 @@ function ChartCard({ title, children }) {
 // Pie Chart Component
 function PieChart({ data }) {
     const total = data.reduce((sum, item) => sum + item.value, 0)
+
+    if (total === 0) {
+        return (
+            <div style={{ textAlign: 'center', padding: 'var(--spacing-3xl)', color: 'rgba(255,255,255,0.5)' }}>
+                No data available
+            </div>
+        )
+    }
+
     let currentAngle = 0
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--spacing-xl)' }}>
-            <svg width="300" height="300" viewBox="0 0 100 100" style={{ transform: 'rotate(-90deg)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--spacing-xl)', padding: 'var(--spacing-lg)' }}>
+            {/* Pie Chart SVG */}
+            <div style={{ position: 'relative', width: '350px', height: '350px' }}>
+                <svg width="350" height="350" viewBox="0 0 100 100" style={{ transform: 'rotate(-90deg)' }}>
+                    {/* Shadow/Border Circle */}
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+
+                    {/* Pie Slices */}
+                    {data.map((item, index) => {
+                        const percentage = (item.value / total) * 100
+                        const angle = (percentage / 100) * 360
+                        const startAngle = currentAngle
+                        currentAngle += angle
+
+                        const x1 = 50 + 40 * Math.cos((startAngle * Math.PI) / 180)
+                        const y1 = 50 + 40 * Math.sin((startAngle * Math.PI) / 180)
+                        const x2 = 50 + 40 * Math.cos(((startAngle + angle) * Math.PI) / 180)
+                        const y2 = 50 + 40 * Math.sin(((startAngle + angle) * Math.PI) / 180)
+                        const largeArc = angle > 180 ? 1 : 0
+
+                        return (
+                            <g key={index}>
+                                <path
+                                    d={`M 50 50 L ${x1} ${y1} A 40 40 0 ${largeArc} 1 ${x2} ${y2} Z`}
+                                    fill={item.color}
+                                    opacity="0.9"
+                                    stroke="rgba(0,0,0,0.2)"
+                                    strokeWidth="0.5"
+                                />
+                            </g>
+                        )
+                    })}
+
+                    {/* Center white circle for donut effect */}
+                    <circle cx="50" cy="50" r="20" fill="rgba(30, 30, 40, 0.95)" />
+                </svg>
+
+                {/* Center Text */}
+                <div style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    textAlign: 'center'
+                }}>
+                    <div style={{ fontSize: '2rem', fontWeight: '800', color: 'white' }}>
+                        {total}
+                    </div>
+                    <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', marginTop: '4px' }}>
+                        Total
+                    </div>
+                </div>
+            </div>
+
+            {/* Legend */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)', width: '100%', maxWidth: '350px' }}>
                 {data.map((item, index) => {
-                    const percentage = (item.value / total) * 100
-                    const angle = (percentage / 100) * 360
-                    const startAngle = currentAngle
-                    currentAngle += angle
-
-                    const x1 = 50 + 40 * Math.cos((startAngle * Math.PI) / 180)
-                    const y1 = 50 + 40 * Math.sin((startAngle * Math.PI) / 180)
-                    const x2 = 50 + 40 * Math.cos(((startAngle + angle) * Math.PI) / 180)
-                    const y2 = 50 + 40 * Math.sin(((startAngle + angle) * Math.PI) / 180)
-                    const largeArc = angle > 180 ? 1 : 0
-
+                    const percentage = ((item.value / total) * 100).toFixed(1)
                     return (
-                        <path
-                            key={index}
-                            d={`M 50 50 L ${x1} ${y1} A 40 40 0 ${largeArc} 1 ${x2} ${y2} Z`}
-                            fill={item.color}
-                            opacity="0.9"
-                        />
+                        <div key={index} style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: 'var(--spacing-sm)',
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            borderRadius: 'var(--radius-sm)',
+                            borderLeft: `4px solid ${item.color}`
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
+                                <div style={{
+                                    width: '12px',
+                                    height: '12px',
+                                    borderRadius: '50%',
+                                    background: item.color,
+                                    boxShadow: `0 0 8px ${item.color}50`
+                                }}></div>
+                                <span style={{ color: 'white', fontSize: '0.95rem', fontWeight: '500' }}>
+                                    {item.label}
+                                </span>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
+                                <span style={{ color: 'white', fontSize: '1rem', fontWeight: '700' }}>
+                                    {item.value}
+                                </span>
+                                <span style={{
+                                    color: 'rgba(255,255,255,0.6)',
+                                    fontSize: '0.85rem',
+                                    minWidth: '45px',
+                                    textAlign: 'right'
+                                }}>
+                                    {percentage}%
+                                </span>
+                            </div>
+                        </div>
                     )
                 })}
-            </svg>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-md)', justifyContent: 'center' }}>
-                {data.map((item, index) => (
-                    <div key={index} style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
-                        <div style={{ width: '16px', height: '16px', borderRadius: '4px', background: item.color }}></div>
-                        <span style={{ color: 'white', fontSize: '0.9rem' }}>
-                            {item.label}: {item.value} ({((item.value / total) * 100).toFixed(1)}%)
-                        </span>
-                    </div>
-                ))}
             </div>
         </div>
     )
