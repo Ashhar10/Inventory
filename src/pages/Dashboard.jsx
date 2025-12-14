@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { db } from '../supabase/client'
+import AnimatedStatBox from '../components/AnimatedStatBox'
 
 const dashboardCards = [
     {
@@ -116,30 +117,26 @@ function Dashboard() {
                         <div className="stat-label">Total Products</div>
                     </div>
 
-                    <div className="glass-card stat-card">
-                        <div className="stat-value">{stats.pendingOrders}</div>
-                        <div className="stat-label">Pending Orders</div>
-                    </div>
+                    <AnimatedStatBox
+                        slides={[
+                            { value: stats.pendingOrders, label: 'Pending Orders' },
+                            { value: stats.confirmedOrders || 0, label: 'Confirmed Orders' },
+                            { value: stats.deliveredOrders || 0, label: 'Delivered Orders' },
+                        ]}
+                    />
 
                     <div className="glass-card stat-card">
                         <div className="stat-value">Rs. {stats.salesThisMonth.toLocaleString()}</div>
                         <div className="stat-label">Sales This Month</div>
                     </div>
 
-                    <div className="glass-card stat-card">
-                        <div className="stat-value">{stats.totalPacking || 0}</div>
-                        <div className="stat-label">Total Packing</div>
-                    </div>
-
-                    <div className="glass-card stat-card">
-                        <div className="stat-value">{stats.packedItems || 0}</div>
-                        <div className="stat-label">Packed Items</div>
-                    </div>
-
-                    <div className="glass-card stat-card">
-                        <div className="stat-value">{stats.shippedItems || 0}</div>
-                        <div className="stat-label">Shipped Items</div>
-                    </div>
+                    <AnimatedStatBox
+                        slides={[
+                            { value: stats.totalPacking || 0, label: 'Total Packing' },
+                            { value: stats.packedItems || 0, label: 'Packed Items' },
+                            { value: stats.shippedItems || 0, label: 'Shipped Items' },
+                        ]}
+                    />
                 </div>
 
                 <div className="dashboard-grid">

@@ -575,12 +575,23 @@ export const db = {
         const { count: pendingOrders } = await supabase
             .from('orders')
             .select('*', { count: 'exact', head: true })
-            .in('status', ['pending', 'confirmed', 'processing'])
+            .eq('status', 'pending')
 
-        // Get total sales this month
-        const startOfMonth = new Date()
-        startOfMonth.setDate(1)
-        startOfMonth.setHours(0, 0, 0, 0)
+        // Get confirmed orders
+        const { count: confirmedOrders } = await supabase
+            .from('orders')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'confirmed')
+
+        // Get delivered orders
+        const { count: deliveredOrders } = await supabase
+            .from('orders')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'delivered')
+
+        // Get sales this month
+        const now = new Date()
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
 
         const { data: salesData } = await supabase
             .from('sales')
@@ -609,6 +620,8 @@ export const db = {
             customers: customersCount || 0,
             products: productsCount || 0,
             pendingOrders: pendingOrders || 0,
+            confirmedOrders: confirmedOrders || 0,
+            deliveredOrders: deliveredOrders || 0,
             salesThisMonth: totalSales,
             totalPacking: packingCount || 0,
             packedItems: packedCount || 0,
