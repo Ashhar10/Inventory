@@ -108,7 +108,7 @@ function Form({ fields, onSubmit, onCancel, initialData = {}, submitLabel = 'Sub
                     alignItems: 'center',
                     fontSize: '0.9rem'
                 }}>
-                    <span>💾 Restored unsaved data from previous session</span>
+                    <span>Restored unsaved data from previous session</span>
                     <button
                         type="button"
                         onClick={handleClearCache}

@@ -252,7 +252,7 @@ function Sales() {
             <div className="container" style={{ marginTop: 'var(--spacing-2xl)' }}>
                 <div className="glass-card" style={{ padding: 'var(--spacing-2xl)' }}>
                     <h3 style={{ color: 'white', marginBottom: 'var(--spacing-lg)', fontSize: '1.25rem' }}>
-                        💵 Sales Summary
+                        Sales Summary
                     </h3>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--spacing-lg)' }}>
                         <div style={{ textAlign: 'center' }}>

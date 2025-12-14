@@ -14,11 +14,11 @@ function Modal({ isOpen, onClose, title, message, type = 'info', onConfirm, show
     if (!isOpen) return null
 
     const icons = {
-        success: '✅',
-        error: '❌',
-        warning: '⚠️',
-        info: 'ℹ️',
-        confirm: '❓',
+        success: '',
+        error: '',
+        warning: '',
+        info: '',
+        confirm: '',
     }
 
     const colors = {
