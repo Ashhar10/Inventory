@@ -25,7 +25,10 @@ function App() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        // Check current session from localStorage
+        // Clear session on page load/refresh to require login
+        auth.signOut()
+
+        // Check current session (will be null after clearing)
         auth.getSession().then((session) => {
             setUser(session?.user ?? null)
             setLoading(false)
