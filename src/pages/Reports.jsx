@@ -309,20 +309,14 @@ function Reports() {
                     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
                 }
 
-                /* Calendar day cell hover - expand icons */
-                .calendar-day-cell:hover .icon-rest,
-                .calendar-day-cell:focus .icon-rest {
-                    display: flex !important;
-                }
-
-                .calendar-day-cell:hover .expand-arrow,
-                .calendar-day-cell:focus .expand-arrow {
-                    display: none;
+                /* Calendar day cell hover - show popup */
+                .calendar-day-cell:hover .calendar-hover-popup {
+                    display: block !important;
                 }
 
                 .calendar-day-cell:hover {
                     transform: scale(1.05);
-                    z-index: 10;
+                    z-index: 50;
                 }
             `}</style>
         </div >
@@ -686,16 +680,18 @@ function CalendarView({ stats, detailedData, isMobile }) {
                     <button
                         onClick={goToNextMonth}
                         style={{
-                            padding: 'var(--spacing-md) var(--spacing-lg)',
+                            padding: isMobile ? '6px' : 'var(--spacing-md) var(--spacing-lg)',
                             background: 'rgba(255, 255, 255, 0.1)',
                             border: '1px solid rgba(255, 255, 255, 0.2)',
                             borderRadius: 'var(--radius-md)',
                             color: 'white',
-                            fontSize: '1.5rem',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
                         }}
                     >
-                        <img src="/assets/icons/Next.png" alt="Next" style={{ width: '20px', height: '20px' }} />
+                        <img src="/assets/icons/Next.png" alt="Next" style={{ width: isMobile ? '14px' : '20px', height: isMobile ? '14px' : '20px' }} />
                     </button>
                 </div>
 
@@ -737,7 +733,7 @@ function CalendarView({ stats, detailedData, isMobile }) {
                                                     : 'rgba(255, 255, 255, 0.05)',
                                         border: isToday ? '2px solid rgba(16, 185, 129, 0.6)' : '1px solid rgba(255, 255, 255, 0.1)',
                                         borderRadius: 'var(--radius-sm)',
-                                        padding: '4px',
+                                        padding: '2px',
                                         cursor: 'pointer',
                                         transition: 'all 0.2s ease',
                                         display: 'flex',
@@ -748,52 +744,129 @@ function CalendarView({ stats, detailedData, isMobile }) {
                                     }}
                                     className="calendar-day-cell"
                                 >
-                                    <div style={{ color: 'white', fontWeight: '700', fontSize: isMobile ? '0.9rem' : '1.1rem' }}>
+                                    {/* Date Number */}
+                                    <div style={{ color: 'white', fontWeight: '700', fontSize: isMobile ? '0.85rem' : '1rem' }}>
                                         {date.getDate()}
                                     </div>
+
+                                    {/* Activity indicator dot */}
                                     {dateData.hasActivity && (
-                                        <div className="calendar-icons-container" style={{
-                                            fontSize: '0.65rem',
-                                            color: 'rgba(255,255,255,0.8)',
-                                            marginTop: '2px',
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            alignItems: 'center',
-                                            gap: '2px'
+                                        <div style={{
+                                            width: '4px',
+                                            height: '4px',
+                                            borderRadius: '50%',
+                                            background: '#3b82f6',
+                                            marginTop: '2px'
+                                        }}></div>
+                                    )}
+
+                                    {/* Hover Popup - Triangle + Box with Icons */}
+                                    {dateData.hasActivity && (
+                                        <div className="calendar-hover-popup" style={{
+                                            display: 'none',
+                                            position: 'absolute',
+                                            top: '100%',
+                                            left: '50%',
+                                            transform: 'translateX(-50%)',
+                                            paddingTop: '8px',
+                                            zIndex: 100
                                         }}>
-                                            {/* First icon always visible */}
-                                            <div className="icon-first" style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                                {dateData.orders > 0 ? (
-                                                    <><img src="/assets/icons/Package.png" alt="Orders" style={{ width: '12px', height: '12px' }} /><span>{dateData.orders}</span></>
-                                                ) : dateData.sales > 0 ? (
-                                                    <><img src="/assets/icons/Money.png" alt="Sales" style={{ width: '12px', height: '12px' }} /><span>{dateData.sales}</span></>
-                                                ) : dateData.packing > 0 ? (
-                                                    <><img src="/assets/icons/Clipboard.png" alt="Packing" style={{ width: '12px', height: '12px' }} /><span>{dateData.packing}</span></>
-                                                ) : null}
-                                                {/* Arrow indicator if more icons */}
-                                                {((dateData.orders > 0 ? 1 : 0) + (dateData.sales > 0 ? 1 : 0) + (dateData.packing > 0 ? 1 : 0)) > 1 && (
-                                                    <span className="expand-arrow" style={{ marginLeft: '2px', fontSize: '0.5rem', opacity: 0.7 }}>▼</span>
-                                                )}
-                                            </div>
-                                            {/* Other icons - hidden by default, shown on hover */}
-                                            <div className="icon-rest" style={{
-                                                display: 'none',
-                                                flexDirection: 'column',
-                                                alignItems: 'center',
-                                                gap: '2px'
+                                            {/* Triangle pointer */}
+                                            <div style={{
+                                                position: 'absolute',
+                                                top: '0',
+                                                left: '50%',
+                                                transform: 'translateX(-50%)',
+                                                width: 0,
+                                                height: 0,
+                                                borderLeft: '8px solid transparent',
+                                                borderRight: '8px solid transparent',
+                                                borderBottom: '8px solid rgba(30, 30, 45, 0.95)'
+                                            }}></div>
+
+                                            {/* Popup box */}
+                                            <div style={{
+                                                background: 'rgba(30, 30, 45, 0.95)',
+                                                border: '1px solid rgba(255, 255, 255, 0.2)',
+                                                borderRadius: 'var(--radius-md)',
+                                                padding: '8px 10px',
+                                                minWidth: '60px',
+                                                backdropFilter: 'blur(8px)'
                                             }}>
-                                                {dateData.orders > 0 && dateData.sales > 0 && (
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                                        <img src="/assets/icons/Money.png" alt="Sales" style={{ width: '12px', height: '12px' }} />
-                                                        <span>{dateData.sales}</span>
-                                                    </div>
-                                                )}
-                                                {(dateData.orders > 0 || dateData.sales > 0) && dateData.packing > 0 && (
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                                        <img src="/assets/icons/Clipboard.png" alt="Packing" style={{ width: '12px', height: '12px' }} />
-                                                        <span>{dateData.packing}</span>
-                                                    </div>
-                                                )}
+                                                {/* Date centered */}
+                                                <div style={{
+                                                    textAlign: 'center',
+                                                    color: 'white',
+                                                    fontWeight: '700',
+                                                    fontSize: '0.75rem',
+                                                    marginBottom: '6px',
+                                                    borderBottom: '1px solid rgba(255,255,255,0.1)',
+                                                    paddingBottom: '4px'
+                                                }}>
+                                                    {date.getDate()}
+                                                </div>
+
+                                                {/* Icons row - horizontal */}
+                                                <div style={{
+                                                    display: 'flex',
+                                                    justifyContent: 'center',
+                                                    gap: '8px'
+                                                }}>
+                                                    {dateData.orders > 0 && (
+                                                        <div style={{ textAlign: 'center' }}>
+                                                            <div style={{
+                                                                width: dateData.orders > 9 ? '22px' : '18px',
+                                                                height: dateData.orders > 9 ? '22px' : '18px',
+                                                                borderRadius: '50%',
+                                                                background: 'rgba(245, 158, 11, 0.3)',
+                                                                border: '1px solid rgba(245, 158, 11, 0.6)',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                margin: '0 auto 2px'
+                                                            }}>
+                                                                <img src="/assets/icons/Package.png" alt="O" style={{ width: '10px', height: '10px' }} />
+                                                            </div>
+                                                            <div style={{ color: '#f59e0b', fontSize: dateData.orders > 9 ? '0.65rem' : '0.55rem', fontWeight: '700' }}>{dateData.orders}</div>
+                                                        </div>
+                                                    )}
+                                                    {dateData.sales > 0 && (
+                                                        <div style={{ textAlign: 'center' }}>
+                                                            <div style={{
+                                                                width: dateData.sales > 9 ? '22px' : '18px',
+                                                                height: dateData.sales > 9 ? '22px' : '18px',
+                                                                borderRadius: '50%',
+                                                                background: 'rgba(16, 185, 129, 0.3)',
+                                                                border: '1px solid rgba(16, 185, 129, 0.6)',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                margin: '0 auto 2px'
+                                                            }}>
+                                                                <img src="/assets/icons/Money.png" alt="S" style={{ width: '10px', height: '10px' }} />
+                                                            </div>
+                                                            <div style={{ color: '#10b981', fontSize: dateData.sales > 9 ? '0.65rem' : '0.55rem', fontWeight: '700' }}>{dateData.sales}</div>
+                                                        </div>
+                                                    )}
+                                                    {dateData.packing > 0 && (
+                                                        <div style={{ textAlign: 'center' }}>
+                                                            <div style={{
+                                                                width: dateData.packing > 9 ? '22px' : '18px',
+                                                                height: dateData.packing > 9 ? '22px' : '18px',
+                                                                borderRadius: '50%',
+                                                                background: 'rgba(139, 92, 246, 0.3)',
+                                                                border: '1px solid rgba(139, 92, 246, 0.6)',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                margin: '0 auto 2px'
+                                                            }}>
+                                                                <img src="/assets/icons/Clipboard.png" alt="P" style={{ width: '10px', height: '10px' }} />
+                                                            </div>
+                                                            <div style={{ color: '#8b5cf6', fontSize: dateData.packing > 9 ? '0.65rem' : '0.55rem', fontWeight: '700' }}>{dateData.packing}</div>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     )}
