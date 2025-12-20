@@ -10,20 +10,20 @@ function ActivityLog() {
     })
 
     const actionColors = {
-        CREATE: { bg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', text: '#ffffff', icon: '✨' },
-        UPDATE: { bg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', text: '#ffffff', icon: '✏️' },
-        DELETE: { bg: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', text: '#ffffff', icon: '🗑️' },
+        CREATE: { bg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', text: '#ffffff', icon: '/assets/icons/Create.png' },
+        UPDATE: { bg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', text: '#ffffff', icon: '/assets/icons/Edit.png' },
+        DELETE: { bg: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', text: '#ffffff', icon: '/assets/icons/Delete.png' },
     }
 
     const entityIcons = {
-        Customer: '👤',
-        Product: '📦',
-        Inventory: '📊',
-        Order: '🛒',
-        Sale: '💰',
-        Packing: '📋',
-        Store: '🏪',
-        User: '👥',
+        Customer: '/assets/icons/Customers.png',
+        Product: '/assets/icons/Products.png',
+        Inventory: '/assets/icons/Inventory.png',
+        Order: '/assets/icons/Orders.png',
+        Sale: '/assets/icons/Sales.png',
+        Packing: '/assets/icons/Packing.png',
+        Store: '/assets/icons/Stores.png',
+        User: '/assets/icons/Users.png',
     }
 
     useEffect(() => {
@@ -79,7 +79,7 @@ function ActivityLog() {
         <div className="activity-log-page">
             <div className="activity-log-header">
                 <h1>
-                    <span className="header-icon">📋</span>
+                    <img src="/assets/icons/Activity.png" alt="Activity" className="header-icon" />
                     Activity Log
                 </h1>
                 <p className="header-subtitle">Track all user actions across the system</p>
@@ -117,7 +117,8 @@ function ActivityLog() {
                     </select>
                 </div>
                 <button className="btn-refresh" onClick={loadLogs}>
-                    🔄 Refresh
+                    <img src="/assets/icons/Reset.png" alt="Refresh" className="btn-icon" />
+                    Refresh
                 </button>
             </div>
 
@@ -130,7 +131,7 @@ function ActivityLog() {
                     </div>
                 ) : logs.length === 0 ? (
                     <div className="empty-state">
-                        <span className="empty-icon">📝</span>
+                        <img src="/assets/icons/Clipboard.png" alt="No Activity" className="empty-icon" />
                         <h3>No Activity Yet</h3>
                         <p>Activity logs will appear here when users perform actions</p>
                     </div>
@@ -154,7 +155,11 @@ function ActivityLog() {
                                         className="action-badge"
                                         style={{ background: actionColors[log.action_type]?.bg }}
                                     >
-                                        <span className="action-icon">{actionColors[log.action_type]?.icon}</span>
+                                        <img
+                                            src={actionColors[log.action_type]?.icon}
+                                            alt={log.action_type}
+                                            className="action-icon"
+                                        />
                                         <span>{log.action_type}</span>
                                     </div>
                                     <div className="activity-time">
@@ -179,7 +184,11 @@ function ActivityLog() {
                                         {log.action_type === 'DELETE' && 'deleted'}
                                     </span>
                                     <span className="entity-badge">
-                                        <span className="entity-icon">{entityIcons[log.entity_type] || '📄'}</span>
+                                        <img
+                                            src={entityIcons[log.entity_type] || '/assets/icons/Dashboard.png'}
+                                            alt={log.entity_type}
+                                            className="entity-icon"
+                                        />
                                         {log.entity_type}
                                     </span>
                                     <span className="entity-name">"{log.entity_name}"</span>
@@ -239,7 +248,9 @@ function ActivityLog() {
                 }
 
                 .header-icon {
-                    font-size: 2.5rem;
+                    width: 40px;
+                    height: 40px;
+                    object-fit: contain;
                 }
 
                 .header-subtitle {
@@ -311,6 +322,13 @@ function ActivityLog() {
                     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
                 }
 
+                .btn-icon {
+                    width: 18px;
+                    height: 18px;
+                    object-fit: contain;
+                    filter: brightness(0) invert(1);
+                }
+
                 .activity-timeline {
                     position: relative;
                 }
@@ -341,8 +359,11 @@ function ActivityLog() {
                 }
 
                 .empty-icon {
-                    font-size: 4rem;
+                    width: 80px;
+                    height: 80px;
+                    object-fit: contain;
                     margin-bottom: 1rem;
+                    opacity: 0.7;
                 }
 
                 .empty-state h3 {
@@ -432,7 +453,10 @@ function ActivityLog() {
                 }
 
                 .action-icon {
-                    font-size: 0.9rem;
+                    width: 16px;
+                    height: 16px;
+                    object-fit: contain;
+                    filter: brightness(0) invert(1);
                 }
 
                 .activity-time {
@@ -486,7 +510,9 @@ function ActivityLog() {
                 }
 
                 .entity-icon {
-                    font-size: 1rem;
+                    width: 18px;
+                    height: 18px;
+                    object-fit: contain;
                 }
 
                 .entity-name {
@@ -518,6 +544,11 @@ function ActivityLog() {
                 @media (max-width: 768px) {
                     .activity-log-header h1 {
                         font-size: 1.5rem;
+                    }
+
+                    .header-icon {
+                        width: 32px;
+                        height: 32px;
                     }
 
                     .activity-timeline::before {
