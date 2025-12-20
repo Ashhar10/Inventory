@@ -27,8 +27,10 @@ function ClientCarousel() {
         }
     }
 
-    // Duplicate clients for seamless infinite scroll
+    // Duplicate clients multiple times for seamless infinite scroll
     const duplicatedClients = [...clients, ...clients]
+    // Extra duplicates for mobile to fill the bar
+    const mobileClients = [...clients, ...clients, ...clients, ...clients]
 
     return (
         <>
@@ -55,22 +57,19 @@ function ClientCarousel() {
                 </div>
             </div>
 
-            {/* Mobile: Fixed Left Vertical */}
+            {/* Mobile: Fixed Right Vertical - Filled Bar */}
             <div className="client-marquee-mobile">
                 <div className="marquee-track-vertical">
-                    {duplicatedClients.map((client, index) => {
+                    {mobileClients.map((client, index) => {
                         const colors = getClientColor(client.name)
                         return (
                             <div
                                 key={`mobile-${client.name}-${index}`}
                                 className="client-box-vertical"
                                 onClick={handleClientClick}
-                                style={{
-                                    '--client-bg': colors.bg,
-                                    '--client-shadow': colors.shadow
-                                }}
+                                style={{ '--client-bg': colors.bg }}
                             >
-                                <div className="client-avatar-small">{client.initials}</div>
+                                {client.initials}
                             </div>
                         )
                     })}
@@ -168,12 +167,11 @@ function ClientCarousel() {
                     white-space: nowrap;
                 }
 
-                /* ========== MOBILE: Fixed Left Vertical ========== */
+                /* ========== MOBILE: Fixed Right Vertical - Filled Bar ========== */
                 .client-marquee-mobile {
                     display: none;
                 }
 
-                /* Hide desktop on mobile, show mobile version */
                 @media (max-width: 768px) {
                     .client-marquee-desktop {
                         display: none;
@@ -181,44 +179,29 @@ function ClientCarousel() {
 
                     .client-marquee-mobile {
                         position: fixed;
-                        left: 0;
-                        top: 60px;
-                        bottom: 70px;
-                        width: 50px;
-                        background: rgba(15, 15, 20, 0.9);
+                        right: 0;
+                        top: 0;
+                        bottom: 0;
+                        width: 40px;
+                        background: linear-gradient(180deg, 
+                            rgba(15, 15, 20, 0.98) 0%,
+                            rgba(25, 25, 35, 0.95) 50%,
+                            rgba(15, 15, 20, 0.98) 100%
+                        );
                         backdrop-filter: blur(20px);
-                        border-right: 1px solid rgba(255, 255, 255, 0.1);
+                        border-left: 1px solid rgba(255, 255, 255, 0.1);
                         overflow: hidden;
-                        z-index: 998;
+                        z-index: 1000;
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        mask-image: linear-gradient(
-                            to bottom,
-                            transparent 0%,
-                            black 10%,
-                            black 90%,
-                            transparent 100%
-                        );
-                        -webkit-mask-image: linear-gradient(
-                            to bottom,
-                            transparent 0%,
-                            black 10%,
-                            black 90%,
-                            transparent 100%
-                        );
                     }
 
                     .marquee-track-vertical {
                         display: flex;
                         flex-direction: column;
-                        gap: 0.75rem;
-                        animation: marquee-vertical 20s linear infinite;
-                        height: fit-content;
-                    }
-
-                    .marquee-track-vertical:hover {
-                        animation-play-state: paused;
+                        gap: 6px;
+                        animation: marquee-vertical 15s linear infinite;
                     }
 
                     @keyframes marquee-vertical {
@@ -231,46 +214,41 @@ function ClientCarousel() {
                     }
 
                     .client-box-vertical {
+                        width: 30px;
+                        height: 30px;
+                        border-radius: 6px;
+                        background: var(--client-bg);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 0.55rem;
+                        font-weight: 800;
+                        color: white;
                         cursor: pointer;
-                        transition: all 0.3s ease;
+                        transition: all 0.2s ease;
                         flex-shrink: 0;
+                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
                     }
 
                     .client-box-vertical:hover {
                         transform: scale(1.1);
                     }
-
-                    .client-avatar-small {
-                        width: 36px;
-                        height: 36px;
-                        border-radius: 50%;
-                        background: var(--client-bg);
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-size: 0.65rem;
-                        font-weight: 800;
-                        color: white;
-                        box-shadow: 0 2px 10px var(--client-shadow);
-                        border: 2px solid rgba(255, 255, 255, 0.2);
-                    }
                 }
 
                 @media (max-width: 480px) {
                     .client-marquee-mobile {
-                        width: 45px;
-                        top: 55px;
-                        bottom: 75px;
+                        width: 36px;
                     }
 
-                    .client-avatar-small {
-                        width: 32px;
-                        height: 32px;
-                        font-size: 0.6rem;
+                    .client-box-vertical {
+                        width: 26px;
+                        height: 26px;
+                        font-size: 0.5rem;
+                        gap: 5px;
                     }
 
                     .marquee-track-vertical {
-                        gap: 0.6rem;
+                        gap: 5px;
                     }
                 }
             `}</style>

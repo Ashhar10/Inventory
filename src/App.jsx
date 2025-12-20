@@ -109,8 +109,8 @@ function App() {
                 
                 @media (max-width: 768px) {
                     .app-container {
-                        padding-bottom: 0; /* No bottom padding on mobile */
-                        padding-left: 50px; /* Space for left side carousel */
+                        padding-bottom: 0;
+                        padding-right: 40px; /* Space for right side carousel */
                     }
                     
                     .app-layout {
@@ -119,13 +119,13 @@ function App() {
                     
                     .app-content {
                         padding: 1rem;
-                        padding-bottom: 80px; /* Space for bottom nav */
+                        padding-bottom: 80px;
                     }
                 }
                 
                 @media (max-width: 480px) {
                     .app-container {
-                        padding-left: 45px; /* Smaller left padding */
+                        padding-right: 36px;
                     }
                     
                     .app-content {
