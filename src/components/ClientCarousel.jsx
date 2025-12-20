@@ -21,120 +21,114 @@ function ClientCarousel() {
             hash = name.charCodeAt(i) + ((hash << 5) - hash)
         }
         const hue = Math.abs(hash) % 360
-        return `linear-gradient(135deg, hsl(${hue}, 70%, 50%) 0%, hsl(${(hue + 30) % 360}, 70%, 40%) 100%)`
+        return {
+            bg: `linear-gradient(135deg, hsl(${hue}, 70%, 50%) 0%, hsl(${(hue + 30) % 360}, 70%, 40%) 100%)`,
+            shadow: `hsla(${hue}, 70%, 50%, 0.3)`
+        }
     }
 
-    return (
-        <>
-            {/* Desktop: Fixed Bottom Horizontal - Seamless Loop */}
-            <div className="client-marquee-desktop">
-                <div className="marquee-track-horizontal">
-                    {/* First set */}
-                    {clients.map((client, index) => (
-                        <div
-                            key={`set1-${index}`}
-                            className="client-box-horizontal"
-                            onClick={handleClientClick}
-                            style={{ background: getClientColor(client.name) }}
-                        >
-                            <div className="client-avatar">{client.initials}</div>
-                            <div className="client-name">{client.name}</div>
-                        </div>
-                    ))}
-                    {/* Second set (duplicate for seamless loop) */}
-                    {clients.map((client, index) => (
-                        <div
-                            key={`set2-${index}`}
-                            className="client-box-horizontal"
-                            onClick={handleClientClick}
-                            style={{ background: getClientColor(client.name) }}
-                        >
-                            <div className="client-avatar">{client.initials}</div>
-                            <div className="client-name">{client.name}</div>
-                        </div>
-                    ))}
-                </div>
-            </div>
+    // Duplicate clients for seamless infinite scroll
+    const duplicatedClients = [...clients, ...clients]
 
-            {/* Mobile: Fixed Right Vertical - Seamless Loop */}
-            <div className="client-marquee-mobile">
-                <div className="marquee-track-vertical">
-                    {/* First set */}
-                    {clients.map((client, index) => (
-                        <div
-                            key={`mset1-${index}`}
-                            className="client-box-vertical"
-                            onClick={handleClientClick}
-                            style={{ background: getClientColor(client.name) }}
-                        >
-                            {client.initials}
-                        </div>
-                    ))}
-                    {/* Second set (duplicate for seamless loop) */}
-                    {clients.map((client, index) => (
-                        <div
-                            key={`mset2-${index}`}
-                            className="client-box-vertical"
-                            onClick={handleClientClick}
-                            style={{ background: getClientColor(client.name) }}
-                        >
-                            {client.initials}
-                        </div>
-                    ))}
+    return (
+        <div className="client-marquee-container">
+            <div className="marquee-wrapper">
+                <div className="marquee-track">
+                    {duplicatedClients.map((client, index) => {
+                        const colors = getClientColor(client.name)
+                        return (
+                            <div
+                                key={`${client.name}-${index}`}
+                                className="client-box"
+                                onClick={handleClientClick}
+                                style={{
+                                    '--client-bg': colors.bg,
+                                    '--client-shadow': colors.shadow
+                                }}
+                            >
+                                <div className="client-avatar">
+                                    {client.initials}
+                                </div>
+                                <div className="client-name">{client.name}</div>
+                            </div>
+                        )
+                    })}
                 </div>
             </div>
 
             <style>{`
-                /* ========== DESKTOP: Fixed Bottom Horizontal ========== */
-                .client-marquee-desktop {
+                .client-marquee-container {
                     position: fixed;
                     bottom: 0;
                     left: 0;
                     right: 0;
-                    height: 60px;
+                    width: 100%;
+                    padding: 0.75rem 0;
                     background: rgba(15, 15, 20, 0.95);
                     backdrop-filter: blur(20px);
                     border-top: 1px solid rgba(255, 255, 255, 0.1);
                     overflow: hidden;
-                    z-index: 999;
-                    display: flex;
-                    align-items: center;
+                    z-index: 1000;
                 }
 
-                .marquee-track-horizontal {
-                    display: flex;
-                    gap: 1.5rem;
-                    width: max-content;
-                    animation: scroll-left 25s linear infinite;
+                .marquee-wrapper {
+                    width: 100%;
+                    overflow: hidden;
+                    mask-image: linear-gradient(
+                        to right,
+                        transparent 0%,
+                        black 5%,
+                        black 95%,
+                        transparent 100%
+                    );
+                    -webkit-mask-image: linear-gradient(
+                        to right,
+                        transparent 0%,
+                        black 5%,
+                        black 95%,
+                        transparent 100%
+                    );
                 }
 
-                @keyframes scroll-left {
+                .marquee-track {
+                    display: flex;
+                    gap: 1rem;
+                    animation: marquee 20s linear infinite;
+                    width: fit-content;
+                }
+
+                .marquee-track:hover {
+                    animation-play-state: paused;
+                }
+
+                @keyframes marquee {
                     0% {
                         transform: translateX(0);
                     }
                     100% {
-                        transform: translateX(calc(-50% - 0.75rem));
+                        transform: translateX(-50%);
                     }
                 }
 
-                .client-box-horizontal {
-                    border-radius: 8px;
-                    padding: 0.5rem 1rem;
+                .client-box {
+                    background: var(--client-bg);
+                    border-radius: 10px;
+                    padding: 0.6rem 1rem;
                     display: flex;
                     align-items: center;
                     gap: 0.6rem;
                     cursor: pointer;
-                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 2px 12px var(--client-shadow);
                     flex-shrink: 0;
-                    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
                 }
 
-                .client-box-horizontal:hover {
-                    transform: translateY(-3px);
-                    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+                .client-box:hover {
+                    transform: translateY(-2px) scale(1.02);
+                    box-shadow: 0 4px 20px var(--client-shadow);
                 }
 
-                .client-box-horizontal .client-avatar {
+                .client-avatar {
                     width: 32px;
                     height: 32px;
                     border-radius: 50%;
@@ -142,110 +136,74 @@ function ClientCarousel() {
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    font-size: 0.7rem;
+                    font-size: 0.75rem;
                     font-weight: 800;
                     color: white;
                     border: 2px solid rgba(255, 255, 255, 0.3);
                     flex-shrink: 0;
                 }
 
-                .client-box-horizontal .client-name {
+                .client-name {
                     color: white;
-                    font-size: 0.8rem;
+                    font-size: 0.85rem;
                     font-weight: 600;
                     white-space: nowrap;
                 }
 
-                /* ========== MOBILE: Fixed Right Vertical ========== */
-                .client-marquee-mobile {
-                    display: none;
-                }
-
+                /* Mobile Responsive */
                 @media (max-width: 768px) {
-                    .client-marquee-desktop {
-                        display: none;
+                    .client-marquee-container {
+                        padding: 0.6rem 0;
                     }
 
-                    .client-marquee-mobile {
-                        position: fixed;
-                        right: 0;
-                        top: 0;
-                        bottom: 0;
-                        width: 42px;
-                        background: rgba(15, 15, 20, 0.95);
-                        backdrop-filter: blur(20px);
-                        border-left: 1px solid rgba(255, 255, 255, 0.1);
-                        overflow: hidden;
-                        z-index: 1000;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
+                    .marquee-track {
+                        gap: 0.75rem;
+                        animation-duration: 18s;
                     }
 
-                    .marquee-track-vertical {
-                        display: flex;
-                        flex-direction: column;
-                        gap: 8px;
-                        height: max-content;
-                        animation: scroll-up 12s linear infinite;
+                    .client-box {
+                        padding: 0.5rem 0.8rem;
+                        border-radius: 8px;
                     }
 
-                    @keyframes scroll-up {
-                        0% {
-                            transform: translateY(0);
-                        }
-                        100% {
-                            transform: translateY(calc(-50% - 4px));
-                        }
+                    .client-avatar {
+                        width: 28px;
+                        height: 28px;
+                        font-size: 0.65rem;
                     }
 
-                    .client-box-vertical {
-                        width: 32px;
-                        height: 32px;
-                        border-radius: 6px;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-size: 0.55rem;
-                        font-weight: 800;
-                        color: white;
-                        cursor: pointer;
-                        transition: transform 0.2s ease;
-                        flex-shrink: 0;
-                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-                    }
-
-                    .client-box-vertical:hover {
-                        transform: scale(1.15);
+                    .client-name {
+                        font-size: 0.75rem;
                     }
                 }
 
                 @media (max-width: 480px) {
-                    .client-marquee-mobile {
-                        width: 38px;
+                    .client-marquee-container {
+                        padding: 0.5rem 0;
                     }
 
-                    .client-box-vertical {
-                        width: 28px;
-                        height: 28px;
-                        font-size: 0.5rem;
+                    .marquee-track {
+                        gap: 0.5rem;
+                        animation-duration: 15s;
                     }
 
-                    .marquee-track-vertical {
-                        gap: 6px;
+                    .client-box {
+                        padding: 0.4rem 0.6rem;
                     }
 
-                    @keyframes scroll-up {
-                        0% {
-                            transform: translateY(0);
-                        }
-                        100% {
-                            transform: translateY(calc(-50% - 3px));
-                        }
+                    .client-avatar {
+                        width: 24px;
+                        height: 24px;
+                        font-size: 0.6rem;
+                        border-width: 1px;
+                    }
+
+                    .client-name {
+                        font-size: 0.7rem;
                     }
                 }
             `}</style>
-        </>
+        </div>
     )
 }
 

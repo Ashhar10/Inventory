@@ -54,15 +54,16 @@ function App() {
     return (
         <BrowserRouter>
             <Background3D />
-
-            {/* Client Carousel - Fixed on all pages */}
-            <ClientCarousel />
-
             {!user ? (
-                <Routes>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="*" element={<Navigate to="/login" replace />} />
-                </Routes>
+                <div className="login-layout">
+                    <div className="login-content">
+                        <Routes>
+                            <Route path="/login" element={<Login />} />
+                            <Route path="*" element={<Navigate to="/login" replace />} />
+                        </Routes>
+                    </div>
+                    <ClientCarousel />
+                </div>
             ) : (
                 <div className="app-container">
                     <Navbar user={user} />
@@ -85,15 +86,30 @@ function App() {
                             </Routes>
                         </main>
                     </div>
+                    <ClientCarousel />
                 </div>
             )}
 
             <style>{`
+                .login-layout {
+                    min-height: 100vh;
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .login-content {
+                    flex: 1;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding-bottom: 80px;
+                }
+
                 .app-container {
                     min-height: 100vh;
                     display: flex;
                     flex-direction: column;
-                    padding-bottom: 60px; /* Space for fixed bottom carousel */
+                    padding-bottom: 70px;
                 }
                 
                 .app-layout {
@@ -108,29 +124,34 @@ function App() {
                 }
                 
                 @media (max-width: 768px) {
-                    .app-container {
-                        padding-bottom: 0;
-                        padding-right: 40px; /* Space for right side carousel */
-                    }
-                    
                     .app-layout {
                         flex-direction: column;
                     }
                     
                     .app-content {
                         padding: 1rem;
+                        padding-bottom: 100px;
+                    }
+
+                    .login-content {
+                        padding: 1rem;
+                        padding-bottom: 100px;
+                    }
+
+                    .app-container {
                         padding-bottom: 80px;
                     }
                 }
                 
                 @media (max-width: 480px) {
-                    .app-container {
-                        padding-right: 36px;
-                    }
-                    
                     .app-content {
                         padding: 0.75rem;
-                        padding-bottom: 80px;
+                        padding-bottom: 100px;
+                    }
+
+                    .login-content {
+                        padding: 0.75rem;
+                        padding-bottom: 100px;
                     }
                 }
             `}</style>
