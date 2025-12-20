@@ -2,10 +2,11 @@ import { NavLink } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import logo from '/assets/icons/Dashboard.png' // Fallback icon
 
-function Sidebar() {
+function Sidebar({ user }) {
     const [isExpanded, setIsExpanded] = useState(false)
 
-    const navItems = [
+    // Define all nav items with optional adminOnly flag
+    const allNavItems = [
         { path: '/', label: 'Dashboard', icon: '/assets/icons/Dashboard.png' },
         { path: '/customers', label: 'Customers', icon: '/assets/icons/Customers.png' },
         { path: '/products', label: 'Products', icon: '/assets/icons/Products.png' },
@@ -14,8 +15,16 @@ function Sidebar() {
         { path: '/packing', label: 'Packing', icon: '/assets/icons/Packing.png' },
         { path: '/sales', label: 'Sales', icon: '/assets/icons/Sales.png' },
         { path: '/reports', label: 'Reports', icon: '/assets/icons/Reports.png' },
-        { path: '/activity-log', label: 'Activity Log', icon: '/assets/icons/Activity.png' }
+        { path: '/activity-log', label: 'Activity Log', icon: '/assets/icons/Activity.png', adminOnly: true }
     ]
+
+    // Filter nav items based on user role - Activity Log only visible to admins
+    const navItems = allNavItems.filter(item => {
+        if (item.adminOnly) {
+            return user?.role === 'admin'
+        }
+        return true
+    })
 
     // Mobile Menu Button Logic
     const [isMenuOpen, setIsMenuOpen] = useState(false)

@@ -62,7 +62,7 @@ function App() {
                 <div className="app-container">
                     <Navbar user={user} />
                     <div className="app-layout">
-                        <Sidebar />
+                        <Sidebar user={user} />
                         <main className="app-content">
                             <Routes>
                                 <Route path="/" element={<Dashboard />} />
