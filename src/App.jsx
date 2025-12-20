@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { auth } from './supabase/client'
 import Background3D from './components/Background3D'
+import ClientCarousel from './components/ClientCarousel'
 
 // Pages
 import Login from './pages/Login'
@@ -53,6 +54,10 @@ function App() {
     return (
         <BrowserRouter>
             <Background3D />
+
+            {/* Client Carousel - Fixed on all pages */}
+            <ClientCarousel />
+
             {!user ? (
                 <Routes>
                     <Route path="/login" element={<Login />} />
@@ -88,6 +93,7 @@ function App() {
                     min-height: 100vh;
                     display: flex;
                     flex-direction: column;
+                    padding-bottom: 60px; /* Space for fixed bottom carousel */
                 }
                 
                 .app-layout {
@@ -102,6 +108,11 @@ function App() {
                 }
                 
                 @media (max-width: 768px) {
+                    .app-container {
+                        padding-bottom: 0; /* No bottom padding on mobile */
+                        padding-left: 50px; /* Space for left side carousel */
+                    }
+                    
                     .app-layout {
                         flex-direction: column;
                     }
@@ -113,6 +124,10 @@ function App() {
                 }
                 
                 @media (max-width: 480px) {
+                    .app-container {
+                        padding-left: 45px; /* Smaller left padding */
+                    }
+                    
                     .app-content {
                         padding: 0.75rem;
                         padding-bottom: 80px;

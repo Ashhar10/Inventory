@@ -23,7 +23,7 @@ function ClientCarousel() {
         const hue = Math.abs(hash) % 360
         return {
             bg: `linear-gradient(135deg, hsl(${hue}, 70%, 50%) 0%, hsl(${(hue + 30) % 360}, 70%, 40%) 100%)`,
-            shadow: `hsla(${hue}, 70%, 50%, 0.4)`
+            shadow: `hsla(${hue}, 70%, 50%, 0.3)`
         }
     }
 
@@ -31,28 +31,23 @@ function ClientCarousel() {
     const duplicatedClients = [...clients, ...clients]
 
     return (
-        <div className="client-marquee-container">
-            <div className="marquee-header">
-                <h3>Our Trusted Clients</h3>
-            </div>
-
-            <div className="marquee-wrapper">
-                <div className="marquee-track">
+        <>
+            {/* Desktop: Fixed Bottom Horizontal */}
+            <div className="client-marquee-desktop">
+                <div className="marquee-track-horizontal">
                     {duplicatedClients.map((client, index) => {
                         const colors = getClientColor(client.name)
                         return (
                             <div
-                                key={`${client.name}-${index}`}
-                                className="client-box"
+                                key={`desktop-${client.name}-${index}`}
+                                className="client-box-horizontal"
                                 onClick={handleClientClick}
                                 style={{
                                     '--client-bg': colors.bg,
                                     '--client-shadow': colors.shadow
                                 }}
                             >
-                                <div className="client-avatar">
-                                    {client.initials}
-                                </div>
+                                <div className="client-avatar">{client.initials}</div>
                                 <div className="client-name">{client.name}</div>
                             </div>
                         )
@@ -60,61 +55,71 @@ function ClientCarousel() {
                 </div>
             </div>
 
+            {/* Mobile: Fixed Left Vertical */}
+            <div className="client-marquee-mobile">
+                <div className="marquee-track-vertical">
+                    {duplicatedClients.map((client, index) => {
+                        const colors = getClientColor(client.name)
+                        return (
+                            <div
+                                key={`mobile-${client.name}-${index}`}
+                                className="client-box-vertical"
+                                onClick={handleClientClick}
+                                style={{
+                                    '--client-bg': colors.bg,
+                                    '--client-shadow': colors.shadow
+                                }}
+                            >
+                                <div className="client-avatar-small">{client.initials}</div>
+                            </div>
+                        )
+                    })}
+                </div>
+            </div>
+
             <style>{`
-                .client-marquee-container {
-                    width: 100%;
-                    padding: 1.5rem 0;
-                    background: rgba(0, 0, 0, 0.3);
-                    backdrop-filter: blur(10px);
+                /* ========== DESKTOP: Fixed Bottom Horizontal ========== */
+                .client-marquee-desktop {
+                    position: fixed;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    height: 60px;
+                    background: rgba(15, 15, 20, 0.95);
+                    backdrop-filter: blur(20px);
                     border-top: 1px solid rgba(255, 255, 255, 0.1);
                     overflow: hidden;
-                }
-
-                .marquee-header {
-                    text-align: center;
-                    margin-bottom: 1.25rem;
-                }
-
-                .marquee-header h3 {
-                    color: rgba(255, 255, 255, 0.9);
-                    font-size: 1rem;
-                    font-weight: 600;
-                    margin: 0;
-                    text-transform: uppercase;
-                    letter-spacing: 2px;
-                }
-
-                .marquee-wrapper {
-                    width: 100%;
-                    overflow: hidden;
+                    z-index: 999;
+                    display: flex;
+                    align-items: center;
                     mask-image: linear-gradient(
                         to right,
                         transparent 0%,
-                        black 10%,
-                        black 90%,
+                        black 5%,
+                        black 95%,
                         transparent 100%
                     );
                     -webkit-mask-image: linear-gradient(
                         to right,
                         transparent 0%,
-                        black 10%,
-                        black 90%,
+                        black 5%,
+                        black 95%,
                         transparent 100%
                     );
                 }
 
-                .marquee-track {
+                .marquee-track-horizontal {
                     display: flex;
                     gap: 1.5rem;
-                    animation: marquee 25s linear infinite;
+                    animation: marquee-horizontal 30s linear infinite;
                     width: fit-content;
                 }
 
-                .marquee-track:hover {
+                .marquee-track-horizontal:hover {
                     animation-play-state: paused;
                 }
 
-                @keyframes marquee {
+                @keyframes marquee-horizontal {
                     0% {
                         transform: translateX(0);
                     }
@@ -123,103 +128,153 @@ function ClientCarousel() {
                     }
                 }
 
-                .client-box {
+                .client-box-horizontal {
                     background: var(--client-bg);
-                    border-radius: 12px;
-                    padding: 1rem 1.5rem;
+                    border-radius: 8px;
+                    padding: 0.5rem 1rem;
                     display: flex;
                     align-items: center;
-                    gap: 0.75rem;
+                    gap: 0.6rem;
                     cursor: pointer;
                     transition: all 0.3s ease;
-                    box-shadow: 0 4px 20px var(--client-shadow);
+                    box-shadow: 0 2px 15px var(--client-shadow);
                     flex-shrink: 0;
-                    min-width: 180px;
                 }
 
-                .client-box:hover {
-                    transform: translateY(-3px) scale(1.02);
-                    box-shadow: 0 8px 30px var(--client-shadow);
+                .client-box-horizontal:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 5px 25px var(--client-shadow);
                 }
 
-                .client-avatar {
-                    width: 45px;
-                    height: 45px;
+                .client-box-horizontal .client-avatar {
+                    width: 32px;
+                    height: 32px;
                     border-radius: 50%;
                     background: rgba(255, 255, 255, 0.2);
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    font-size: 1rem;
+                    font-size: 0.7rem;
                     font-weight: 800;
                     color: white;
                     border: 2px solid rgba(255, 255, 255, 0.3);
                     flex-shrink: 0;
                 }
 
-                .client-name {
+                .client-box-horizontal .client-name {
                     color: white;
-                    font-size: 0.95rem;
+                    font-size: 0.8rem;
                     font-weight: 600;
                     white-space: nowrap;
                 }
 
-                /* Mobile Responsive */
+                /* ========== MOBILE: Fixed Left Vertical ========== */
+                .client-marquee-mobile {
+                    display: none;
+                }
+
+                /* Hide desktop on mobile, show mobile version */
                 @media (max-width: 768px) {
-                    .client-marquee-container {
-                        padding: 1rem 0;
+                    .client-marquee-desktop {
+                        display: none;
                     }
 
-                    .marquee-header h3 {
-                        font-size: 0.85rem;
-                        letter-spacing: 1.5px;
+                    .client-marquee-mobile {
+                        position: fixed;
+                        left: 0;
+                        top: 60px;
+                        bottom: 70px;
+                        width: 50px;
+                        background: rgba(15, 15, 20, 0.9);
+                        backdrop-filter: blur(20px);
+                        border-right: 1px solid rgba(255, 255, 255, 0.1);
+                        overflow: hidden;
+                        z-index: 998;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        mask-image: linear-gradient(
+                            to bottom,
+                            transparent 0%,
+                            black 10%,
+                            black 90%,
+                            transparent 100%
+                        );
+                        -webkit-mask-image: linear-gradient(
+                            to bottom,
+                            transparent 0%,
+                            black 10%,
+                            black 90%,
+                            transparent 100%
+                        );
                     }
 
-                    .marquee-track {
-                        gap: 1rem;
-                        animation-duration: 20s;
+                    .marquee-track-vertical {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 0.75rem;
+                        animation: marquee-vertical 20s linear infinite;
+                        height: fit-content;
                     }
 
-                    .client-box {
-                        padding: 0.75rem 1rem;
-                        min-width: 150px;
-                        border-radius: 10px;
+                    .marquee-track-vertical:hover {
+                        animation-play-state: paused;
                     }
 
-                    .client-avatar {
-                        width: 38px;
-                        height: 38px;
-                        font-size: 0.85rem;
+                    @keyframes marquee-vertical {
+                        0% {
+                            transform: translateY(0);
+                        }
+                        100% {
+                            transform: translateY(-50%);
+                        }
                     }
 
-                    .client-name {
-                        font-size: 0.85rem;
+                    .client-box-vertical {
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        flex-shrink: 0;
+                    }
+
+                    .client-box-vertical:hover {
+                        transform: scale(1.1);
+                    }
+
+                    .client-avatar-small {
+                        width: 36px;
+                        height: 36px;
+                        border-radius: 50%;
+                        background: var(--client-bg);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 0.65rem;
+                        font-weight: 800;
+                        color: white;
+                        box-shadow: 0 2px 10px var(--client-shadow);
+                        border: 2px solid rgba(255, 255, 255, 0.2);
                     }
                 }
 
                 @media (max-width: 480px) {
-                    .marquee-track {
-                        gap: 0.75rem;
-                        animation-duration: 18s;
+                    .client-marquee-mobile {
+                        width: 45px;
+                        top: 55px;
+                        bottom: 75px;
                     }
 
-                    .client-box {
-                        padding: 0.6rem 0.8rem;
-                        min-width: 130px;
-                    }
-
-                    .client-avatar {
+                    .client-avatar-small {
                         width: 32px;
                         height: 32px;
-                        font-size: 0.75rem;
+                        font-size: 0.6rem;
                     }
 
-                    .client-name {
-                        font-size: 0.75rem;
+                    .marquee-track-vertical {
+                        gap: 0.6rem;
                     }
                 }
             `}</style>
-        </div>
+        </>
     )
 }
 
