@@ -219,9 +219,19 @@ export const db = {
     getCustomers: async () => {
         const { data, error } = await supabase
             .from('customers')
-            .select('*')
+            .select(`
+                *,
+                created_by_user:users!customers_created_by_fkey(id, full_name)
+            `)
             .order('created_at', { ascending: false })
-        return { data, error }
+
+        // Add last_modified_by field for user attribution
+        const dataWithAttribution = data?.map(row => ({
+            ...row,
+            last_modified_by: row.created_by_user?.full_name || null
+        }))
+
+        return { data: dataWithAttribution, error }
     },
 
     createCustomer: async (customerData) => {
@@ -299,9 +309,19 @@ export const db = {
     getProducts: async () => {
         const { data, error } = await supabase
             .from('products')
-            .select('*')
+            .select(`
+                *,
+                created_by_user:users!products_created_by_fkey(id, full_name)
+            `)
             .order('created_at', { ascending: false })
-        return { data, error }
+
+        // Add last_modified_by field for user attribution
+        const dataWithAttribution = data?.map(row => ({
+            ...row,
+            last_modified_by: row.created_by_user?.full_name || null
+        }))
+
+        return { data: dataWithAttribution, error }
     },
 
     createProduct: async (productData) => {
@@ -380,12 +400,20 @@ export const db = {
         const { data, error } = await supabase
             .from('inventory')
             .select(`
-        *,
-        product:products(*),
-        store:stores(*)
-      `)
+                *,
+                product:products(*),
+                store:stores(*),
+                updated_by_user:users!inventory_updated_by_fkey(id, full_name)
+            `)
             .order('updated_at', { ascending: false })
-        return { data, error }
+
+        // Add last_modified_by field for user attribution
+        const dataWithAttribution = data?.map(row => ({
+            ...row,
+            last_modified_by: row.updated_by_user?.full_name || null
+        }))
+
+        return { data: dataWithAttribution, error }
     },
 
     createInventory: async (inventoryData) => {
@@ -447,12 +475,20 @@ export const db = {
         const { data, error } = await supabase
             .from('orders')
             .select(`
-        *,
-        customer:customers(*),
-        order_items(*, product:products(*))
-      `)
+                *,
+                customer:customers(*),
+                order_items(*, product:products(*)),
+                created_by_user:users!orders_created_by_fkey(id, full_name)
+            `)
             .order('order_date', { ascending: false })
-        return { data, error }
+
+        // Add last_modified_by field for user attribution
+        const dataWithAttribution = data?.map(row => ({
+            ...row,
+            last_modified_by: row.created_by_user?.full_name || null
+        }))
+
+        return { data: dataWithAttribution, error }
     },
 
     createOrder: async (orderData, orderItems) => {
@@ -526,12 +562,20 @@ export const db = {
         const { data, error } = await supabase
             .from('sales')
             .select(`
-        *,
-        customer:customers(*),
-        order:orders(*)
-      `)
+                *,
+                customer:customers(*),
+                order:orders(*),
+                created_by_user:users!sales_created_by_fkey(id, full_name)
+            `)
             .order('sale_date', { ascending: false })
-        return { data, error }
+
+        // Add last_modified_by field for user attribution
+        const dataWithAttribution = data?.map(row => ({
+            ...row,
+            last_modified_by: row.created_by_user?.full_name || null
+        }))
+
+        return { data: dataWithAttribution, error }
     },
 
     createSale: async (saleData) => {
@@ -610,13 +654,21 @@ export const db = {
         const { data, error } = await supabase
             .from('packing')
             .select(`
-        *,
-        order:orders(*),
-        store:stores(*),
-        packing_items(*, product:products(*))
-      `)
+                *,
+                order:orders(*),
+                store:stores(*),
+                packing_items(*, product:products(*)),
+                packed_by_user:users!packing_packed_by_fkey(id, full_name)
+            `)
             .order('packed_date', { ascending: false })
-        return { data, error }
+
+        // Add last_modified_by field for user attribution
+        const dataWithAttribution = data?.map(row => ({
+            ...row,
+            last_modified_by: row.packed_by_user?.full_name || null
+        }))
+
+        return { data: dataWithAttribution, error }
     },
 
     // Stores

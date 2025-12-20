@@ -7,12 +7,45 @@ function TableView({
     onDelete,
     title,
     onAdd,
-    loading = false
+    loading = false,
+    showUserAttribution = true
 }) {
     const [searchTerm, setSearchTerm] = useState('')
     const [currentPage, setCurrentPage] = useState(1)
     const [expandedRow, setExpandedRow] = useState(null)
     const itemsPerPage = 10
+
+    // Generate unique color for each user based on their name
+    const getUserColor = (userName) => {
+        if (!userName) return { color: '#6366f1', bg: 'rgba(99, 102, 241, 0.15)' }
+        let hash = 0
+        for (let i = 0; i < userName.length; i++) {
+            hash = userName.charCodeAt(i) + ((hash << 5) - hash)
+        }
+        const hue = Math.abs(hash) % 360
+        return {
+            color: `hsl(${hue}, 70%, 55%)`,
+            bg: `hsla(${hue}, 70%, 55%, 0.15)`,
+            border: `hsla(${hue}, 70%, 55%, 0.5)`
+        }
+    }
+
+    // Extract user info from row data
+    const getUserInfo = (row) => {
+        // Check for user object (from joined data) or user_name field
+        const createdByUser = row.created_by_user?.full_name || row.creator?.full_name || null
+        const updatedByUser = row.updated_by_user?.full_name || row.updater?.full_name || null
+
+        // If we have activity log info embedded
+        const lastModifiedBy = row.last_modified_by || updatedByUser || createdByUser
+
+        return {
+            createdBy: createdByUser,
+            updatedBy: updatedByUser,
+            lastModifiedBy: lastModifiedBy,
+            hasAttribution: !!lastModifiedBy
+        }
+    }
 
     // Auto-collapse logic
     useEffect(() => {
@@ -20,8 +53,6 @@ function TableView({
             const timer = setTimeout(() => setExpandedRow(null), 5000)
 
             const handleOutsideClick = () => setExpandedRow(null)
-            // Use capture phase or check if click target is not within the expanded row if needed
-            // But simple window click is fine because row click stops propagation
             window.addEventListener('click', handleOutsideClick)
 
             return () => {
@@ -43,6 +74,26 @@ function TableView({
     const totalPages = Math.ceil(filteredData.length / itemsPerPage)
     const startIndex = (currentPage - 1) * itemsPerPage
     const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage)
+
+    // Check if consecutive rows have same user for merging visual
+    const shouldShowUserLabel = (currentIdx, userName) => {
+        if (!userName) return false
+        if (currentIdx === 0) return true
+
+        const prevRow = paginatedData[currentIdx - 1]
+        const prevUserInfo = getUserInfo(prevRow)
+        return prevUserInfo.lastModifiedBy !== userName
+    }
+
+    // Check if next row has same user (for visual grouping)
+    const hasNextSameUser = (currentIdx, userName) => {
+        if (!userName) return false
+        if (currentIdx >= paginatedData.length - 1) return false
+
+        const nextRow = paginatedData[currentIdx + 1]
+        const nextUserInfo = getUserInfo(nextRow)
+        return nextUserInfo.lastModifiedBy === userName
+    }
 
     if (loading) {
         return (
@@ -79,7 +130,7 @@ function TableView({
             </div>
 
             <div className="table-container">
-                <table className="table">
+                <table className="table user-attribution-table">
                     <thead>
                         <tr>
                             {columns.map((col) => (
@@ -96,52 +147,87 @@ function TableView({
                                 </td>
                             </tr>
                         ) : (
-                            paginatedData.map((row, idx) => (
-                                <tr
-                                    key={idx}
-                                    onClick={(e) => {
-                                        e.stopPropagation()
-                                        setExpandedRow(expandedRow === idx ? null : idx)
-                                    }}
-                                    className={expandedRow === idx ? 'expanded' : ''}
-                                >
-                                    {columns.map((col) => (
-                                        <td key={col.key}>
-                                            {col.render ? col.render(row[col.key], row) : row[col.key]}
-                                        </td>
-                                    ))}
-                                    {(onEdit || onDelete) && (
-                                        <td>
-                                            <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                                {onEdit && (
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation()
-                                                            onEdit(row)
-                                                        }}
-                                                        className="btn btn-secondary"
-                                                        style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
-                                                    >
-                                                        Edit
-                                                    </button>
-                                                )}
-                                                {onDelete && (
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation()
-                                                            onDelete(row)
-                                                        }}
-                                                        className="btn btn-danger"
-                                                        style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
-                                                    >
-                                                        Delete
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </td>
-                                    )}
-                                </tr>
-                            ))
+                            paginatedData.map((row, idx) => {
+                                const userInfo = getUserInfo(row)
+                                const userColors = getUserColor(userInfo.lastModifiedBy)
+                                const showLabel = showUserAttribution && shouldShowUserLabel(idx, userInfo.lastModifiedBy)
+                                const nextSameUser = hasNextSameUser(idx, userInfo.lastModifiedBy)
+                                const prevSameUser = idx > 0 && !shouldShowUserLabel(idx, userInfo.lastModifiedBy)
+
+                                return (
+                                    <tr
+                                        key={idx}
+                                        onClick={(e) => {
+                                            e.stopPropagation()
+                                            setExpandedRow(expandedRow === idx ? null : idx)
+                                        }}
+                                        className={`${expandedRow === idx ? 'expanded' : ''} ${userInfo.hasAttribution && showUserAttribution ? 'has-attribution' : ''}`}
+                                        style={userInfo.hasAttribution && showUserAttribution ? {
+                                            '--user-color': userColors.color,
+                                            '--user-bg': userColors.bg,
+                                            '--user-border': userColors.border,
+                                            borderLeft: `3px solid ${userColors.color}`,
+                                            background: userColors.bg,
+                                            borderTopLeftRadius: showLabel ? '8px' : '0',
+                                            borderTopRightRadius: showLabel ? '8px' : '0',
+                                            borderBottomLeftRadius: !nextSameUser ? '8px' : '0',
+                                            borderBottomRightRadius: !nextSameUser ? '8px' : '0',
+                                            marginTop: showLabel ? '0.5rem' : '0',
+                                        } : {}}
+                                    >
+                                        {columns.map((col, colIdx) => (
+                                            <td key={col.key} style={{ position: 'relative' }}>
+                                                {col.render ? col.render(row[col.key], row) : row[col.key]}
+                                            </td>
+                                        ))}
+                                        {(onEdit || onDelete) && (
+                                            <td style={{ position: 'relative' }}>
+                                                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                                    {onEdit && (
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation()
+                                                                onEdit(row)
+                                                            }}
+                                                            className="btn btn-secondary"
+                                                            style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                    )}
+                                                    {onDelete && (
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation()
+                                                                onDelete(row)
+                                                            }}
+                                                            className="btn btn-danger"
+                                                            style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    )}
+
+                                                    {/* User Attribution Label */}
+                                                    {showUserAttribution && userInfo.lastModifiedBy && showLabel && (
+                                                        <div
+                                                            className="user-attribution-label"
+                                                            style={{
+                                                                color: userColors.color,
+                                                                borderColor: userColors.border,
+                                                                background: userColors.bg,
+                                                            }}
+                                                            title={`Last modified by ${userInfo.lastModifiedBy}`}
+                                                        >
+                                                            {userInfo.lastModifiedBy}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </td>
+                                        )}
+                                    </tr>
+                                )
+                            })
                         )}
                     </tbody>
                 </table>
@@ -155,7 +241,7 @@ function TableView({
                         className="btn btn-secondary"
                         style={{ opacity: currentPage === 1 ? 0.5 : 1 }}
                     >
-                        ← Previous
+                        Previous
                     </button>
                     <span style={{ color: 'white', fontWeight: '600', display: 'flex', alignItems: 'center' }}>
                         Page {currentPage} of {totalPages}
@@ -166,10 +252,61 @@ function TableView({
                         className="btn btn-secondary"
                         style={{ opacity: currentPage === totalPages ? 0.5 : 1 }}
                     >
-                        Next →
+                        Next
                     </button>
                 </div>
             )}
+
+            <style>{`
+                .user-attribution-table tbody tr.has-attribution {
+                    position: relative;
+                    transition: all 0.2s ease;
+                }
+
+                .user-attribution-table tbody tr.has-attribution:hover {
+                    filter: brightness(1.1);
+                }
+
+                .user-attribution-label {
+                    position: absolute;
+                    right: 8px;
+                    bottom: 4px;
+                    font-size: 0.65rem;
+                    font-weight: 700;
+                    padding: 2px 6px;
+                    border-radius: 4px;
+                    border: 1px solid;
+                    white-space: nowrap;
+                    text-transform: uppercase;
+                    letter-spacing: 0.3px;
+                    pointer-events: none;
+                    z-index: 5;
+                }
+
+                /* Position the label properly within the actions cell */
+                .user-attribution-table td:last-child {
+                    position: relative;
+                }
+
+                .user-attribution-table td:last-child > div {
+                    position: relative;
+                }
+
+                .user-attribution-table .user-attribution-label {
+                    position: relative;
+                    right: auto;
+                    bottom: auto;
+                    margin-left: auto;
+                }
+
+                /* Mobile responsive */
+                @media (max-width: 768px) {
+                    .user-attribution-label {
+                        font-size: 0.55rem;
+                        padding: 1px 4px;
+                    }
+                }
+            `}</style>
         </div>
     )
 }
