@@ -189,10 +189,10 @@ function TableView({
                                                                 e.stopPropagation()
                                                                 onEdit(row)
                                                             }}
-                                                            className="btn btn-secondary"
-                                                            style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
+                                                            className="btn-icon-action btn-edit"
+                                                            title="Edit"
                                                         >
-                                                            Edit
+                                                            <img src="/assets/icons/Edit.png" alt="Edit" />
                                                         </button>
                                                     )}
                                                     {onDelete && (
@@ -201,10 +201,10 @@ function TableView({
                                                                 e.stopPropagation()
                                                                 onDelete(row)
                                                             }}
-                                                            className="btn btn-danger"
-                                                            style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
+                                                            className="btn-icon-action btn-delete"
+                                                            title="Delete"
                                                         >
-                                                            Delete
+                                                            <img src="/assets/icons/Delete.png" alt="Delete" />
                                                         </button>
                                                     )}
 
@@ -304,6 +304,60 @@ function TableView({
                     .user-attribution-label {
                         font-size: 0.55rem;
                         padding: 1px 4px;
+                    }
+                }
+
+                /* Icon Action Buttons */
+                .btn-icon-action {
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 8px;
+                    border: none;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    padding: 0;
+                }
+
+                .btn-icon-action img {
+                    width: 20px;
+                    height: 20px;
+                    object-fit: contain;
+                }
+
+                .btn-edit {
+                    background: rgba(99, 102, 241, 0.15);
+                    border: 1px solid rgba(99, 102, 241, 0.3);
+                }
+
+                .btn-edit:hover {
+                    background: rgba(99, 102, 241, 0.3);
+                    transform: scale(1.1);
+                    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+                }
+
+                .btn-delete {
+                    background: rgba(239, 68, 68, 0.15);
+                    border: 1px solid rgba(239, 68, 68, 0.3);
+                }
+
+                .btn-delete:hover {
+                    background: rgba(239, 68, 68, 0.3);
+                    transform: scale(1.1);
+                    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+                }
+
+                @media (max-width: 768px) {
+                    .btn-icon-action {
+                        width: 32px;
+                        height: 32px;
+                    }
+
+                    .btn-icon-action img {
+                        width: 16px;
+                        height: 16px;
                     }
                 }
             `}</style>
