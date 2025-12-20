@@ -21,58 +21,66 @@ function ClientCarousel() {
             hash = name.charCodeAt(i) + ((hash << 5) - hash)
         }
         const hue = Math.abs(hash) % 360
-        return {
-            bg: `linear-gradient(135deg, hsl(${hue}, 70%, 50%) 0%, hsl(${(hue + 30) % 360}, 70%, 40%) 100%)`,
-            shadow: `hsla(${hue}, 70%, 50%, 0.3)`
-        }
+        return `linear-gradient(135deg, hsl(${hue}, 70%, 50%) 0%, hsl(${(hue + 30) % 360}, 70%, 40%) 100%)`
     }
-
-    // Duplicate clients multiple times for seamless infinite scroll
-    const duplicatedClients = [...clients, ...clients]
-    // Extra duplicates for mobile to fill the bar
-    const mobileClients = [...clients, ...clients, ...clients, ...clients]
 
     return (
         <>
-            {/* Desktop: Fixed Bottom Horizontal */}
+            {/* Desktop: Fixed Bottom Horizontal - Seamless Loop */}
             <div className="client-marquee-desktop">
                 <div className="marquee-track-horizontal">
-                    {duplicatedClients.map((client, index) => {
-                        const colors = getClientColor(client.name)
-                        return (
-                            <div
-                                key={`desktop-${client.name}-${index}`}
-                                className="client-box-horizontal"
-                                onClick={handleClientClick}
-                                style={{
-                                    '--client-bg': colors.bg,
-                                    '--client-shadow': colors.shadow
-                                }}
-                            >
-                                <div className="client-avatar">{client.initials}</div>
-                                <div className="client-name">{client.name}</div>
-                            </div>
-                        )
-                    })}
+                    {/* First set */}
+                    {clients.map((client, index) => (
+                        <div
+                            key={`set1-${index}`}
+                            className="client-box-horizontal"
+                            onClick={handleClientClick}
+                            style={{ background: getClientColor(client.name) }}
+                        >
+                            <div className="client-avatar">{client.initials}</div>
+                            <div className="client-name">{client.name}</div>
+                        </div>
+                    ))}
+                    {/* Second set (duplicate for seamless loop) */}
+                    {clients.map((client, index) => (
+                        <div
+                            key={`set2-${index}`}
+                            className="client-box-horizontal"
+                            onClick={handleClientClick}
+                            style={{ background: getClientColor(client.name) }}
+                        >
+                            <div className="client-avatar">{client.initials}</div>
+                            <div className="client-name">{client.name}</div>
+                        </div>
+                    ))}
                 </div>
             </div>
 
-            {/* Mobile: Fixed Right Vertical - Filled Bar */}
+            {/* Mobile: Fixed Right Vertical - Seamless Loop */}
             <div className="client-marquee-mobile">
                 <div className="marquee-track-vertical">
-                    {mobileClients.map((client, index) => {
-                        const colors = getClientColor(client.name)
-                        return (
-                            <div
-                                key={`mobile-${client.name}-${index}`}
-                                className="client-box-vertical"
-                                onClick={handleClientClick}
-                                style={{ '--client-bg': colors.bg }}
-                            >
-                                {client.initials}
-                            </div>
-                        )
-                    })}
+                    {/* First set */}
+                    {clients.map((client, index) => (
+                        <div
+                            key={`mset1-${index}`}
+                            className="client-box-vertical"
+                            onClick={handleClientClick}
+                            style={{ background: getClientColor(client.name) }}
+                        >
+                            {client.initials}
+                        </div>
+                    ))}
+                    {/* Second set (duplicate for seamless loop) */}
+                    {clients.map((client, index) => (
+                        <div
+                            key={`mset2-${index}`}
+                            className="client-box-vertical"
+                            onClick={handleClientClick}
+                            style={{ background: getClientColor(client.name) }}
+                        >
+                            {client.initials}
+                        </div>
+                    ))}
                 </div>
             </div>
 
@@ -91,58 +99,39 @@ function ClientCarousel() {
                     z-index: 999;
                     display: flex;
                     align-items: center;
-                    mask-image: linear-gradient(
-                        to right,
-                        transparent 0%,
-                        black 5%,
-                        black 95%,
-                        transparent 100%
-                    );
-                    -webkit-mask-image: linear-gradient(
-                        to right,
-                        transparent 0%,
-                        black 5%,
-                        black 95%,
-                        transparent 100%
-                    );
                 }
 
                 .marquee-track-horizontal {
                     display: flex;
                     gap: 1.5rem;
-                    animation: marquee-horizontal 30s linear infinite;
-                    width: fit-content;
+                    width: max-content;
+                    animation: scroll-left 25s linear infinite;
                 }
 
-                .marquee-track-horizontal:hover {
-                    animation-play-state: paused;
-                }
-
-                @keyframes marquee-horizontal {
+                @keyframes scroll-left {
                     0% {
                         transform: translateX(0);
                     }
                     100% {
-                        transform: translateX(-50%);
+                        transform: translateX(calc(-50% - 0.75rem));
                     }
                 }
 
                 .client-box-horizontal {
-                    background: var(--client-bg);
                     border-radius: 8px;
                     padding: 0.5rem 1rem;
                     display: flex;
                     align-items: center;
                     gap: 0.6rem;
                     cursor: pointer;
-                    transition: all 0.3s ease;
-                    box-shadow: 0 2px 15px var(--client-shadow);
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
                     flex-shrink: 0;
+                    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
                 }
 
                 .client-box-horizontal:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 5px 25px var(--client-shadow);
+                    transform: translateY(-3px);
+                    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
                 }
 
                 .client-box-horizontal .client-avatar {
@@ -167,7 +156,7 @@ function ClientCarousel() {
                     white-space: nowrap;
                 }
 
-                /* ========== MOBILE: Fixed Right Vertical - Filled Bar ========== */
+                /* ========== MOBILE: Fixed Right Vertical ========== */
                 .client-marquee-mobile {
                     display: none;
                 }
@@ -182,12 +171,8 @@ function ClientCarousel() {
                         right: 0;
                         top: 0;
                         bottom: 0;
-                        width: 40px;
-                        background: linear-gradient(180deg, 
-                            rgba(15, 15, 20, 0.98) 0%,
-                            rgba(25, 25, 35, 0.95) 50%,
-                            rgba(15, 15, 20, 0.98) 100%
-                        );
+                        width: 42px;
+                        background: rgba(15, 15, 20, 0.95);
                         backdrop-filter: blur(20px);
                         border-left: 1px solid rgba(255, 255, 255, 0.1);
                         overflow: hidden;
@@ -200,24 +185,24 @@ function ClientCarousel() {
                     .marquee-track-vertical {
                         display: flex;
                         flex-direction: column;
-                        gap: 6px;
-                        animation: marquee-vertical 15s linear infinite;
+                        gap: 8px;
+                        height: max-content;
+                        animation: scroll-up 12s linear infinite;
                     }
 
-                    @keyframes marquee-vertical {
+                    @keyframes scroll-up {
                         0% {
                             transform: translateY(0);
                         }
                         100% {
-                            transform: translateY(-50%);
+                            transform: translateY(calc(-50% - 4px));
                         }
                     }
 
                     .client-box-vertical {
-                        width: 30px;
-                        height: 30px;
+                        width: 32px;
+                        height: 32px;
                         border-radius: 6px;
-                        background: var(--client-bg);
                         display: flex;
                         align-items: center;
                         justify-content: center;
@@ -225,30 +210,38 @@ function ClientCarousel() {
                         font-weight: 800;
                         color: white;
                         cursor: pointer;
-                        transition: all 0.2s ease;
+                        transition: transform 0.2s ease;
                         flex-shrink: 0;
-                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
                     }
 
                     .client-box-vertical:hover {
-                        transform: scale(1.1);
+                        transform: scale(1.15);
                     }
                 }
 
                 @media (max-width: 480px) {
                     .client-marquee-mobile {
-                        width: 36px;
+                        width: 38px;
                     }
 
                     .client-box-vertical {
-                        width: 26px;
-                        height: 26px;
+                        width: 28px;
+                        height: 28px;
                         font-size: 0.5rem;
-                        gap: 5px;
                     }
 
                     .marquee-track-vertical {
-                        gap: 5px;
+                        gap: 6px;
+                    }
+
+                    @keyframes scroll-up {
+                        0% {
+                            transform: translateY(0);
+                        }
+                        100% {
+                            transform: translateY(calc(-50% - 3px));
+                        }
                     }
                 }
             `}</style>
