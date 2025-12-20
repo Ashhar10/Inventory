@@ -281,7 +281,7 @@ ALTER TABLE public.packing_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.inventory_movements ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.activity_logs ENABLE ROW LEVEL SECURITY;
 
--- Drop all existing policies (if any)
+-- Drop all existing policies (if any) - prevents duplicate policy errors
 DROP POLICY IF EXISTS "Users can view their own profile" ON public.users;
 DROP POLICY IF EXISTS "Admins can view all users" ON public.users;
 DROP POLICY IF EXISTS "Authenticated users can view stores" ON public.stores;
@@ -303,6 +303,20 @@ DROP POLICY IF EXISTS "Authenticated users can view packing items" ON public.pac
 DROP POLICY IF EXISTS "Authenticated users can manage packing items" ON public.packing_items;
 DROP POLICY IF EXISTS "Authenticated users can view inventory movements" ON public.inventory_movements;
 DROP POLICY IF EXISTS "Authenticated users can create inventory movements" ON public.inventory_movements;
+
+-- Drop permissive policies before recreating
+DROP POLICY IF EXISTS "Allow all operations on users" ON public.users;
+DROP POLICY IF EXISTS "Allow all operations on stores" ON public.stores;
+DROP POLICY IF EXISTS "Allow all operations on customers" ON public.customers;
+DROP POLICY IF EXISTS "Allow all operations on products" ON public.products;
+DROP POLICY IF EXISTS "Allow all operations on inventory" ON public.inventory;
+DROP POLICY IF EXISTS "Allow all operations on orders" ON public.orders;
+DROP POLICY IF EXISTS "Allow all operations on order_items" ON public.order_items;
+DROP POLICY IF EXISTS "Allow all operations on sales" ON public.sales;
+DROP POLICY IF EXISTS "Allow all operations on packing" ON public.packing;
+DROP POLICY IF EXISTS "Allow all operations on packing_items" ON public.packing_items;
+DROP POLICY IF EXISTS "Allow all operations on inventory_movements" ON public.inventory_movements;
+DROP POLICY IF EXISTS "Allow all operations on activity_logs" ON public.activity_logs;
 
 -- Create permissive policies (authentication handled on client side)
 -- Note: In a production environment, you should implement proper service role authentication
