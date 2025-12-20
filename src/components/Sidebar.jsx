@@ -13,7 +13,8 @@ function Sidebar() {
         { path: '/orders', label: 'Orders', icon: '/assets/icons/Orders.png' },
         { path: '/packing', label: 'Packing', icon: '/assets/icons/Packing.png' },
         { path: '/sales', label: 'Sales', icon: '/assets/icons/Sales.png' },
-        { path: '/reports', label: 'Reports', icon: '/assets/icons/Reports.png' }
+        { path: '/reports', label: 'Reports', icon: '/assets/icons/Reports.png' },
+        { path: '/activity-log', label: 'Activity Log', icon: '/assets/icons/Activity.png' }
     ]
 
     // Mobile Menu Button Logic

@@ -178,6 +178,43 @@ export const auth = {
 
 // Database helpers (unchanged - still use Supabase for data operations)
 export const db = {
+    // Activity Logs
+    getActivityLogs: async (limit = 100, filters = {}) => {
+        let query = supabase
+            .from('activity_logs')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(limit)
+
+        if (filters.action_type) {
+            query = query.eq('action_type', filters.action_type)
+        }
+        if (filters.entity_type) {
+            query = query.eq('entity_type', filters.entity_type)
+        }
+        if (filters.user_id) {
+            query = query.eq('user_id', filters.user_id)
+        }
+
+        const { data, error } = await query
+        return { data, error }
+    },
+
+    createActivityLog: async (logData) => {
+        const currentUser = await auth.getCurrentUser()
+        const logEntry = {
+            ...logData,
+            user_id: currentUser?.id,
+            user_name: currentUser?.full_name || 'Unknown User',
+        }
+
+        const { data, error } = await supabase
+            .from('activity_logs')
+            .insert([logEntry])
+            .select()
+        return { data, error }
+    },
+
     // Customers
     getCustomers: async () => {
         const { data, error } = await supabase
@@ -199,6 +236,18 @@ export const db = {
             .from('customers')
             .insert([dataWithCreator])
             .select()
+
+        // Log activity
+        if (!error && data?.[0]) {
+            await db.createActivityLog({
+                action_type: 'CREATE',
+                entity_type: 'Customer',
+                entity_id: data[0].id,
+                entity_name: data[0].name || data[0].customer_code,
+                details: { customer_code: data[0].customer_code, company: data[0].company_name }
+            })
+        }
+
         return { data, error }
     },
 
@@ -208,14 +257,41 @@ export const db = {
             .update(customerData)
             .eq('id', id)
             .select()
+
+        // Log activity
+        if (!error && data?.[0]) {
+            await db.createActivityLog({
+                action_type: 'UPDATE',
+                entity_type: 'Customer',
+                entity_id: id,
+                entity_name: data[0].name || data[0].customer_code,
+                details: { updated_fields: Object.keys(customerData) }
+            })
+        }
+
         return { data, error }
     },
 
     deleteCustomer: async (id) => {
+        // Get customer name before deleting
+        const { data: customer } = await supabase.from('customers').select('name, customer_code').eq('id', id).single()
+
         const { error } = await supabase
             .from('customers')
             .delete()
             .eq('id', id)
+
+        // Log activity
+        if (!error) {
+            await db.createActivityLog({
+                action_type: 'DELETE',
+                entity_type: 'Customer',
+                entity_id: id,
+                entity_name: customer?.name || customer?.customer_code || 'Unknown',
+                details: null
+            })
+        }
+
         return { error }
     },
 
@@ -240,6 +316,18 @@ export const db = {
             .from('products')
             .insert([dataWithCreator])
             .select()
+
+        // Log activity
+        if (!error && data?.[0]) {
+            await db.createActivityLog({
+                action_type: 'CREATE',
+                entity_type: 'Product',
+                entity_id: data[0].id,
+                entity_name: data[0].name || data[0].sku,
+                details: { sku: data[0].sku, category: data[0].category }
+            })
+        }
+
         return { data, error }
     },
 
@@ -249,14 +337,41 @@ export const db = {
             .update(productData)
             .eq('id', id)
             .select()
+
+        // Log activity
+        if (!error && data?.[0]) {
+            await db.createActivityLog({
+                action_type: 'UPDATE',
+                entity_type: 'Product',
+                entity_id: id,
+                entity_name: data[0].name || data[0].sku,
+                details: { updated_fields: Object.keys(productData) }
+            })
+        }
+
         return { data, error }
     },
 
     deleteProduct: async (id) => {
+        // Get product name before deleting
+        const { data: product } = await supabase.from('products').select('name, sku').eq('id', id).single()
+
         const { error } = await supabase
             .from('products')
             .delete()
             .eq('id', id)
+
+        // Log activity
+        if (!error) {
+            await db.createActivityLog({
+                action_type: 'DELETE',
+                entity_type: 'Product',
+                entity_id: id,
+                entity_name: product?.name || product?.sku || 'Unknown',
+                details: null
+            })
+        }
+
         return { error }
     },
 
@@ -284,6 +399,18 @@ export const db = {
             .from('inventory')
             .insert([dataWithCreator])
             .select()
+
+        // Log activity
+        if (!error && data?.[0]) {
+            await db.createActivityLog({
+                action_type: 'CREATE',
+                entity_type: 'Inventory',
+                entity_id: data[0].id,
+                entity_name: `Stock Entry`,
+                details: { quantity: data[0].quantity, product_id: data[0].product_id }
+            })
+        }
+
         return { data, error }
     },
 
@@ -300,6 +427,18 @@ export const db = {
             .update(dataWithUpdater)
             .eq('id', id)
             .select()
+
+        // Log activity
+        if (!error && data?.[0]) {
+            await db.createActivityLog({
+                action_type: 'UPDATE',
+                entity_type: 'Inventory',
+                entity_id: id,
+                entity_name: `Stock Update`,
+                details: { updated_fields: Object.keys(inventoryData), new_quantity: data[0].quantity }
+            })
+        }
+
         return { data, error }
     },
 
@@ -349,6 +488,15 @@ export const db = {
             return { data: null, error: itemsError }
         }
 
+        // Log activity
+        await db.createActivityLog({
+            action_type: 'CREATE',
+            entity_type: 'Order',
+            entity_id: order.id,
+            entity_name: order.order_number,
+            details: { total_amount: order.total_amount, items_count: orderItems.length }
+        })
+
         return { data: order, error: null }
     },
 
@@ -358,6 +506,18 @@ export const db = {
             .update(orderData)
             .eq('id', id)
             .select()
+
+        // Log activity
+        if (!error && data?.[0]) {
+            await db.createActivityLog({
+                action_type: 'UPDATE',
+                entity_type: 'Order',
+                entity_id: id,
+                entity_name: data[0].order_number,
+                details: { updated_fields: Object.keys(orderData), status: data[0].status }
+            })
+        }
+
         return { data, error }
     },
 
@@ -386,6 +546,18 @@ export const db = {
             .from('sales')
             .insert([dataWithCreator])
             .select()
+
+        // Log activity
+        if (!error && data?.[0]) {
+            await db.createActivityLog({
+                action_type: 'CREATE',
+                entity_type: 'Sale',
+                entity_id: data[0].id,
+                entity_name: data[0].invoice_number,
+                details: { total_amount: data[0].total_amount, payment_method: data[0].payment_method }
+            })
+        }
+
         return { data, error }
     },
 
@@ -395,14 +567,41 @@ export const db = {
             .update(saleData)
             .eq('id', id)
             .select()
+
+        // Log activity
+        if (!error && data?.[0]) {
+            await db.createActivityLog({
+                action_type: 'UPDATE',
+                entity_type: 'Sale',
+                entity_id: id,
+                entity_name: data[0].invoice_number,
+                details: { updated_fields: Object.keys(saleData) }
+            })
+        }
+
         return { data, error }
     },
 
     deleteSale: async (id) => {
+        // Get sale info before deleting
+        const { data: sale } = await supabase.from('sales').select('invoice_number').eq('id', id).single()
+
         const { error } = await supabase
             .from('sales')
             .delete()
             .eq('id', id)
+
+        // Log activity
+        if (!error) {
+            await db.createActivityLog({
+                action_type: 'DELETE',
+                entity_type: 'Sale',
+                entity_id: id,
+                entity_name: sale?.invoice_number || 'Unknown',
+                details: null
+            })
+        }
+
         return { error }
     },
 
@@ -434,6 +633,18 @@ export const db = {
             .from('stores')
             .insert([storeData])
             .select()
+
+        // Log activity
+        if (!error && data?.[0]) {
+            await db.createActivityLog({
+                action_type: 'CREATE',
+                entity_type: 'Store',
+                entity_id: data[0].id,
+                entity_name: data[0].name,
+                details: { location: data[0].location }
+            })
+        }
+
         return { data, error }
     },
 
@@ -443,14 +654,41 @@ export const db = {
             .update(storeData)
             .eq('id', id)
             .select()
+
+        // Log activity
+        if (!error && data?.[0]) {
+            await db.createActivityLog({
+                action_type: 'UPDATE',
+                entity_type: 'Store',
+                entity_id: id,
+                entity_name: data[0].name,
+                details: { updated_fields: Object.keys(storeData) }
+            })
+        }
+
         return { data, error }
     },
 
     deleteStore: async (id) => {
+        // Get store name before deleting
+        const { data: store } = await supabase.from('stores').select('name').eq('id', id).single()
+
         const { error } = await supabase
             .from('stores')
             .delete()
             .eq('id', id)
+
+        // Log activity
+        if (!error) {
+            await db.createActivityLog({
+                action_type: 'DELETE',
+                entity_type: 'Store',
+                entity_id: id,
+                entity_name: store?.name || 'Unknown',
+                details: null
+            })
+        }
+
         return { error }
     },
 
@@ -487,6 +725,15 @@ export const db = {
             return { data: null, error: itemsError }
         }
 
+        // Log activity
+        await db.createActivityLog({
+            action_type: 'CREATE',
+            entity_type: 'Packing',
+            entity_id: packing.id,
+            entity_name: packing.packing_slip_number,
+            details: { total_packages: packing.total_packages, items_count: packingItems.length }
+        })
+
         return { data: packing, error: null }
     },
 
@@ -496,14 +743,41 @@ export const db = {
             .update(packingData)
             .eq('id', id)
             .select()
+
+        // Log activity
+        if (!error && data?.[0]) {
+            await db.createActivityLog({
+                action_type: 'UPDATE',
+                entity_type: 'Packing',
+                entity_id: id,
+                entity_name: data[0].packing_slip_number,
+                details: { updated_fields: Object.keys(packingData), status: data[0].status }
+            })
+        }
+
         return { data, error }
     },
 
     deletePacking: async (id) => {
+        // Get packing info before deleting
+        const { data: packing } = await supabase.from('packing').select('packing_slip_number').eq('id', id).single()
+
         const { error } = await supabase
             .from('packing')
             .delete()
             .eq('id', id)
+
+        // Log activity
+        if (!error) {
+            await db.createActivityLog({
+                action_type: 'DELETE',
+                entity_type: 'Packing',
+                entity_id: id,
+                entity_name: packing?.packing_slip_number || 'Unknown',
+                details: null
+            })
+        }
+
         return { error }
     },
 
@@ -531,6 +805,18 @@ export const db = {
             .from('users')
             .insert([dataWithHash])
             .select('id, email, full_name, role, phone, is_active, created_at')
+
+        // Log activity
+        if (!error && data?.[0]) {
+            await db.createActivityLog({
+                action_type: 'CREATE',
+                entity_type: 'User',
+                entity_id: data[0].id,
+                entity_name: data[0].full_name,
+                details: { email: data[0].email, role: data[0].role }
+            })
+        }
+
         return { data, error }
     },
 
@@ -548,14 +834,41 @@ export const db = {
             .update(updateData)
             .eq('id', id)
             .select('id, email, full_name, role, phone, is_active, created_at')
+
+        // Log activity
+        if (!error && data?.[0]) {
+            await db.createActivityLog({
+                action_type: 'UPDATE',
+                entity_type: 'User',
+                entity_id: id,
+                entity_name: data[0].full_name,
+                details: { updated_fields: Object.keys(userData).filter(k => k !== 'password') }
+            })
+        }
+
         return { data, error }
     },
 
     deleteUser: async (id) => {
+        // Get user name before deleting
+        const { data: user } = await supabase.from('users').select('full_name, email').eq('id', id).single()
+
         const { error } = await supabase
             .from('users')
             .delete()
             .eq('id', id)
+
+        // Log activity
+        if (!error) {
+            await db.createActivityLog({
+                action_type: 'DELETE',
+                entity_type: 'User',
+                entity_id: id,
+                entity_name: user?.full_name || user?.email || 'Unknown',
+                details: null
+            })
+        }
+
         return { error }
     },
 

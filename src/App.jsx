@@ -15,6 +15,7 @@ import Reports from './pages/Reports'
 import Packing from './pages/Packing'
 import Stores from './pages/Stores'
 import Users from './pages/Users'
+import ActivityLog from './pages/ActivityLog'
 
 // Components
 import Navbar from './components/Navbar'
@@ -74,6 +75,7 @@ function App() {
                                 <Route path="/packing" element={<Packing />} />
                                 <Route path="/stores" element={<Stores />} />
                                 <Route path="/users" element={<Users />} />
+                                <Route path="/activity-log" element={<ActivityLog />} />
                                 <Route path="*" element={<Navigate to="/" replace />} />
                             </Routes>
                         </main>

@@ -183,6 +183,19 @@ CREATE TABLE IF NOT EXISTS public.inventory_movements (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Activity Logs Table (for tracking all user actions)
+CREATE TABLE IF NOT EXISTS public.activity_logs (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID REFERENCES public.users(id),
+    user_name TEXT NOT NULL,
+    action_type TEXT NOT NULL CHECK (action_type IN ('CREATE', 'UPDATE', 'DELETE')),
+    entity_type TEXT NOT NULL,
+    entity_id UUID,
+    entity_name TEXT,
+    details JSONB,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- =============================================
 -- INDEXES FOR PERFORMANCE
 -- =============================================
@@ -200,6 +213,9 @@ CREATE INDEX IF NOT EXISTS idx_orders_order_date ON public.orders(order_date);
 CREATE INDEX IF NOT EXISTS idx_sales_customer_id ON public.sales(customer_id);
 CREATE INDEX IF NOT EXISTS idx_sales_sale_date ON public.sales(sale_date);
 CREATE INDEX IF NOT EXISTS idx_packing_order_id ON public.packing(order_id);
+CREATE INDEX IF NOT EXISTS idx_activity_logs_user_id ON public.activity_logs(user_id);
+CREATE INDEX IF NOT EXISTS idx_activity_logs_created_at ON public.activity_logs(created_at);
+CREATE INDEX IF NOT EXISTS idx_activity_logs_entity_type ON public.activity_logs(entity_type);
 
 -- =============================================
 -- FUNCTIONS & TRIGGERS
@@ -263,6 +279,7 @@ ALTER TABLE public.sales ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.packing ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.packing_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.inventory_movements ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.activity_logs ENABLE ROW LEVEL SECURITY;
 
 -- Drop all existing policies (if any)
 DROP POLICY IF EXISTS "Users can view their own profile" ON public.users;
@@ -322,6 +339,9 @@ CREATE POLICY "Allow all operations on packing_items" ON public.packing_items
     FOR ALL USING (true);
 
 CREATE POLICY "Allow all operations on inventory_movements" ON public.inventory_movements
+    FOR ALL USING (true);
+
+CREATE POLICY "Allow all operations on activity_logs" ON public.activity_logs
     FOR ALL USING (true);
 
 -- =============================================
