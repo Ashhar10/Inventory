@@ -107,15 +107,14 @@ function Dashboard() {
                 </div>
 
                 <div className="stats-grid fade-in-up stagger-2">
-                    <div className="glass-card stat-card">
-                        <div className="stat-value">{stats.customers}</div>
-                        <div className="stat-label">Total Customers</div>
-                    </div>
+                    <AnimatedStatBox
+                        slides={[
+                            { value: stats.customers, label: 'Total Customers' },
+                            { value: stats.products, label: 'Total Products' },
+                        ]}
+                    />
 
-                    <div className="glass-card stat-card">
-                        <div className="stat-value">{stats.products}</div>
-                        <div className="stat-label">Total Products</div>
-                    </div>
+
 
                     <AnimatedStatBox
                         slides={[
