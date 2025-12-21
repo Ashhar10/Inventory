@@ -1,13 +1,13 @@
 function ClientCarousel() {
     const clients = [
-        { name: 'Ishaq & Sons', initials: 'IS' },
-        { name: 'Madina Cable', initials: 'MC' },
-        { name: 'Xinda Control Cable', initials: 'XC' },
-        { name: 'Qadafi Cables', initials: 'QC' },
-        { name: 'AINEY CABLES', initials: 'AC' },
-        { name: 'Masood Engineering', initials: 'ME' },
-        { name: 'SE Engineering', initials: 'SE' },
-        { name: 'Chawla Ent.', initials: 'CE' },
+        { name: 'Ishaq & Sons', initials: 'IS', image: '/assets/clients/ishaq-sons.png' },
+        { name: 'Madina Cable', initials: 'MC', image: '/assets/clients/madina-cable.png' },
+        { name: 'Xinda Control Cable', initials: 'XC', image: '/assets/clients/xinda-cable.png' },
+        { name: 'Qadafi Cables', initials: 'QC', image: '/assets/clients/qadafi-cables.png' },
+        { name: 'AINEY CABLES', initials: 'AC', image: '/assets/clients/ainey-cables.png' },
+        { name: 'Masood Engineering', initials: 'ME', image: '/assets/clients/masood-engineering.png' },
+        { name: 'SE Engineering', initials: 'SE', image: '/assets/clients/se-engineering.png' },
+        { name: 'Chawla Ent.', initials: 'CE', image: '/assets/clients/chawla-ent.png' },
     ]
 
     const handleClientClick = () => {
@@ -47,7 +47,15 @@ function ClientCarousel() {
                                 }}
                             >
                                 <div className="client-avatar">
-                                    {client.initials}
+                                    <img
+                                        src={client.image}
+                                        alt={client.name}
+                                        onError={(e) => {
+                                            e.target.style.display = 'none';
+                                            e.target.nextSibling.style.display = 'flex';
+                                        }}
+                                    />
+                                    <span className="initials-fallback">{client.initials}</span>
                                 </div>
                                 <div className="client-name">{client.name}</div>
                             </div>
@@ -132,15 +140,27 @@ function ClientCarousel() {
                     width: 32px;
                     height: 32px;
                     border-radius: 50%;
-                    background: rgba(255, 255, 255, 0.2);
+                    background: rgba(255, 255, 255, 0.15);
                     display: flex;
                     align-items: center;
                     justify-content: center;
+                    border: 2px solid rgba(255, 255, 255, 0.25);
+                    flex-shrink: 0;
+                    overflow: hidden;
+                    position: relative;
+                }
+
+                .client-avatar img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+
+                .initials-fallback {
+                    display: none;
                     font-size: 0.75rem;
                     font-weight: 800;
                     color: white;
-                    border: 2px solid rgba(255, 255, 255, 0.3);
-                    flex-shrink: 0;
                 }
 
                 .client-name {
