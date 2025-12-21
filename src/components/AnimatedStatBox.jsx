@@ -63,6 +63,10 @@ function AnimatedStatBox({ slides, autoPlayInterval = 3000 }) {
                     flex-direction: column;
                     justify-content: center;
                     align-items: center;
+                    background: rgba(39, 39, 42, 0.3) !important; /* Transparent smokey glass */
+                    backdrop-filter: blur(10px) !important;
+                    -webkit-backdrop-filter: blur(10px) !important;
+                    border: 1px solid rgba(255, 255, 255, 0.08) !important;
                 }
 
                 .stat-slideshow {
