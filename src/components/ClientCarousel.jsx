@@ -22,8 +22,8 @@ function ClientCarousel() {
         }
         const hue = Math.abs(hash) % 360
         return {
-            bg: `linear-gradient(135deg, hsl(${hue}, 70%, 50%) 0%, hsl(${(hue + 30) % 360}, 70%, 40%) 100%)`,
-            shadow: `hsla(${hue}, 70%, 50%, 0.3)`
+            bg: `linear-gradient(135deg, hsl(${hue}, 35%, 35%) 0%, hsl(${(hue + 30) % 360}, 40%, 28%) 100%)`,
+            shadow: `hsla(${hue}, 35%, 30%, 0.25)`
         }
     }
 
