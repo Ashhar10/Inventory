@@ -924,6 +924,114 @@ export const db = {
         return { error }
     },
 
+    // Packaged Inventory (Pre-Packaging System)
+    getPackagedInventory: async (statusFilter = 'available') => {
+        let query = supabase
+            .from('packaged_inventory')
+            .select(`
+                *,
+                product:products(*),
+                created_by_user:users!packaged_inventory_created_by_fkey(id, full_name)
+            `)
+            .order('packaging_date', { ascending: false })
+
+        if (statusFilter) {
+            query = query.eq('status', statusFilter)
+        }
+
+        const { data, error } = await query
+
+        const dataWithAttribution = data?.map(row => ({
+            ...row,
+            last_modified_by: row.created_by_user?.full_name || null
+        }))
+
+        return { data: dataWithAttribution, error }
+    },
+
+    getPackagedInventoryByProduct: async (productId) => {
+        const { data, error } = await supabase
+            .from('packaged_inventory')
+            .select(`
+                *,
+                product:products(*)
+            `)
+            .eq('product_id', productId)
+            .eq('status', 'available')
+            .order('packaging_date', { ascending: true })
+
+        return { data, error }
+    },
+
+    createPackagedInventory: async (inventoryData) => {
+        const currentUser = await auth.getCurrentUser()
+        const dataWithCreator = {
+            ...inventoryData,
+            created_by: currentUser?.id
+        }
+
+        const { data, error } = await supabase
+            .from('packaged_inventory')
+            .insert([dataWithCreator])
+            .select()
+
+        if (!error && data?.[0]) {
+            await db.createActivityLog({
+                action_type: 'CREATE',
+                entity_type: 'Packaged Inventory',
+                entity_id: data[0].id,
+                entity_name: `Pre-Packaged Stock`,
+                details: { quantity: data[0].quantity, product_id: data[0].product_id }
+            })
+        }
+
+        return { data, error }
+    },
+
+    updatePackagedInventoryStatus: async (id, status, notes = null) => {
+        const updateData = { status }
+        if (notes) {
+            updateData.notes = notes
+        }
+
+        const { data, error } = await supabase
+            .from('packaged_inventory')
+            .update(updateData)
+            .eq('id', id)
+            .select()
+
+        if (!error && data?.[0]) {
+            await db.createActivityLog({
+                action_type: 'UPDATE',
+                entity_type: 'Packaged Inventory',
+                entity_id: id,
+                entity_name: `Pre-Packaged Stock Status Update`,
+                details: { new_status: status }
+            })
+        }
+
+        return { data, error }
+    },
+
+    deletePackagedInventory: async (id) => {
+        const { error } = await supabase
+            .from('packaged_inventory')
+            .delete()
+            .eq('id', id)
+
+        if (!error) {
+            await db.createActivityLog({
+                action_type: 'DELETE',
+                entity_type: 'Packaged Inventory',
+                entity_id: id,
+                entity_name: `Pre-Packaged Stock`,
+                details: null
+            })
+        }
+
+        return { error }
+    },
+
     // Reports & Analytics
     getDashboardStats: async () => {
         // Get total customers

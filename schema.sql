@@ -169,6 +169,19 @@ CREATE TABLE IF NOT EXISTS public.packing_items (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Packaged Inventory Table (Pre-Packaging System)
+CREATE TABLE IF NOT EXISTS public.packaged_inventory (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    product_id UUID REFERENCES public.products(id) ON DELETE CASCADE,
+    quantity INTEGER NOT NULL,
+    packaging_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    status TEXT DEFAULT 'available' CHECK (status IN ('available', 'reserved', 'used')),
+    notes TEXT,
+    created_by UUID REFERENCES public.users(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Inventory Movements Table (for audit trail)
 CREATE TABLE IF NOT EXISTS public.inventory_movements (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -213,6 +226,8 @@ CREATE INDEX IF NOT EXISTS idx_orders_order_date ON public.orders(order_date);
 CREATE INDEX IF NOT EXISTS idx_sales_customer_id ON public.sales(customer_id);
 CREATE INDEX IF NOT EXISTS idx_sales_sale_date ON public.sales(sale_date);
 CREATE INDEX IF NOT EXISTS idx_packing_order_id ON public.packing(order_id);
+CREATE INDEX IF NOT EXISTS idx_packaged_inventory_product_id ON public.packaged_inventory(product_id);
+CREATE INDEX IF NOT EXISTS idx_packaged_inventory_status ON public.packaged_inventory(status);
 CREATE INDEX IF NOT EXISTS idx_activity_logs_user_id ON public.activity_logs(user_id);
 CREATE INDEX IF NOT EXISTS idx_activity_logs_created_at ON public.activity_logs(created_at);
 CREATE INDEX IF NOT EXISTS idx_activity_logs_entity_type ON public.activity_logs(entity_type);
@@ -263,6 +278,10 @@ DROP TRIGGER IF EXISTS update_packing_updated_at ON public.packing;
 CREATE TRIGGER update_packing_updated_at BEFORE UPDATE ON public.packing
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_packaged_inventory_updated_at ON public.packaged_inventory;
+CREATE TRIGGER update_packaged_inventory_updated_at BEFORE UPDATE ON public.packaged_inventory
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 -- =============================================
 -- ROW LEVEL SECURITY (RLS) POLICIES
 -- =============================================
@@ -278,6 +297,7 @@ ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.sales ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.packing ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.packing_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.packaged_inventory ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.inventory_movements ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.activity_logs ENABLE ROW LEVEL SECURITY;
 
@@ -315,6 +335,7 @@ DROP POLICY IF EXISTS "Allow all operations on order_items" ON public.order_item
 DROP POLICY IF EXISTS "Allow all operations on sales" ON public.sales;
 DROP POLICY IF EXISTS "Allow all operations on packing" ON public.packing;
 DROP POLICY IF EXISTS "Allow all operations on packing_items" ON public.packing_items;
+DROP POLICY IF EXISTS "Allow all operations on packaged_inventory" ON public.packaged_inventory;
 DROP POLICY IF EXISTS "Allow all operations on inventory_movements" ON public.inventory_movements;
 DROP POLICY IF EXISTS "Allow all operations on activity_logs" ON public.activity_logs;
 
@@ -350,6 +371,9 @@ CREATE POLICY "Allow all operations on packing" ON public.packing
     FOR ALL USING (true);
 
 CREATE POLICY "Allow all operations on packing_items" ON public.packing_items
+    FOR ALL USING (true);
+
+CREATE POLICY "Allow all operations on packaged_inventory" ON public.packaged_inventory
     FOR ALL USING (true);
 
 CREATE POLICY "Allow all operations on inventory_movements" ON public.inventory_movements
