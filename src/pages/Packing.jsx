@@ -11,6 +11,10 @@ function Packing() {
     const [editingPacking, setEditingPacking] = useState(null)
     const { showSuccess, showError, showConfirm, ModalComponent } = useModal()
 
+    // Pre-packaging system
+    const [packingMode, setPackingMode] = useState('order') // 'order' or 'inventory'
+    const [packagedInventory, setPackagedInventory] = useState([])
+
     // For dropdowns
     const [orders, setOrders] = useState([])
     const [stores, setStores] = useState([])
@@ -89,6 +93,23 @@ function Packing() {
         { name: 'notes', label: 'Notes', type: 'textarea', placeholder: 'Additional packing notes...' },
     ]
 
+    const getFormFields = () => {
+        if (packingMode === 'inventory') {
+            return [
+                {
+                    name: 'product_id',
+                    label: 'Product',
+                    type: 'select',
+                    required: true,
+                    options: products.map(product => ({ value: product.id, label: `${product.name} (${product.sku})` }))
+                },
+                { name: 'quantity', label: 'Quantity', type: 'number', required: true, placeholder: '100' },
+                { name: 'notes', label: 'Notes', type: 'textarea', placeholder: 'Pre-packaging notes...' },
+            ]
+        }
+        return formFields
+    }
+
     useEffect(() => {
         loadData()
     }, [])
@@ -96,21 +117,20 @@ function Packing() {
     const loadData = async () => {
         setLoading(true)
 
-        // Load packing records
         const { data: packingData, error } = await db.getPacking()
         if (!error && packingData) {
             setPacking(packingData)
         }
 
-        // Load orders for dropdown
+        const { data: packagedData } = await db.getPackagedInventory()
+        if (packagedData) setPackagedInventory(packagedData)
+
         const { data: ordersData } = await db.getOrders()
         if (ordersData) setOrders(ordersData)
 
-        // Load stores for dropdown
         const { data: storesData } = await db.getStores()
         if (storesData) setStores(storesData)
 
-        // Load products for packing items
         const { data: productsData } = await db.getProducts()
         if (productsData) setProducts(productsData)
 
@@ -123,7 +143,6 @@ function Packing() {
     }
 
     const handleEdit = (packingRecord) => {
-        // Prepare editing data
         const editData = {
             ...packingRecord,
             packed_date: packingRecord.packed_date ? new Date(packingRecord.packed_date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
@@ -150,6 +169,25 @@ function Packing() {
 
     const handleSubmit = async (formData) => {
         try {
+            if (packingMode === 'inventory') {
+                const inventoryData = {
+                    product_id: formData.product_id,
+                    quantity: parseInt(formData.quantity),
+                    notes: formData.notes,
+                }
+
+                const { error } = await db.createPackagedInventory(inventoryData)
+
+                if (!error) {
+                    setShowModal(false)
+                    loadData()
+                    showSuccess('Product packaged successfully and added to inventory!')
+                } else {
+                    showError('Error packaging product: ' + error.message)
+                }
+                return
+            }
+
             const packingData = {
                 packing_slip_number: formData.packing_slip_number || `PACK-${Date.now().toString().slice(-6)}`,
                 order_id: formData.order_id,
@@ -168,7 +206,6 @@ function Packing() {
                 const result = await db.updatePacking(editingPacking.id, packingData)
                 error = result.error
             } else {
-                // For new packing, we need packing items - simplified for now
                 const result = await db.createPacking(packingData, [])
                 error = result.error
             }
@@ -191,29 +228,125 @@ function Packing() {
         <>
             <ModalComponent />
 
-            <TableView
-                title="Packing Management"
-                columns={columns}
-                data={packing}
-                onAdd={handleAdd}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                loading={loading}
-            />
+            <div className="container" style={{ marginBottom: 'var(--spacing-xl)' }}>
+                <div className="glass-card" style={{ padding: 'var(--spacing-lg)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 'var(--spacing-md)' }}>
+                    <div>
+                        <h3 style={{ margin: 0, color: 'var(--text-main)', fontSize: '1.25rem' }}>Packing Mode</h3>
+                        <p style={{ margin: '0.5rem 0 0', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                            {packingMode === 'order' ? 'Pack products for specific orders' : 'Pre-package products for inventory'}
+                        </p>
+                    </div>
+                    <div style={{ display: 'flex', gap: '4px', background: 'rgba(0,0,0,0.2)', padding: '4px', borderRadius: 'var(--radius-lg)' }}>
+                        <button
+                            onClick={() => { setPackingMode('order'); setShowModal(false) }}
+                            className="btn"
+                            style={{
+                                padding: '0.5rem 1rem',
+                                background: packingMode === 'order' ? 'var(--bg-gradient-primary)' : 'transparent',
+                                color: 'white',
+                                border: 'none',
+                                fontSize: '0.9rem'
+                            }}
+                        >
+                            Order Packing
+                        </button>
+                        <button
+                            onClick={() => { setPackingMode('inventory'); setShowModal(false) }}
+                            className="btn"
+                            style={{
+                                padding: '0.5rem 1rem',
+                                background: packingMode === 'inventory' ? 'var(--bg-gradient-primary)' : 'transparent',
+                                color: 'white',
+                                border: 'none',
+                                fontSize: '0.9rem'
+                            }}
+                        >
+                            Inventory Packing
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {packingMode === 'order' ? (
+                <TableView
+                    title="Packing Management"
+                    columns={columns}
+                    data={packing}
+                    onAdd={handleAdd}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    loading={loading}
+                />
+            ) : (
+                <TableView
+                    title="Packaged Inventory"
+                    columns={[
+                        {
+                            key: 'product',
+                            label: 'Product',
+                            render: (val) => val?.name || 'N/A'
+                        },
+                        { key: 'quantity', label: 'Quantity' },
+                        {
+                            key: 'packaging_date',
+                            label: 'Packaged Date',
+                            render: (val) => new Date(val).toLocaleDateString()
+                        },
+                        {
+                            key: 'status',
+                            label: 'Status',
+                            render: (val) => {
+                                const colors = {
+                                    available: '#10b981',
+                                    reserved: '#f59e0b',
+                                    used: '#6b7280'
+                                }
+                                return <span style={{ color: colors[val] || '#6b7280', fontWeight: '600', textTransform: 'capitalize' }}>{val}</span>
+                            }
+                        },
+                        { key: 'notes', label: 'Notes' },
+                    ]}
+                    data={packagedInventory}
+                    onAdd={handleAdd}
+                    onDelete={async (item) => {
+                        showConfirm(
+                            `Delete this packaged inventory (${item.product?.name})?`,
+                            async () => {
+                                const { error } = await db.deletePackagedInventory(item.id)
+                                if (!error) {
+                                    loadData()
+                                    showSuccess('Packaged inventory deleted!')
+                                } else {
+                                    showError('Error: ' + error.message)
+                                }
+                            },
+                            'Delete Packaged Inventory'
+                        )
+                    }}
+                    loading={loading}
+                />
+            )}
 
             {showModal && (
                 <div className="modal-overlay" onClick={() => setShowModal(false)}>
                     <div className="modal" onClick={(e) => e.stopPropagation()}>
                         <h2 style={{ marginBottom: 'var(--spacing-xl)' }}>
-                            {editingPacking ? 'Edit Packing Record' : 'Create Packing Record'}
+                            {packingMode === 'inventory'
+                                ? 'Package Product for Inventory'
+                                : (editingPacking ? 'Edit Packing Record' : 'Create Packing Record')}
                         </h2>
                         <Form
-                            formId={editingPacking ? `packing-edit-${editingPacking.id}` : 'packing-create'}
-                            fields={formFields}
-                            initialData={editingPacking || { status: 'pending', total_packages: 1, packed_date: new Date().toISOString().split('T')[0] }}
+                            formId={editingPacking ? `packing-edit-${editingPacking.id}` : `packing-create-${packingMode}`}
+                            fields={getFormFields()}
+                            initialData={packingMode === 'inventory'
+                                ? { quantity: 1 }
+                                : (editingPacking || { status: 'pending', total_packages: 1, packed_date: new Date().toISOString().split('T')[0] })
+                            }
                             onSubmit={handleSubmit}
                             onCancel={() => setShowModal(false)}
-                            submitLabel={editingPacking ? 'Update Packing' : 'Create Packing'}
+                            submitLabel={packingMode === 'inventory'
+                                ? 'Package Product'
+                                : (editingPacking ? 'Update Packing' : 'Create Packing')}
                         />
                     </div>
                 </div>
